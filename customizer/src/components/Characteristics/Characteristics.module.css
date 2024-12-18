@@ -1,0 +1,35 @@
+.card {
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    padding: 16px;
+    width: 100%;
+    background-color: #fff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.2s ease-in-out;
+  }
+  
+  .card:hover {
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .input {
+    margin-bottom: 16px;
+  }
+  
+  .input:last-of-type {
+    margin-bottom: 0;
+  }
+  
+  .label {
+    font-size: 14px;
+    color: #333;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  
+  .read-only {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    color: #888;
+  }
+  
