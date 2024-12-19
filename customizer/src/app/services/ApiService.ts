@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config";
+import DeliveryType from "./../Models/DeliveryType";
 
 class APIService {
   private baseURL: string;
@@ -13,6 +14,7 @@ class APIService {
     body?: FormData | any,
     headers: HeadersInit = this.getDefaultHeaders(body instanceof FormData)
   ): Promise<T> {
+    console.log(`${this.baseURL}/${url}`);
     const response = await fetch(`${this.baseURL}/${url}`, {
       method,
       headers,
@@ -26,11 +28,11 @@ class APIService {
 
     if (!response.ok) {
       const errorText = await response.text();
+      console.log(response.status);
       throw new Error(
         `HTTP Error! Status: ${response.status}, Message: ${errorText}`
       );
     }
-
     return response.json();
   }
   private getDefaultHeaders(isFormData: boolean = false): HeadersInit {
@@ -39,7 +41,9 @@ class APIService {
     if (!isFormData) {
       headers["Content-Type"] = "application/json";
     }
-
+    headers["Access-Control-Allow-Origin"] = "*";
+    headers["X-Requested-With"] = "XMLHttpRequest";
+    headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS";
     // Приклад додавання токену авторизації
     const token = localStorage.getItem("token");
     if (token) {

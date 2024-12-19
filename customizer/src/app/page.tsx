@@ -1,6 +1,28 @@
+"use client";
 import Image from "next/image";
+import { useState, useEffect } from "react";
+import APIService from "./services/ApiService";
+import SheathColorService from "./services/SheathColorService";
+import DeliveryTypeService from "./services/DeliveryTypeService";
+import AuthService from "./services/AuthService";
+import DeliveryType from "./Models/DeliveryType";
 
 export default function Home() {
+  const [colors, setColors] = useState<DeliveryType[]>([]);
+  const deliveryTypeService = new DeliveryTypeService(new APIService());
+  const auth = new AuthService(new APIService());
+
+  useEffect(() => {
+    const fetchColors = async () => {
+      try {
+        auth.login("admin", "admin");
+      } catch (error) {
+        console.error("Error fetching sheath colors:", error);
+      }
+    };
+    fetchColors();
+  }, []);
+
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">

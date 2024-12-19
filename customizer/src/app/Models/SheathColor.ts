@@ -3,6 +3,7 @@ export default interface SheathColor {
   color: string;
   colorCode: string;
   material: string;
-  materialUrl: string;
+  materialUrl: string | null;
   price: number;
+  EngravingColorCode: string;
 }

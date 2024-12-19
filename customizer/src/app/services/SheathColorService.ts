@@ -25,12 +25,14 @@ class SheathColorService {
 
   async create(color: SheathColor, material: File): Promise<SheathColor> {
     const formData = new FormData();
+    formData.append("Id", "0");
     formData.append("Color", color.color);
     formData.append("ColorCode", color.colorCode);
     formData.append("Material", color.material);
-    formData.append("MaterialUrl", color.materialUrl);
+    formData.append("MaterialUrl", "");
     formData.append("Price", color.price.toString());
-    formData.append("material", material);
+    formData.append("handleMaterial", material);
+    formData.append("EngravingColorCode", color.EngravingColorCode);
 
     const response = await this.apiService.create<SheathColor>(
       this.resource,
@@ -45,12 +47,16 @@ class SheathColorService {
     material?: File
   ): Promise<SheathColor> {
     const formData = new FormData();
+    formData.append("Id", "0");
     formData.append("Color", color.color);
     formData.append("ColorCode", color.colorCode);
     formData.append("Material", color.material);
-    formData.append("MaterialUrl", color.materialUrl);
+    formData.append("MaterialUrl", "");
     formData.append("Price", color.price.toString());
-    formData.append("material", material);
+    formData.append("EngravingColorCode", color.EngravingColorCode);
+    if (material) {
+      formData.append("handleMaterial", material);
+    }
 
     const response = await this.apiService.update<SheathColor>(
       this.resource,
