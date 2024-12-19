@@ -1,5 +1,5 @@
 import APIService from "./ApiService";
-import SheathColor from "../Models/SheathColor"; // Шлях до моделі
+import SheathColor from "../Models/SheathColor";
 
 class SheathColorService {
   private apiService: APIService;
@@ -12,7 +12,7 @@ class SheathColorService {
 
   async getAll(): Promise<SheathColor[]> {
     const response = await this.apiService.getAll<SheathColor>(this.resource);
-    return response; // Тут вже повернені `SheathColor[]`
+    return response;
   }
 
   async getById(id: number): Promise<SheathColor> {
@@ -20,12 +20,16 @@ class SheathColorService {
       this.resource,
       id
     );
-    return response; // Об'єкт типу `SheathColor`
+    return response;
   }
 
   async create(color: SheathColor, material: File): Promise<SheathColor> {
     const formData = new FormData();
-    formData.append("color", JSON.stringify(color));
+    formData.append("Color", color.color);
+    formData.append("ColorCode", color.colorCode);
+    formData.append("Material", color.material);
+    formData.append("MaterialUrl", color.materialUrl);
+    formData.append("Price", color.price.toString());
     formData.append("material", material);
 
     const response = await this.apiService.create<SheathColor>(
@@ -41,10 +45,12 @@ class SheathColorService {
     material?: File
   ): Promise<SheathColor> {
     const formData = new FormData();
-    formData.append("color", JSON.stringify(color));
-    if (material) {
-      formData.append("material", material);
-    }
+    formData.append("Color", color.color);
+    formData.append("ColorCode", color.colorCode);
+    formData.append("Material", color.material);
+    formData.append("MaterialUrl", color.materialUrl);
+    formData.append("Price", color.price.toString());
+    formData.append("material", material);
 
     const response = await this.apiService.update<SheathColor>(
       this.resource,
@@ -59,7 +65,7 @@ class SheathColorService {
       this.resource,
       id
     );
-    return response.isDeleted; // Повертає результат видалення
+    return response.isDeleted;
   }
 }
 
