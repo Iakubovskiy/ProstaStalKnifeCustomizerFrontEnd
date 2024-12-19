@@ -1,6 +1,11 @@
 import React from "react";
 import { Input, Card } from "@nextui-org/react";
 import styles from "./Characteristics.module.css";
+import BladeShape from "../../Models/BladeShape";
+import Fastening from "../../Models/Fastening";
+import HandleColor from "../../Models/HandleColor";
+import SheathColor from "../../Models/SheathColor";
+import BladeCoating from "../../Models/BladeCoating";
 
 interface CharacteristicsProps<T> {
   data: T;
