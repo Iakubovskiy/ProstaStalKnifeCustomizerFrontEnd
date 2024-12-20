@@ -14,7 +14,7 @@ export default function BladeShapeList() {
                 const data = await bladeShapeService.getAll();
                 setBladeShapes(data);
             } catch (error) {
-                console.error("Помилка при отриманні Кольорів:", error);
+                console.error("Помилка при отриманні форм клинків:", error);
             }
         };
 
