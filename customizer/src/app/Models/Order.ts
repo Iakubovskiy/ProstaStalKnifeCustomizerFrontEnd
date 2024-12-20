@@ -5,12 +5,12 @@ export default interface Order {
   number: string;
   total: number;
   knifes: Knife[];
-  delivery: string;
+  delivery: DeliveryType;
   clientFullName: string;
   clientPhoneNumber: string;
   countryForDelivery: string;
   city: string;
   email: string;
   comment: string | null;
-  status: string;
+  status: OrderStatuses;
 }

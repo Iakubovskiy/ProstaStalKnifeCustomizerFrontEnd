@@ -72,6 +72,14 @@ class APIService {
     return this.request<T>(`${resource}/${id}`, "PUT", data);
   }
 
+  partialUpdate<T>(
+      resource: string,
+      id: number | string,
+      data: FormData | any
+  ): Promise<T> {
+    return this.request<T>(`${resource}/${id}`, "PATCH", data);
+  }
+
   delete<T>(resource: string, id: number | string): Promise<T> {
     return this.request<T>(`${resource}/${id}`, "DELETE");
   }
