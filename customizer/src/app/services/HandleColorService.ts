@@ -26,11 +26,11 @@ class HandleColorService {
   async create(color: HandleColor, material: File): Promise<HandleColor> {
     const formData = new FormData();
     formData.append("Id", "0");
-    formData.append("ColorName", color.color);
+    formData.append("ColorName", color.colorName);
     formData.append("material", material);
     formData.append("Material", color.material);
     formData.append("MaterialUrl", "");
-    formData.append("ColorCode", color.ColorCode);
+    formData.append("ColorCode", color.colorCode);
 
     const response = await this.apiService.create<HandleColor>(
       this.resource,
@@ -46,10 +46,10 @@ class HandleColorService {
   ): Promise<HandleColor> {
     const formData = new FormData();
     formData.append("Id", "0");
-    formData.append("ColorName", color.color);
+    formData.append("ColorName", color.colorName);
     formData.append("Material", color.material);
     formData.append("MaterialUrl", color.materialUrl);
-    formData.append("ColorCode", color.ColorCode);
+    formData.append("ColorCode", color.colorCode);
     if (material) {
       formData.append("material", material);
     }
