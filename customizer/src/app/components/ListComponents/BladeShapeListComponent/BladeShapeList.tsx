@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import CustomTable from "../CustomTableComponent/CustomTable";
 import {Column} from "../CustomTableComponent/CustomTable";
 import { Button } from "@nextui-org/react";
-import BladeShapeService from "../../services/BladeShapeService"
+import BladeShapeService from "../../../services/BladeShapeService"
 
 export default function BladeShapeList() {
     const [bladeShapes, setBladeShapes] = useState<BladeShape[]>([]);
     const bladeShapeService = new BladeShapeService();
 
     useEffect(() => {
-        const fetchDeliveryTypes = async () => {
+        const fetchBladeShapes = async () => {
             try {
                 const data = await bladeShapeService.getAll();
                 setBladeShapes(data);
@@ -18,7 +18,7 @@ export default function BladeShapeList() {
             }
         };
 
-        fetchDeliveryTypes();
+        fetchBladeShapes();
     }, []);
 
     const bladeDelete = async (id: number) => {

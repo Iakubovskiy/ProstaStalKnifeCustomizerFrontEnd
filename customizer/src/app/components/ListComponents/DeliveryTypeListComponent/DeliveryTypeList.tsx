@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import CustomTable from "../CustomTableComponent/CustomTable";
 import {Column} from "../CustomTableComponent/CustomTable";
 import { Button } from "@nextui-org/react";
-import DeliveryTypeService from "../../services/DeliveryTypeService"
+import DeliveryTypeService from "../../../services/DeliveryTypeService"
 
 export default function DeliveryTypeList() {
     const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);

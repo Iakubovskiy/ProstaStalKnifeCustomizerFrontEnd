@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import CustomTable from "../CustomTableComponent/CustomTable";
 import {Column} from "../CustomTableComponent/CustomTable";
 import { Button } from "@nextui-org/react";
-import HandleColorService from "../../services/HandleColorService"
+import HandleColorService from "../../../services/HandleColorService"
 
 export default function HandleColorList() {
     const [handleColors, setHandleColors] = useState<HandleColor[]>([]);
     const handleColorService = new HandleColorService();
 
     useEffect(() => {
-        const fetchDeliveryTypes = async () => {
+        const fetchHandleColors = async () => {
             try {
                 const data = await handleColorService.getAll();
                 setHandleColors(data);
@@ -18,7 +18,7 @@ export default function HandleColorList() {
             }
         };
 
-        fetchDeliveryTypes();
+        fetchHandleColors();
     }, []);
 
     const handleDelete = async (id: number) => {
