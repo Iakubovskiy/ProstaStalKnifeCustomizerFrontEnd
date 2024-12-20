@@ -157,8 +157,7 @@ function Characteristics<
 
   return (
     <Card
-      bordered
-      css={{ padding: "1rem", width: "100%" }}
+      style={{ padding: "1rem", width: "100%", border:"1px solid #000" }}
       className={styles.card}
     >
       {renderFields()}

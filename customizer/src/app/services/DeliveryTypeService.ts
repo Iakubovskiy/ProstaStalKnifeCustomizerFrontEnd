@@ -10,13 +10,11 @@ class DeliveryTypeService {
     this.resource = "DeliveryType";
   }
 
-  // Отримати всі DeliveryTypes
   async getAll(): Promise<DeliveryType[]> {
     const response = await this.apiService.getAll<DeliveryType>(this.resource);
     return response;
   }
 
-  // Отримати DeliveryType за id
   async getById(id: number): Promise<DeliveryType> {
     const response = await this.apiService.getById<DeliveryType>(
       this.resource,
@@ -25,11 +23,9 @@ class DeliveryTypeService {
     return response;
   }
 
-  // Створити новий DeliveryType
   async create(deliveryType: DeliveryType): Promise<DeliveryType> {
     const formData = new FormData();
 
-    // Додаємо дані як звичайні поля
     formData.append("Id", deliveryType.name);
     formData.append("Name", deliveryType.name);
     formData.append("Price", deliveryType.price.toString());
@@ -59,7 +55,6 @@ class DeliveryTypeService {
     return response;
   }
 
-  // Видалити DeliveryType
   async delete(id: number): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
