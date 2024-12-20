@@ -1,6 +1,6 @@
 export default interface SheathColor {
   id: number;
-  color: string;
+  colorName: string;
   colorCode: string;
   material: string;
   materialUrl: string | null;

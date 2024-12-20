@@ -2,52 +2,57 @@
 import React, { useEffect, useState } from "react";
 import DragNDrop from "@/app/components/DragNDrop/DragNDrop";
 import Characteristics from "@/app/components/Characteristics/Characteristics";
-import HandleColor from "@/app/Models/HandleColor";
+import SheathColor from "@/app/Models/SheathColor";
 import { useRouter } from "next/router";
-import HandleColorService from "@/app/services/HandleColorService";
+import SheathColorService from "@/app/services/SheathColorService";
 import "../../styles/globals.css";
 import { Spinner } from "@nextui-org/react";
 import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
-const initialHandleColorData: HandleColor = {
+const initialSheathColorData: SheathColor = {
   id: 1,
   colorName: "",
   material: "",
   colorCode: "",
   materialUrl: "",
+  price: 0,
+  EngravingColorCode: "",
 };
 
-const HandleColorPage = () => {
+const SheathColorPage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [color, setColor] = useState<string>(initialHandleColorData.colorCode);
+  const [color, setColor] = useState<string>(initialSheathColorData.colorCode);
+  const [Engravingcolor, setEngravingcolor] = useState<string>(
+    initialSheathColorData.EngravingColorCode
+  );
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isCreating, setCreating] = useState<boolean>(false);
 
   const [file, setFile] = useState<File | null>(null);
-  const [handleColor, setHandleColor] = useState<HandleColor>(
-    initialHandleColorData
+  const [SheathColor, setSheathColor] = useState<SheathColor>(
+    initialSheathColorData
   );
-  const [handleservice, setHandleservice] = useState<HandleColorService>(
-    new HandleColorService()
+  const [handleservice, setHandleservice] = useState<SheathColorService>(
+    new SheathColorService()
   );
   const handleFileSelected = (selectedFile: File | null) => {
     setFile(selectedFile);
   };
-  const handleObjectChange = (updatedData: HandleColor) => {
-    setHandleColor(updatedData); // Оновлюємо об'єкт у стані
-    console.log(handleColor);
+  const handleObjectChange = (updatedData: SheathColor) => {
+    setSheathColor(updatedData); // Оновлюємо об'єкт у стані
+    console.log(SheathColor);
   };
   const handleSave = async () => {
-    console.log("Saving data:", handleColor, "Uploaded File:", file);
+    console.log("Saving data:", SheathColor, "Uploaded File:", file);
 
-    if (file && handleColor) {
+    if (file && SheathColor) {
       var response;
       if (isCreating) {
-        response = await handleservice.create(handleColor, file);
+        response = await handleservice.create(SheathColor, file);
       } else {
         response = await handleservice.update(
           parseInt(id as string, 10),
-          handleColor,
+          SheathColor,
           file
         );
       }
@@ -56,9 +61,8 @@ const HandleColorPage = () => {
     }
   };
   useEffect(() => {
-    const fetchHandleColor = async () => {
+    const fetchSheathColor = async () => {
       if (id) {
-        // Перетворюємо id на число
         const numericId = parseInt(id as string, 10);
 
         if (isNaN(numericId)) {
@@ -70,63 +74,71 @@ const HandleColorPage = () => {
           setLoading(false);
         } else {
           try {
-            const fetchedHandleColor = await handleservice.getById(numericId);
-            setHandleColor(fetchedHandleColor);
+            const fetchedsheathColor = await handleservice.getById(numericId);
+            setSheathColor(fetchedsheathColor);
             console.log("1");
-            console.log(fetchedHandleColor.colorCode);
+            console.log(fetchedsheathColor.colorCode);
             console.log("1");
-            setColor(fetchedHandleColor.colorCode);
+            setColor(fetchedsheathColor.colorCode);
+            setEngravingcolor(fetchedsheathColor.EngravingColorCode);
             setLoading(false);
           } catch (error) {
             console.error("Error fetching sheath color:", error);
             alert("Сталася помилка під час отримання даних. Перевірте ID.");
-            router.push("/handleColorPage/0");
+            router.push("/sheathColorPage/0");
           }
         }
       }
-      console.log(handleColor);
+      console.log(SheathColor);
     };
-    fetchHandleColor();
+    fetchSheathColor();
   }, [id]);
-  const handleColorChange = (newColor: any) => {
-    setColor(newColor); // Оновлюємо колір
-    handleColor.colorCode = newColor;
+  const SheathColorChange = (newColor: any) => {
+    setColor(newColor);
+    SheathColor.colorCode = newColor;
+  };
+  const SheathEngravingColorChange = (newColor: any) => {
+    setEngravingcolor(newColor);
+    SheathColor.colorCode = newColor;
   };
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center ">
-        <Spinner
-          size="lg"
-          color="warning"
-          label="Loading handle color data..."
-        />
+        <Spinner size="lg" color="warning" label="Завантаження" />
       </div>
     );
   } else {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-center mb-4">
-            Кольори руків'я
-          </h1>
+          <h1 className="text-2xl font-bold text-center mb-4">Піхви</h1>
 
           <div className="mb-6">
             <DragNDrop onFileSelected={handleFileSelected} />
           </div>
           <div className="mb-6">
-            <h3 className="text-lg font-semibold">Оберіть колір</h3>
-            <ColorPicker
-              value={color}
-              onChange={handleColorChange} // Оновлюємо колір, коли вибирається новий
-            />
+            <h3 className="text-lg font-semibold mb-2">Оберіть кольори</h3>
+            <div className="flex items-center space-x-4">
+              <div className="flex-1">
+                <h4 className="text-md font-medium">Колір піхв</h4>
+                <ColorPicker value={color} onChange={SheathColorChange} />
+              </div>
+              <div className="flex-1">
+                <h4 className="text-md font-medium">Колір гравіювання</h4>
+                <ColorPicker
+                  value={color}
+                  onChange={SheathEngravingColorChange}
+                />
+              </div>
+            </div>
           </div>
           <div className="mb-6">
             <Characteristics
-              data={handleColor}
+              data={SheathColor}
               isReadOnly1={false}
               currentBladeCoatingColor={color}
               onChange={handleObjectChange}
-              type="HandleColor"
+              type="SheathColor"
             />
           </div>
 
@@ -142,4 +154,4 @@ const HandleColorPage = () => {
   }
 };
 
-export default HandleColorPage;
+export default SheathColorPage;

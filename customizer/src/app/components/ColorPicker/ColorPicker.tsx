@@ -14,9 +14,9 @@ const ColorPicker = ({
   };
 
   return (
-    <div className="p-3 bg-white shadow-lg rounded-lg">
-      <div className="mb-3">
-        <h3 className="text-lg font-semibold"></h3>
+    <div className="p-4 bg-white shadow-md rounded-lg border border-gray-200 hover:shadow-lg transition duration-200">
+      <div className="mb-2">
+        <h3 className="text-md font-medium text-gray-700"></h3>
       </div>
       <Input
         type="color"
@@ -24,10 +24,15 @@ const ColorPicker = ({
         onChange={handleColorChange}
         aria-label="Color Picker"
         style={{
-          padding: "10px 50px 10px 50px ",
-          backgroundColor: "transparent",
-          height: "6rem",
+          width: "100%",
+          padding: "0.5rem",
+          backgroundColor: "#f9f9f9",
+          border: "1px solid #e5e7eb",
+          borderRadius: "8px",
+          height: "8rem",
+          cursor: "pointer",
         }}
+        className="focus:ring-2 focus:ring-blue-400"
       />
     </div>
   );
