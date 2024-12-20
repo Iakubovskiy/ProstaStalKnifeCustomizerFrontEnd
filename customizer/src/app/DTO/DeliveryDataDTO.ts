@@ -4,4 +4,5 @@ export  default interface DeliveryDataDTO {
     CountryForDelivery:string;
     City:string;
     Email:string;
+    //
 }
