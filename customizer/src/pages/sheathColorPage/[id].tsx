@@ -56,6 +56,8 @@ const SheathColorPage = () => {
           file
         );
       }
+
+      alert("Збережено");
     } else {
       alert("Оберіть файл та заповніть поля");
     }

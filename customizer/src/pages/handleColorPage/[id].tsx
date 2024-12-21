@@ -51,6 +51,8 @@ const HandleColorPage = () => {
           file
         );
       }
+
+      alert("Збережено");
     } else {
       alert("Оберіть файл та заповніть поля");
     }
@@ -115,10 +117,7 @@ const HandleColorPage = () => {
           </div>
           <div className="mb-6">
             <h3 className="text-lg font-semibold">Оберіть колір</h3>
-            <ColorPicker
-              value={color}
-              onChange={handleColorChange} // Оновлюємо колір, коли вибирається новий
-            />
+            <ColorPicker value={color} onChange={handleColorChange} />
           </div>
           <div className="mb-6">
             <Characteristics
