@@ -1,0 +1,13 @@
+.input {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: black;
+}
+
+.input label {
+  font-size: 14px;
+  color: #000000;
+  font-weight: 600;
+}

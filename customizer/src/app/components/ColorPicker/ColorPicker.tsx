@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
-import { Input } from "@nextui-org/react"; // Імпорт Input з NextUI для покращеного вигляду
+import { Input } from "@nextui-org/react";
+import "./style.css";
 
 const ColorPicker = ({
   value,
@@ -16,7 +17,7 @@ const ColorPicker = ({
   return (
     <div className="p-4 bg-white shadow-md rounded-lg border border-gray-200 hover:shadow-lg transition duration-200">
       <div className="mb-2">
-        <h3 className="text-md font-medium text-gray-700"></h3>
+        <h3 className="text-md font-medium text-black"></h3>
       </div>
       <Input
         type="color"

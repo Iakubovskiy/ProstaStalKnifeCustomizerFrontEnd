@@ -10,13 +10,11 @@ class FasteningService {
     this.resource = "Fastening";
   }
 
-  // Отримати всі Fastenings
   async getAll(): Promise<Fastening[]> {
     const response = await this.apiService.getAll<Fastening>(this.resource);
     return response;
   }
 
-  // Отримати Fastening за id
   async getById(id: number): Promise<Fastening> {
     const response = await this.apiService.getById<Fastening>(
       this.resource,
@@ -25,24 +23,23 @@ class FasteningService {
     return response;
   }
 
-  // Створити новий Fastening
   async create(fastening: Fastening, model: File): Promise<Fastening> {
     const formData = new FormData();
 
-    // Додаємо дані як звичайні поля
     formData.append("Id", "0");
     formData.append("Name", fastening.name);
     formData.append("Color", fastening.color);
     formData.append("ColorCode", fastening.colorCode);
     formData.append("price", fastening.price.toString());
     formData.append("Material", fastening.material);
-    formData.append("ModelUrl", fastening.modelUrl);
+    formData.append("ModelUrl", fastening.modelUrl? fastening.modelUrl: "");
     formData.append("model", model);
-
     const response = await this.apiService.create<Fastening>(
       this.resource,
       formData
     );
+
+    formData.append("model", model);
     return response;
   }
 
