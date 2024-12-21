@@ -3,11 +3,13 @@ import CustomTable from "../CustomTableComponent/CustomTable";
 import {Column} from "../CustomTableComponent/CustomTable";
 import { Button } from "@nextui-org/react";
 import FasteningService from "../../../services/FasteningService"
+import Link from "next/link";
+import {useRouter} from "next/router";
 
 export default function FasteningList() {
     const [fastenings, setFastenings] = useState<Fastening[]>([]);
     const fasteningService = new FasteningService();
-
+    const router = useRouter();
     useEffect(() => {
         const fetchFastenings = async () => {
             try {
@@ -40,12 +42,16 @@ export default function FasteningList() {
     return (
         <div className="p-4">
             <div className="flex justify-between mb-4">
-                <Button color="primary">
-                    Back
-                </Button>
-                <Button color="success">
-                    Create
-                </Button>
+                <Link href={`${router.pathname}/0`}>
+                    <Button color="success">
+                        Create
+                    </Button>
+                </Link>
+                <Link href="/dashboard" passHref>
+                    <Button color="primary">
+                        Back
+                    </Button>
+                </Link>
             </div>
             <CustomTable data={fastenings} columns={columns} onDelete={bladeDelete}/>
         </div>

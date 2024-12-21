@@ -3,11 +3,13 @@ import CustomTable from "../CustomTableComponent/CustomTable";
 import {Column} from "../CustomTableComponent/CustomTable";
 import { Button } from "@nextui-org/react";
 import OrderStatusesService from "../../../services/OrderStatusesService"
+import Link from "next/link";
+import {useRouter} from "next/router";
 
 export default function OrderStatusesList() {
     const [orderStatuses, setOrderStatuses] = useState<OrderStatuses[]>([]);
     const statusService = new OrderStatusesService();
-
+    const router = useRouter();
     useEffect(() => {
         const fetchOrderStatuses = async () => {
             try {
@@ -37,12 +39,16 @@ export default function OrderStatusesList() {
     return (
         <div className="p-4">
             <div className="flex justify-between mb-4">
-                <Button color="primary">
-                    Back
-                </Button>
-                <Button color="success">
-                    Create
-                </Button>
+                <Link href={`${router.pathname}/0`}>
+                    <Button color="success">
+                        Create
+                    </Button>
+                </Link>
+                <Link href="/dashboard" passHref>
+                    <Button color="primary">
+                        Back
+                    </Button>
+                </Link>
             </div>
             <CustomTable data={orderStatuses} columns={columns} onDelete={handleDelete}/>
         </div>

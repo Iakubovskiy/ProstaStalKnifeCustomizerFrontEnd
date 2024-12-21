@@ -1,0 +1,14 @@
+.table-row:hover {
+    background-color: #555555;
+}
+.icon:hover {
+    background-color: #aaaaaa;
+    border-radius: 5px;
+}
+.table-row {
+    text-align: start;
+}
+
+.actions-cell {
+    text-align: center;
+}

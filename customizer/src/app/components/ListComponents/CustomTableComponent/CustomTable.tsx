@@ -10,6 +10,8 @@ import {
 } from "@nextui-org/react";
 import { DeleteIcon, EditIcon } from "@nextui-org/shared-icons";
 import {router} from "next/client";
+import "./style.css";
+import {useRouter} from "next/router";
 
 export type Column<T> = {
     name: string;
@@ -27,32 +29,30 @@ export default function CustomTable<T extends Record<string, any>>({
                                                                        columns,
                                                                        onDelete
                                                                    }: CustomTableProps<T>) {
+    const router = useRouter();
     const renderCell = (item: T, columnKey: keyof T) => {
         const cellValue = item[columnKey];
         if (columnKey === "actions") {
             return (
                 <div className="flex gap-2">
-                    <Tooltip content="Редагувати">
-                        <span
-                            className="cursor-pointer"
-                            onClick={() => router.push(`/edit/${item.id}`)}
-                        >
-                            <EditIcon />
-                        </span>
-                    </Tooltip>
-                    <Tooltip color="danger" content="Видалити">
-                        <span className="cursor-pointer"
-                              onClick={() => onDelete(item.id)}>
-                            <DeleteIcon />
-                        </span>
-                    </Tooltip>
+                    <span
+                        className="cursor-pointer icon"
+                        onClick={() => router.push(`${router.asPath}/${item.id}`)}
+                    >
+                        <EditIcon />
+                    </span>
+
+                    <span className="cursor-pointer icon"
+                          onClick={() => onDelete(item.id)}>
+                        <DeleteIcon />
+                    </span>
                 </div>
             );
         }
         return cellValue;
     };
 
-    const modifiedColumns = [...columns, { name: "Actions", uid: "actions" }];
+    const modifiedColumns = [...columns, { name: "Дії", uid: "actions" }];
     return (
         <Table aria-label="Custom Table">
             <TableHeader columns={modifiedColumns}>
@@ -67,9 +67,9 @@ export default function CustomTable<T extends Record<string, any>>({
             </TableHeader>
             <TableBody items={data}>
                 {(item) => (
-                    <TableRow key={item.id}>
+                    <TableRow key={item.id} className="table-row">
                         {(columnKey) => (
-                            <TableCell>{renderCell(item, columnKey as keyof T)}</TableCell>
+                            <TableCell className={columnKey === "actions" ? "actions-cell" : ""}>{renderCell(item, columnKey as keyof T)}</TableCell>
                         )}
                     </TableRow>
                 )}

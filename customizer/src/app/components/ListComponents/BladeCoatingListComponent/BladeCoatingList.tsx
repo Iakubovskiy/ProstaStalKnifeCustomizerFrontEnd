@@ -3,11 +3,13 @@ import CustomTable from "../CustomTableComponent/CustomTable";
 import {Column} from "../CustomTableComponent/CustomTable";
 import { Button } from "@nextui-org/react";
 import BladeCoatingService from "../../../services/BladeCoatingService"
-import {color} from "framer-motion";
+import Link from "next/link";
+import {useRouter} from "next/router";
 
 export default function BladeCoatingList() {
     const [bladeCoatings, setBladeCoatings] = useState<BladeCoating[]>([]);
     const bladeCoatingService = new BladeCoatingService();
+    const router = useRouter();
 
     useEffect(() => {
         const fetchBladeCoatings = async () => {
@@ -44,12 +46,16 @@ export default function BladeCoatingList() {
     return (
         <div className="p-4">
             <div className="flex justify-between mb-4">
-                <Button color="primary">
-                    Back
-                </Button>
-                <Button color="success">
-                    Create
-                </Button>
+                <Link href={`${router.pathname}/0`}>
+                    <Button color="success">
+                        Create
+                    </Button>
+                </Link>
+                <Link href="/dashboard" passHref>
+                    <Button color="primary">
+                        Back
+                    </Button>
+                </Link>
             </div>
             <CustomTable data={preparedCoatings} columns={columns} onDelete={bladeDelete}/>
         </div>

@@ -3,11 +3,13 @@ import CustomTable from "../CustomTableComponent/CustomTable";
 import {Column} from "../CustomTableComponent/CustomTable";
 import { Button } from "@nextui-org/react";
 import OrderService from "../../../services/OrderService"
+import Link from "next/link";
+import {useRouter} from "next/router";
 
 export default function OrderList() {
     const [orders, setOrders] = useState<Order[]>([]);
     const orderService = new OrderService();
-
+    const  router = useRouter();
     useEffect(() => {
         const fetchOrders = async () => {
             try {
@@ -19,6 +21,7 @@ export default function OrderList() {
                         sheathColor: {
                             ...knife.sheathColor,
                             materialUrl: knife.sheathColor.materialUrl || "",
+                            color: knife.sheathColor.colorName || "", // Додай значення за замовчуванням
                         },
                     })),
                     comment: item.comment || "",
@@ -61,12 +64,16 @@ export default function OrderList() {
     return (
         <div className="p-4">
             <div className="flex justify-between mb-4">
-                <Button color="primary">
-                    Back
-                </Button>
-                <Button color="success">
-                    Create
-                </Button>
+                <Link href={`${router.pathname}/0`}>
+                    <Button color="success">
+                        Create
+                    </Button>
+                </Link>
+                <Link href="/dashboard" passHref>
+                    <Button color="primary">
+                        Back
+                    </Button>
+                </Link>
             </div>
             <CustomTable data={preparedOrders} columns={columns} onDelete={bladeDelete}/>
         </div>

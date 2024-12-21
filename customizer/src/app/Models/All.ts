@@ -78,7 +78,8 @@ interface Fastening {
 }
 interface HandleColor {
   id: number;
-  color: string;
+  colorName: string;
+  colorCode: string;
   material: string;
   materialUrl: string;
 }
@@ -113,7 +114,7 @@ interface OrderStatuses {
 }
 interface SheathColor {
   id: number;
-  color: string;
+  colorName: string;
   material: string;
   materialUrl: string;
   price: number;
