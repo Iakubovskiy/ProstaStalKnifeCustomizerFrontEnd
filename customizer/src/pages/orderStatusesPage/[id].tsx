@@ -2,54 +2,57 @@
 import React, { useEffect, useState } from "react";
 import DragNDrop from "@/app/components/DragNDrop/DragNDrop";
 import Characteristics from "@/app/components/Characteristics/Characteristics";
-import EngravingPrice from "@/app/Models/EngravingPrice";
+import OrderStatuses from "@/app/Models/OrderStatuses";
 import { useRouter } from "next/router";
-import EngravingPriceService from "@/app/services/EngravingPriceService";
+import OrderStatusesService from "@/app/services/OrderStatusesService";
 import "../../styles/globals.css";
 import { Input, Spinner } from "@nextui-org/react";
 import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
 import styles from "./eng.module.css";
-const initialEngravingPriceData: EngravingPrice = {
-  id: 1,
-  price: 0,
+const initialOrderStatusesData: OrderStatuses = {
+  id: 0,
+  status: "",
 };
 
-const EngravingPricePage = () => {
+const OrderStatusesPage = () => {
   const router = useRouter();
   const { id } = router.query;
   const [isLoading, setLoading] = useState<boolean>(true);
+  const [isCreating, setCreating] = useState<boolean>(false);
 
-  const [EngravingPrice, setEngravingPrice] = useState<EngravingPrice>(
-    initialEngravingPriceData
+  const [OrderStatuses, setOrderStatuses] = useState<OrderStatuses>(
+    initialOrderStatusesData
   );
   const [Engravingservice, setEngravingservice] =
-    useState<EngravingPriceService>(new EngravingPriceService());
+    useState<OrderStatusesService>(new OrderStatusesService());
   const handleSave = async () => {
-    console.log("Saving data:", EngravingPrice);
+    console.log("Saving data:", OrderStatuses);
 
-    if (EngravingPrice) {
+    if (OrderStatuses) {
       var response;
-
+      if (parseInt(id as string, 10) == 0) {
+        response = await Engravingservice.create(OrderStatuses);
+      }
       response = await Engravingservice.update(
         parseInt(id as string, 10),
-        EngravingPrice
+        OrderStatuses
       );
 
       alert("Збережено");
     } else {
-      alert("Оберіть файл та заповніть поля");
+      alert("Заповніть поля");
     }
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPrice = parseFloat(e.target.value);
-    setEngravingPrice((prev) => ({
+    setOrderStatuses((prev) => ({
       ...prev,
       price: isNaN(newPrice) ? 0 : newPrice,
     }));
   };
   useEffect(() => {
-    const fetchEngravingPrice = async () => {
+    const fetchOrderStatuses = async () => {
       if (id) {
         // Перетворюємо id на число
         const numericId = parseInt(id as string, 10);
@@ -57,23 +60,27 @@ const EngravingPricePage = () => {
         if (isNaN(numericId)) {
           console.error("ID is not a valid number");
           return;
+        }
+        if (numericId == 0) {
+          setCreating(true);
+          setLoading(false);
         } else {
           try {
-            const fetchedEngravingPrice = await Engravingservice.getById(
+            const fetchedOrderStatuses = await Engravingservice.getById(
               numericId
             );
-            setEngravingPrice(fetchedEngravingPrice);
+            setOrderStatuses(fetchedOrderStatuses);
             setLoading(false);
           } catch (error) {
             console.error("Error fetching sheath color:", error);
             alert("Сталася помилка під час отримання даних. Перевірте ID.");
-            router.push("/EngravingPricePage/" + id);
+            router.push("/OrderStatusesPage/" + id);
           }
         }
       }
-      console.log(EngravingPrice);
+      console.log(OrderStatuses);
     };
-    fetchEngravingPrice();
+    fetchOrderStatuses();
   }, [id]);
   if (isLoading) {
     return (
@@ -90,25 +97,23 @@ const EngravingPricePage = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
           <h1 className="text-2xl font-bold text-center mb-4">
-            Ціна гравіювання
+            Статуси замовлення
           </h1>
           <div className={styles.input}>
             <label
-              htmlFor="engravingPrice"
+              htmlFor="OrderStatuses"
               className="block text-sm font-medium text-gray-700 mb-2"
             >
-              Ціна
+              Статус
             </label>
             <Input
-              id="engravingPrice"
-              type="number"
-              defaultValue={EngravingPrice.price.toString()}
+              id="OrderStatuses"
+              type="text"
+              defaultValue={OrderStatuses.status}
               onChange={handlePriceChange}
-              aria-label="Engraving Price"
-              placeholder="Введіть ціну"
+              aria-label="Engraving Status"
+              placeholder="Введіть статус"
               size="lg"
-              min={0}
-              step={0.01}
               style={{
                 width: "100%",
               }}
@@ -126,4 +131,4 @@ const EngravingPricePage = () => {
   }
 };
 
-export default EngravingPricePage;
+export default OrderStatusesPage;
