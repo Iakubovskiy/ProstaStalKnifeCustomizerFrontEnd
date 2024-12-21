@@ -124,3 +124,13 @@ interface User {
   login: string;
   password: string;
 }
+
+interface State {
+  handleColor: string;
+  sheathColor: SheathColor;
+  bladeCoatingColor: BladeCoatingColor;
+  bladeCoating: BladeCoating;
+  bladeShape: BladeShape;
+  engraving: Engraving[] | null;
+  fastening: Fastening[] | null;
+}
