@@ -115,6 +115,7 @@ interface OrderStatuses {
 interface SheathColor {
   id: number;
   colorName: string;
+  colorCode: string;
   material: string;
   materialUrl: string;
   price: number;

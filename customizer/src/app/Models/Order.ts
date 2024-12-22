@@ -1,4 +1,6 @@
 import Knife from "./Knife";
+import DeliveryType from "./DeliveryType";
+import OrderStatuses from "./OrderStatuses";
 
 export default interface Order {
   id: number;

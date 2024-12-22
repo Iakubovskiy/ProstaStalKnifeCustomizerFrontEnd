@@ -184,12 +184,13 @@ function Characteristics<
               onChange={(e) => onChange({ ...data, type: e.target.value })}
               className={styles.input}
             />
-            <Input
-              label="Обраний колір"
-              defaultValue={currentBladeCoatingColor}
-              {...(isReadOnly1 ? { isReadOnly: true } : {})}
-              className={styles.input}
-            />
+            {!isReadOnly1 && (
+              <Input
+                label="Обраний колір"
+                defaultValue={currentBladeCoatingColor}
+                className={styles.input}
+              />
+            )}
           </>
         );
 
