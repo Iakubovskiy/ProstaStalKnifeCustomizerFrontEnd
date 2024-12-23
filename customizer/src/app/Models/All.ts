@@ -5,6 +5,7 @@ interface BladeCoating {
   type: string;
   price: number;
   colors: BladeCoatingColor[];
+  MaterialUrl: string;
 }
 interface BladeCoatingColor {
   id: number;
@@ -119,6 +120,7 @@ interface SheathColor {
   material: string;
   materialUrl: string;
   price: number;
+  EngravingColorCode: string;
 }
 interface User {
   id: string;

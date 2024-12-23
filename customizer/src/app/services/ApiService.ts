@@ -44,10 +44,11 @@ class APIService {
     headers["Access-Control-Allow-Origin"] = "*";
     headers["X-Requested-With"] = "XMLHttpRequest";
     headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS";
-    // Приклад додавання токену авторизації
-    const token = localStorage.getItem("token");
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem("token");
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
+      }
     }
 
     return headers;
