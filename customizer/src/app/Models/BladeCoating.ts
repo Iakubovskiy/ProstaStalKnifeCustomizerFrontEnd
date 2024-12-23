@@ -3,6 +3,6 @@ export default interface BladeCoating {
   id: number;
   type: string;
   price: number;
-  MaterialUrl: string;
+  materialUrl: string;
   colors: BladeCoatingColor[];
 }
