@@ -22,7 +22,9 @@ const state = proxy<State>({
         colorName: '',
         materialUrl: '',
         price: 0,
-        material: ''
+        material: '',
+        colorCode: '',
+        EngravingColorCode: ''
     },
     bladeCoatingColor: {
         id: 0,

@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, useGLTF } from '@react-three/drei';
+import {OrbitControls, useGLTF, Decal, useTexture} from '@react-three/drei';
 import { useSnapshot } from 'valtio';
 import { useCanvasState } from '@/app/state/canvasState';
 import * as THREE from 'three';
+import {useControls} from "leva";
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -21,6 +22,89 @@ interface ModelPartProps {
     rotation?: [number, number, number];
 }
 
+interface EngravingMesh {
+    name: string;
+    geometry: THREE.BufferGeometry;
+    material: THREE.Material;
+    position: THREE.Vector3;
+    rotation: THREE.Euler;
+}
+const DecalMaterial = ({ pictureUrl }) => {
+    const texture = useTexture(pictureUrl);
+
+    return (
+        <meshStandardMaterial
+            map={texture}
+            transparent
+            polygonOffset
+            polygonOffsetFactor={-1}
+        />
+    );
+};
+
+const SingleDecal = ({ meshRef, engraving, controls }) => {
+    if (!meshRef.current) return null;
+
+    return (
+            <Decal
+                mesh={meshRef.current}
+                position={[controls.positionX, controls.positionY, controls.positionZ]}
+                rotation={[controls.rotationX, controls.rotationY, controls.rotationZ]}
+                scale={controls.scale}
+            >
+                <DecalMaterial pictureUrl={engraving.pictureUrl} />
+            </Decal>
+    );
+};
+
+const DecalWithControls = ({ meshRef, engraving, index }) => {
+    const controls = useControls(`Engraving ${index}`, {
+        positionX: { value: engraving.locationX, min: -50, max: 50, step: 0.1 },
+        positionY: { value: engraving.locationY, min: -50, max: 50, step: 0.1 },
+        positionZ: { value: engraving.locationZ, min: -50, max: 50, step: 0.1 },
+        rotationX: { value: engraving.rotationX, min: -Math.PI, max: Math.PI, step: 0.1 },
+        rotationY: { value: engraving.rotationY, min: -Math.PI, max: Math.PI, step: 0.1 },
+        rotationZ: { value: engraving.rotationZ, min: -Math.PI, max: Math.PI, step: 0.1 },
+        scale: { value: 1, min: 0.1, max: 50, step: 0.1 }
+    });
+
+    return (
+        <SingleDecal
+            meshRef={meshRef}
+            engraving={engraving}
+            controls={controls}
+        />
+    );
+};
+
+const EngravedMesh = ({ geometry, material, position, rotation, engravings }) => {
+    const meshRef = useRef();
+
+    return (
+        <group>
+            <mesh
+                ref={meshRef}
+                geometry={geometry}
+                material={material.clone()}
+                position={position}
+                rotation={rotation}
+            >
+            {engravings?.map((eng, index) => (
+                "engravingSide"+eng.side === material.name && (
+                    <DecalWithControls
+                        key={`${eng.id}-${index}`}
+                        meshRef={meshRef}
+                        engraving={eng}
+                        index={index}
+                    />
+                )
+            ))}
+            </mesh>
+        </group>
+    );
+};
+
+
 const ModelPart: React.FC<ModelPartProps> = ({
                                                  url,
                                                  materialProps = {},
@@ -31,6 +115,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
     const modelRef = useRef(null);
     const state = useCanvasState();
     const snap = useSnapshot(state);
+    const [engravingMeshes, setEngravingMeshes] = useState<EngravingMesh[]>([]);
 
     const texturesRef = useRef<Record<string, THREE.Texture>>({});
 
@@ -148,14 +233,49 @@ const ModelPart: React.FC<ModelPartProps> = ({
             texturesRef.current = {};
         };
     }, []);
+    useEffect(() => {
+        if (!modelRef.current || !scene) return;
 
+        const foundEngravingMeshes: EngravingMesh[] = [];
+
+        scene.traverse((child: any) => {
+            if (child.isMesh) {
+                const materialName = child.material.name;
+
+                if (materialName === 'engravingSide1' || materialName === 'engravingSide2') {
+                    foundEngravingMeshes.push({
+                        name: materialName,
+                        geometry: child.geometry,
+                        material: child.material,
+                        position: child.position,
+                        rotation: child.rotation
+                    });
+                    child.visible = false;
+                }
+
+            }
+        });
+
+        setEngravingMeshes(foundEngravingMeshes);
+    }, [scene]);
+    console.log(engravingMeshes);
     return (
-        <primitive
-            ref={modelRef}
-            object={scene}
-            position={position}
-            rotation={rotation}
-        />
+        <group position={position} rotation={rotation}>
+            <primitive
+                ref={modelRef}
+                object={scene}
+            />
+            {engravingMeshes.map((mesh, idx) => (
+                <EngravedMesh
+                    key={`${mesh.name}-${idx}`}
+                    geometry={mesh.geometry}
+                    material={mesh.material}
+                    position={mesh.position}
+                    rotation={mesh.rotation}
+                    engravings={snap.engraving}
+                />
+            ))}
+        </group>
     );
 };
 
@@ -203,25 +323,6 @@ const KnifeConfigurator: React.FC = () => {
         />
     );
 
-    const Engravings: React.FC = () => {
-        if (!snap.engraving?.length) return null;
-
-        // @ts-ignore
-        return (
-            <>
-                {snap.engraving.map((eng, index) => (
-                    <group
-                        key={eng.id || index}
-                        position={[eng.locationX, eng.locationY, eng.locationZ]}
-                        rotation={[eng.rotationX, eng.rotationY, eng.rotationZ]}
-                        scale={[eng.scaleX, eng.scaleY, eng.scaleZ]}
-                    >
-                    </group>
-                ))}
-            </>
-        );
-    };
-
     if (!validateModelUrl(snap.bladeShape.bladeShapeModelUrl)) {
         return (
             <Canvas>
@@ -247,10 +348,9 @@ const KnifeConfigurator: React.FC = () => {
                 <ModelPart
                     url={snap.bladeShape.sheathModelUrl}
                     {...sheathSettings}
+                    position={[80,-40,0]}
                 />
             )}
-
-            <Engravings />
         </Canvas>
     );
 };

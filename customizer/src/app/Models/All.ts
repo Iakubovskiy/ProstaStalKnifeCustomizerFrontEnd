@@ -52,7 +52,7 @@ interface Engraving {
   name: string | null;
   side: number;
   text: string | null;
-  font: number | null;
+  font: string | null;
   pictureUrl: string | null;
   rotationX: number;
   rotationY: number;
