@@ -18,7 +18,7 @@ const initialBladeCoating: BladeCoating = {
   id: 0,
   type: "",
   price: 0,
-  MaterialUrl: "",
+  materialUrl: "",
   colors: [],
 };
 const BladeCoatingPage = () => {

@@ -22,15 +22,29 @@ class BladeCoatingService {
     );
     return response;
   }
+  transformJson = (input: BladeCoating) => {
+    // Створюємо об'єкт для результату з перейменуванням "type" у "name"
+    const result = {
+      name: input.type, // Перейменовуємо type -> name
+      price: input.price,
+      materialUrl: input.materialUrl, // Перейменовуємо MaterialUrl -> materialUrl
+      colors: input.colors.map((color) => ({
+        color: color.color, // Забираємо id і залишаємо решту
+        colorCode: color.colorCode,
+        engravingColorCode: color.engravingColorCode,
+      })),
+    };
 
+    return result;
+  };
   async create(
-    bladeCoatingColor: BladeCoating,
+    bladeCoating: BladeCoating,
     material: File
   ): Promise<BladeCoating> {
     const formData = new FormData();
-
-    formData.append("coatingJson", JSON.stringify(bladeCoatingColor));
-    console.log(JSON.stringify(bladeCoatingColor));
+    const transformedJson = this.transformJson(bladeCoating);
+    formData.append("coatingJson", JSON.stringify(transformedJson));
+    console.log(JSON.stringify(bladeCoating));
     formData.append("material", material);
 
     const response = await this.apiService.create<BladeCoating>(
@@ -46,8 +60,8 @@ class BladeCoatingService {
     material: File | null
   ): Promise<BladeCoating> {
     const formData = new FormData();
-
-    formData.append("coatingJson", JSON.stringify(bladeCoating));
+    const transformedJson = this.transformJson(bladeCoating);
+    formData.append("coatingJson", JSON.stringify(transformedJson));
     if (material) {
       formData.append("material", material);
     }
