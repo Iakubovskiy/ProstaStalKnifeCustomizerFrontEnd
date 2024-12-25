@@ -242,7 +242,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
             if (child.isMesh) {
                 const materialName = child.material.name;
 
-                if (materialName === 'engravingSide1' || materialName === 'engravingSide2') {
+                if (materialName === 'engravingSide1' || materialName === 'engravingSide2' || materialName === 'engravingSide3') {
                     foundEngravingMeshes.push({
                         name: materialName,
                         geometry: child.geometry,
