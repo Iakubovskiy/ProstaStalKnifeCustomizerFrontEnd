@@ -69,34 +69,7 @@ const state = proxy<State>({
     fastening: [],
 });
 
-const initializeState = async () => {
-    const bladeCoatingService = new BladeCoatingService();
-    const bladeCoatingList = await bladeCoatingService.getAll();
-
-    const bladeCoating = bladeCoatingList.length > 0
-        ? await bladeCoatingService.getById(bladeCoatingList[0].id)
-        : state.bladeCoating;
-
-    state.bladeCoating = bladeCoating;
-    state.bladeCoatingColor = bladeCoating.colors.length > 0 ? bladeCoating.colors[0] : state.bladeCoatingColor;
-
-    const sheathColorService = new SheathColorService();
-    const sheathColorList = await sheathColorService.getAll();
-    state.sheathColor = sheathColorList.length > 0 ? sheathColorList[0] : state.sheathColor;
-
-    const bladeShapeService = new BladeShapeService();
-    const bladeShapeList = await bladeShapeService.getAll();
-    state.bladeShape = bladeShapeList.length > 0 ? bladeShapeList[0] : state.bladeShape;
-
-    const fasteningService = new FasteningService();
-    const fasteningList = await fasteningService.getAll();
-    state.fastening = fasteningList.length > 0 ? fasteningList : state.fastening;
-};
-
 export const useCanvasState = () => {
-    useEffect(() => {
-        initializeState().catch((err) => console.error('Error initializing state:', err));
-    }, []);
 
     return state;
 };
