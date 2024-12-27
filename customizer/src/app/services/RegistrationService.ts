@@ -1,4 +1,4 @@
-import APIService from "./ApiService"; // Замініть на свій API-сервіс
+import APIService from "./ApiService";
 
 class RegistrationService {
   private apiService: APIService;
@@ -9,7 +9,6 @@ class RegistrationService {
     this.resource = "Registration";
   }
 
-  // Реєстрація користувача
   async register(
     username: string,
     password: string,
@@ -19,7 +18,6 @@ class RegistrationService {
   ): Promise<any> {
     const formData = new FormData();
 
-    // Додаємо поля
     formData.append("Username", username);
     formData.append("Password", password);
     formData.append("Role", role);
