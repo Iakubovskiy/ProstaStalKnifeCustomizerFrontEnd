@@ -16,7 +16,7 @@ import "../../styles/globals.css";
 
 const initialBladeCoating: BladeCoating = {
   id: 0,
-  type: "",
+  name: "",
   price: 0,
   materialUrl: "",
   colors: [],
@@ -90,23 +90,26 @@ const BladeCoatingPage = () => {
   };
 
   const handleSave = async () => {
-    console.log("Saving blade coating:", bladeCoating, "Uploaded file:", file);
     var response;
     const numericId = parseInt(id as string, 10);
 
     if (file) {
       if (isCreating) {
         response = await bladecoatingservice.create(bladeCoating, file);
+
+        alert("Створено");
       } else {
         response = await bladecoatingservice.update(
           numericId,
           bladeCoating,
           file
         );
-      }
-    }
 
-    alert("Створено");
+        alert("Оновлено");
+      }
+    } else {
+      alert("Оберіть файл");
+    }
   };
 
   const handleFileSelected = (selectedFile: File | null) => {
@@ -132,7 +135,11 @@ const BladeCoatingPage = () => {
           {isCreating ? "Create Blade Coating" : "Edit Blade Coating"}
         </h1>
         <div className="mb-6">
-          <DragNDrop onFileSelected={handleFileSelected} />
+          <DragNDrop
+            onFileSelected={handleFileSelected}
+            validExtensions={[".png", ".jpeg"]}
+            fileUrl={!isCreating ? bladeCoating.materialUrl : undefined}
+          />
         </div>
         <div className="mb-6 grid grid-cols-1 gap-4">
           <div className="space-y-4">
@@ -142,9 +149,9 @@ const BladeCoatingPage = () => {
                   Тип покриття
                 </label>
                 <Input
-                  value={bladeCoating.type}
+                  value={bladeCoating.name}
                   onChange={(e) =>
-                    setBladeCoating({ ...bladeCoating, type: e.target.value })
+                    setBladeCoating({ ...bladeCoating, name: e.target.value })
                   }
                   variant="bordered"
                   placeholder="Тип"

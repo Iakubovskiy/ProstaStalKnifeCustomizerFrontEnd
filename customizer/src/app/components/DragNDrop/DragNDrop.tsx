@@ -1,17 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 interface FileDragAndDropProps {
   onFileSelected: (file: File | null) => void;
+  validExtensions: string[];
+  fileUrl?: string;
 }
 
-const DragNDrop: React.FC<FileDragAndDropProps> = ({ onFileSelected }) => {
+const DragNDrop: React.FC<FileDragAndDropProps> = ({
+  onFileSelected,
+  validExtensions,
+  fileUrl,
+}) => {
   const [file, setFile] = useState<File | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
   };
+  useEffect(() => {
+    const loadFileFromUrl = async () => {
+      if (fileUrl) {
+        try {
+          const response = await fetch(fileUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to fetch file: ${response.statusText}`);
+          }
 
+          const blob = await response.blob();
+          const fileName = fileUrl.split("/").pop() || "downloaded_file.glb";
+          const fetchedFile = new File([blob], fileName, { type: blob.type });
+          setFile(fetchedFile);
+          onFileSelected(fetchedFile);
+        } catch (error) {
+          console.error("Error loading file from URL:", error);
+          setErrorMessage("Failed to load file from URL.");
+        }
+      }
+    };
+
+    loadFileFromUrl();
+  }, [fileUrl]);
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
 
@@ -27,16 +55,19 @@ const DragNDrop: React.FC<FileDragAndDropProps> = ({ onFileSelected }) => {
   };
 
   const validateAndSetFile = (selectedFile: File) => {
-    if (
-      selectedFile &&
-      (selectedFile.type === "image/jpeg" || selectedFile.type === "image/png")
-    ) {
+    const fileExtension = selectedFile.name
+      .slice(selectedFile.name.lastIndexOf("."))
+      .toLowerCase();
+
+    if (validExtensions.includes(fileExtension)) {
       setFile(selectedFile);
       setErrorMessage(null);
       onFileSelected(selectedFile);
     } else {
       setFile(null);
-      setErrorMessage("Only JPEG and PNG files are allowed.");
+      setErrorMessage(
+        `Допустимі формати файлів: ${validExtensions.join(", ")}`
+      );
       onFileSelected(null);
     }
   };
@@ -60,10 +91,10 @@ const DragNDrop: React.FC<FileDragAndDropProps> = ({ onFileSelected }) => {
       >
         {!file ? (
           <div className="text-center">
-            <p className="text-gray-500">Перемістіть</p>
+            <p className="text-gray-500">Перемістіть або оберіть файл</p>
             <input
               type="file"
-              accept="image/jpeg, image/png"
+              accept={validExtensions.map((ext) => `*${ext}`).join(",")}
               onChange={handleFileInputChange}
               className="hidden"
               id="file-upload"
@@ -72,17 +103,17 @@ const DragNDrop: React.FC<FileDragAndDropProps> = ({ onFileSelected }) => {
               htmlFor="file-upload"
               className="text-blue-500 underline cursor-pointer mt-2"
             >
-              Choose file
+              Обрати файл
             </label>
           </div>
         ) : (
           <div className="text-center">
-            <p className="text-gray-700">Selected File: {file.name}</p>
+            <p className="text-gray-700">Обрано файл: {file.name}</p>
             <button
               onClick={clearFile}
               className="mt-2 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
             >
-              Remove File
+              Видалити файл
             </button>
           </div>
         )}
