@@ -37,7 +37,7 @@ const BladeCoatingColorComponent = ({
   };
 
   return (
-    <div className="p-6 bg-white shadow-md rounded-lg max-w-md mx-auto">
+    <div className="p-6 bg-white  rounded-lg max-w-md mx-auto">
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">
           Назва кольору
@@ -47,7 +47,7 @@ const BladeCoatingColorComponent = ({
           onChange={(e) => handleInputChange("color", e.target.value)}
           placeholder="Введіть назву кольору"
           aria-label="Color Name"
-          size="lg"
+          size="md"
           {...(isReadOnly1 ? { isReadOnly: true } : {})}
           style={{ width: "100%" }}
         />

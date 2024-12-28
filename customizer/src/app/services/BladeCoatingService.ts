@@ -23,13 +23,12 @@ class BladeCoatingService {
     return response;
   }
   transformJson = (input: BladeCoating) => {
-    // Створюємо об'єкт для результату з перейменуванням "type" у "name"
     const result = {
-      name: input.type, // Перейменовуємо type -> name
+      name: input.name,
       price: input.price,
-      materialUrl: input.materialUrl, // Перейменовуємо MaterialUrl -> materialUrl
+      materialUrl: input.materialUrl,
       colors: input.colors.map((color) => ({
-        color: color.color, // Забираємо id і залишаємо решту
+        color: color.color,
         colorCode: color.colorCode,
         engravingColorCode: color.engravingColorCode,
       })),
@@ -44,7 +43,7 @@ class BladeCoatingService {
     const formData = new FormData();
     const transformedJson = this.transformJson(bladeCoating);
     formData.append("coatingJson", JSON.stringify(transformedJson));
-    console.log(JSON.stringify(bladeCoating));
+    console.log(JSON.stringify(transformedJson));
     formData.append("material", material);
 
     const response = await this.apiService.create<BladeCoating>(
@@ -62,6 +61,7 @@ class BladeCoatingService {
     const formData = new FormData();
     const transformedJson = this.transformJson(bladeCoating);
     formData.append("coatingJson", JSON.stringify(transformedJson));
+    console.log(JSON.stringify(transformedJson));
     if (material) {
       formData.append("material", material);
     }

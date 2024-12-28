@@ -15,7 +15,7 @@ const ColorPicker = ({
   };
 
   return (
-    <div className="p-4 bg-white shadow-md rounded-lg border border-gray-200 hover:shadow-lg transition duration-200">
+    <div className="p-4   rounded-lg   ">
       <div className="mb-2">
         <h3 className="text-md font-medium text-black"></h3>
       </div>
@@ -28,7 +28,6 @@ const ColorPicker = ({
           width: "100%",
           padding: "0.5rem",
           backgroundColor: "#f9f9f9",
-          border: "1px solid #e5e7eb",
           borderRadius: "8px",
           height: "8rem",
           cursor: "pointer",

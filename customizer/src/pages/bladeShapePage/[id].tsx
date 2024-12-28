@@ -22,9 +22,8 @@ const defaultBladeShape: BladeShape = {
   engravingRotationX: 0,
   engravingRotationY: 0,
   engravingRotationZ: 0,
-  bladeShapeModelUrl: "",
-  handleShapeModelUrl: "",
-  sheathModelUrl: "",
+  bladeShapeModelUrl: "1",
+  sheathModelUrl: "1",
   handleLocationX: null,
   handleLocationY: null,
   handleLocationZ: null,
@@ -39,9 +38,11 @@ const BladeShapeEditPage = () => {
   const [isLoading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [bladeShape, setBladeShape] = useState<BladeShape | null>(null);
+  const [bladeShapeService, setbladeShapeService] = useState<BladeShapeService>(
+    new BladeShapeService()
+  );
   const [files, setFiles] = useState({
     bladeShapeModel: null,
-    handleShapeModel: null,
     sheathModel: null,
   });
 
@@ -63,8 +64,7 @@ const BladeShapeEditPage = () => {
         }
 
         try {
-          const service: BladeShapeService = {} as BladeShapeService;
-          const data = await service.getById(numericId);
+          const data = await bladeShapeService.getById(numericId);
           setBladeShape(data);
         } catch (error) {
           console.error("Error fetching blade shape:", error);
@@ -90,6 +90,20 @@ const BladeShapeEditPage = () => {
   };
 
   const handleFileSelected = (key: string, file: File | null) => {
+    if (file) {
+      const validExtensions = [".glb", ".gltf"];
+      const fileExtension = file.name
+        .slice(file.name.lastIndexOf("."))
+        .toLowerCase();
+
+      if (!validExtensions.includes(fileExtension)) {
+        alert("Допустимі формати файлів: .glb, .gltf");
+        setFiles((prev) => ({ ...prev, [key]: null })); // Очищення файлу зі стану
+        return;
+      }
+    }
+
+    // Оновлення файлу, якщо все гаразд
     setFiles((prev) => ({ ...prev, [key]: file }));
   };
 
@@ -97,11 +111,9 @@ const BladeShapeEditPage = () => {
     if (!bladeShape) return;
 
     try {
-      const service: BladeShapeService = {} as BladeShapeService;
-      const { bladeShapeModel, handleShapeModel, sheathModel } = files;
+      const { bladeShapeModel, sheathModel } = files;
       const modelFiles: { [key: string]: File | null } = {
         bladeShapeModel,
-        handleShapeModel,
         sheathModel,
       };
 
@@ -112,10 +124,14 @@ const BladeShapeEditPage = () => {
 
       if (isCreating) {
         const createData = bladeShape;
-        await service.create(bladeShape, modelFiles as { [key: string]: File });
+
+        var response = await bladeShapeService.create(
+          bladeShape,
+          modelFiles as { [key: string]: File }
+        );
         alert("Blade shape created successfully");
       } else {
-        await service.update(
+        await bladeShapeService.update(
           bladeShape.id,
           bladeShape,
           modelFiles as { [key: string]: File }
@@ -123,7 +139,7 @@ const BladeShapeEditPage = () => {
         alert("Changes saved successfully");
       }
 
-      router.push("/bladeShapes");
+      router.push("/bladeShapePage/");
     } catch (error) {
       console.error("Error saving changes:", error);
       alert(`Error ${isCreating ? "creating" : "saving"} blade shape`);
@@ -220,23 +236,24 @@ const BladeShapeEditPage = () => {
 
           <Card className="p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">
-              Моделі: Форма клинка, Руківя , Піхви
+              Моделі: Форма клинка , Піхви
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <DragNDrop
                 onFileSelected={(file) =>
                   handleFileSelected("bladeShapeModel", file)
                 }
-              />
-              <DragNDrop
-                onFileSelected={(file) =>
-                  handleFileSelected("handleShapeModel", file)
+                validExtensions={[".glb", ".gltf"]}
+                fileUrl={
+                  !isCreating ? bladeShape.bladeShapeModelUrl : undefined
                 }
               />
               <DragNDrop
                 onFileSelected={(file) =>
                   handleFileSelected("sheathModel", file)
                 }
+                validExtensions={[".glb", ".gltf"]}
+                fileUrl={!isCreating ? bladeShape.sheathModelUrl : undefined}
               />
             </div>
           </Card>

@@ -87,15 +87,16 @@ class BladeShapeService {
       "handleRotationZ",
       bladeShape.handleRotationZ?.toString() || ""
     );
-    formData.append("bladeShapeModelUrl", "");
-    formData.append("handleShapeModelUrl", "");
-    formData.append("sheathModelUrl", "");
+    formData.append("bladeShapeModelUrl", "1");
+    formData.append("sheathModelUrl", "1");
 
     // Додавання файлів моделей (якщо є)
     Object.keys(modelFiles).forEach((key) => {
       formData.append(key, modelFiles[key]);
     });
-
+    for (const [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+    }
     const response = await this.apiService.create<BladeShape>(
       this.resource,
       formData
@@ -170,7 +171,6 @@ class BladeShapeService {
       bladeShape.handleRotationZ?.toString() || ""
     );
     formData.append("bladeShapeModelUrl", bladeShape.bladeShapeModelUrl);
-    formData.append("handleShapeModelUrl", bladeShape.handleShapeModelUrl);
     formData.append("sheathModelUrl", bladeShape.sheathModelUrl);
 
     // Додавання файлів моделей (якщо є)
