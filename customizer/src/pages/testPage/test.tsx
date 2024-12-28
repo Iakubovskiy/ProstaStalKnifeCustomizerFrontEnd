@@ -46,7 +46,7 @@ const EngravingFileInput: React.FC = () => {
                 id: 1,
                 name:"",
                 pictureUrl: url,
-                side:3,
+                side:1,
                 text:"0",
                 font:"",
                 locationX: 0,

@@ -318,8 +318,8 @@ const KnifeConfigurator: React.FC = () => {
             enablePan={true}
             enableZoom={true}
             enableRotate={true}
-            minDistance={10}
-            maxDistance={100}
+            minDistance={30}
+            maxDistance={300}
         />
     );
 
@@ -333,7 +333,7 @@ const KnifeConfigurator: React.FC = () => {
     }
 
     return (
-        <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+        <Canvas camera={{ position: [0, 0, 100], fov: 45 }}>
             <Lighting />
             <Controls />
 
@@ -348,7 +348,7 @@ const KnifeConfigurator: React.FC = () => {
                 <ModelPart
                     url={snap.bladeShape.sheathModelUrl}
                     {...sheathSettings}
-                    position={[80,-40,0]}
+                    position={[-40,-40,0]}
                 />
             )}
         </Canvas>

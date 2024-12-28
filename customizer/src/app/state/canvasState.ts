@@ -16,7 +16,7 @@ interface State {
 }
 
 const state = proxy<State>({
-    handleColor: '#2ff310',
+    handleColor: '#9a02ff',
     sheathColor: {
         id: 0,
         colorName: '',
@@ -42,7 +42,7 @@ const state = proxy<State>({
     bladeShape: {
         id: 0,
         name: '',
-        bladeShapeModelUrl: '',
+        bladeShapeModelUrl: "https://res.cloudinary.com/ddcvocdfe/image/upload/v1735212813/tanto2.glb",
         price: 0,
         totalLength: 0,
         bladeLength: 0,
