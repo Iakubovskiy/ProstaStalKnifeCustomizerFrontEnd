@@ -6,7 +6,6 @@ import BladeShapeService from "@/app/services/BladeShapeService";
 import CardComponent from "./CardComponent";
 import BladeShape from "@/app/Models/BladeShape";
 import { useCanvasState } from '@/app/state/canvasState';
-import {useSnapshot} from "valtio/index";
 
 const PreviewGenerator = dynamic(() => import('./PreviewGenerator'), {
     ssr: false,

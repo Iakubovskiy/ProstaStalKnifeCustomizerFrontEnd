@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import BladeCoating from "../../../Models/BladeCoating";
 import BladeCoatingService from "../../../services/BladeCoatingService";
 import CardComponent from "./CardComponent";
+import { useCanvasState } from '@/app/state/canvasState';
+import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 
 const BladeCoatingCustomizationComponent: React.FC = () => {
     const [bladeCoatingOptions, setBladeCoatingOptions] = useState<
-        { coating: string; colorName: string; colorCode: string }[]
+        { coating: BladeCoating; color: BladeCoatingColor; }[]
     >([]);
+    const state = useCanvasState();
 
     useEffect(() => {
         const fetchBladeCoatings = async () => {
@@ -14,18 +17,16 @@ const BladeCoatingCustomizationComponent: React.FC = () => {
             try {
                 const coatings = await service.getAll();
                 const options: {
-                    coating: string;
-                    colorName: string;
-                    colorCode: string;
+                    coating: BladeCoating;
+                    color: BladeCoatingColor;
                 }[] = [];
 
                 for (const coating of coatings) {
                     const detailedCoating = await service.getById(coating.id);
                     detailedCoating.colors.forEach((color) => {
                         options.push({
-                            coating: detailedCoating.name,
-                            colorName: color.color,
-                            colorCode: color.colorCode,
+                            coating: detailedCoating,
+                            color: color,
                         });
                     });
                 }
@@ -39,8 +40,9 @@ const BladeCoatingCustomizationComponent: React.FC = () => {
         fetchBladeCoatings();
     }, []);
 
-    const handleCoatingSelection = (coating: string, color: string) => {
-        console.log(`Selected coating: ${coating}, color: ${color}`);
+    const handleCoatingSelection = (coating: BladeCoating, color: BladeCoatingColor) => {
+       state.bladeCoating = coating;
+       state.bladeCoatingColor = color;
     };
 
     return (
@@ -48,10 +50,10 @@ const BladeCoatingCustomizationComponent: React.FC = () => {
             {bladeCoatingOptions.map((option, index) => (
                 <CardComponent
                     key={index}
-                    backgroundPicture={option.colorCode}
-                    tooltipText={`${option.coating}, ${option.colorName}`}
+                    backgroundPicture={option.color.colorCode}
+                    tooltipText={`${option.coating.name}, ${option.color.color}`}
                     onClick={() =>
-                        handleCoatingSelection(option.coating, option.colorName)
+                        handleCoatingSelection(option.coating, option.color)
                     }
                 />
             ))}

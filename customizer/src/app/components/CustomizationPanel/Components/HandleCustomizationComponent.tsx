@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import HandleColorService from "../../../services/HandleColorService";
+import HandleColor from "../../../Models/HandleColor";
 import CardComponent from "./CardComponent";
+import { useCanvasState } from '@/app/state/canvasState';
 
 const HandleCustomizationComponent: React.FC = () => {
     const [handleColors, setHandleColors] = useState<HandleColor[]>([]);
+    const state = useCanvasState();
 
     useEffect(() => {
         const fetchHandleColors = async () => {
@@ -15,8 +18,8 @@ const HandleCustomizationComponent: React.FC = () => {
         fetchHandleColors();
     }, []);
 
-    const handleColorClick = (colorCode: string) => {
-        console.log("Selected color: ", colorCode);
+    const handleColorClick = (color:HandleColor ) => {
+        state.handleColor = color.colorCode;
     };
 
     return (
@@ -26,7 +29,7 @@ const HandleCustomizationComponent: React.FC = () => {
                     key={color.id}
                     backgroundPicture={color.colorCode}
                     tooltipText={color.colorName}
-                    onClick={() => handleColorClick(color.colorCode)}
+                    onClick={() => handleColorClick(color)}
                 />
             ))}
         </div>

@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import CustomTable from "../CustomTableComponent/CustomTable";
 import {Column} from "../CustomTableComponent/CustomTable";
 import { Button } from "@nextui-org/react";
-import BladeCoatingService from "../../../services/BladeCoatingService"
+import BladeCoatingService from "../../../services/BladeCoatingService";
+import BladeCoating from "../../../Models/BladeCoating";
+
 import Link from "next/link";
 import {useRouter} from "next/router";
 
@@ -37,7 +39,7 @@ export default function BladeCoatingList() {
         colorsString: bladeCoating.colors.map((color)=> color.color).join(','),
     }));
     const columns: Column<typeof preparedCoatings[number]>[] = [
-        { name: "Назва", uid: "type" },
+        { name: "Назва", uid: "name" },
         { name: "Ціна", uid: "price" },
         { name: "Кольори", uid: "colorsString" },
 

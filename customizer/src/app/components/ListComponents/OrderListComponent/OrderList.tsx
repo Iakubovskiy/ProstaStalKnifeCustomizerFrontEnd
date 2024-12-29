@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import CustomTable from "../CustomTableComponent/CustomTable";
 import {Column} from "../CustomTableComponent/CustomTable";
 import { Button } from "@nextui-org/react";
-import OrderService from "../../../services/OrderService"
+import OrderService from "../../../services/OrderService";
+import Order from "../../../Models/Order";
 import Link from "next/link";
 import {useRouter} from "next/router";
 
@@ -21,7 +22,12 @@ export default function OrderList() {
                         sheathColor: {
                             ...knife.sheathColor,
                             materialUrl: knife.sheathColor.materialUrl || "",
-                            color: knife.sheathColor.colorName || "", // Додай значення за замовчуванням
+                            color: knife.sheathColor.colorName || "",
+                        },
+                        bladeCoating: {
+                            ...knife.bladeCoating,
+                            type: knife.bladeCoating?.name || "default", // Вкажи значення за замовчуванням
+                            materialUrl: knife.bladeCoating?.materialUrl || "",
                         },
                     })),
                     comment: item.comment || "",

@@ -5,6 +5,7 @@ import dynamic from 'next/dynamic';
 import FasteningService from "@/app/services/FasteningService";
 import CardComponent from "./CardComponent";
 import Fastening from "@/app/Models/Fastening";
+import {useCanvasState} from "@/app/state/canvasState"
 
 const PreviewGenerator = dynamic(() => import('./PreviewGenerator'), {
     ssr: false,
@@ -15,6 +16,7 @@ const FasteningCustomizationComponent: React.FC = () => {
     const [fastenings, setFastenings] = useState<Fastening[]>([]);
     const [previews, setPreviews] = useState<{ [key: number]: string }>({});
     const fasteningService = new FasteningService();
+    const state = useCanvasState();
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -38,6 +40,10 @@ const FasteningCustomizationComponent: React.FC = () => {
         }));
     };
 
+    const fasteningOptionClick = (fastening:Fastening ) => {
+        state.fastening.push(fastening);
+    };
+
     return (
         <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", position: "relative" }}>
             {fastenings.map((fastening) => (
@@ -45,7 +51,7 @@ const FasteningCustomizationComponent: React.FC = () => {
                     <CardComponent
                         backgroundPicture={previews[fastening.id] || '#ffffff'}
                         tooltipText={fastening.name}
-                        onClick={() => console.log("Selected Fastening:", fastening)}
+                        onClick={() => fasteningOptionClick(fastening)}
                     />
                     {!previews[fastening.id] && (
                         <PreviewGenerator
