@@ -1,5 +1,10 @@
 import React from "react";
 import CustomizationPanelMenu from "./Menu/CustomizationPanelMenu";
+import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizationComponent";
+import HandleCustomizationComponent from "./Components/HandleCustomizationComponent";
+import SheathCustomizationComponent from "./Components/SheathCustomizationComponent";
+import FasteningCustomizationComponent from "./Components/FasteningCustomizationComponent";
+import BladeCoatingCustomizationComponent from "./Components/BladeCoatingsCustomizationComponent";
 import { useState } from "react";
 
 const CustomizationPanel =()=>{
@@ -8,15 +13,15 @@ const CustomizationPanel =()=>{
     const renderContent = () => {
         switch (selectedOption) {
             case "bladeShape":
-                return <div>Компонент для форми клинка</div>;
+                return <BladeShapeCustomizationComponent/>;
             case "bladeCoating":
-                return <div>Компонент для покриття клинка</div>;
+                return <BladeCoatingCustomizationComponent/>;
             case "handleColor":
-                return <div>Компонент для кольору руків'я</div>;
+                return <HandleCustomizationComponent/>;
             case "scabbardColor":
-                return <div>Компонент для кольору піхв</div>;
+                return <SheathCustomizationComponent/>;
             case "attachments":
-                return <div>Компонент для кріплень</div>;
+                return <FasteningCustomizationComponent/>;
             case "engraving":
                 return <div>Компонент для гравіювання</div>;
             default:

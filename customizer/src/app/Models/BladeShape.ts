@@ -16,10 +16,4 @@ export default interface BladeShape {
   engravingRotationZ: number;
   bladeShapeModelUrl: string;
   sheathModelUrl: string;
-  handleLocationX: number | null;
-  handleLocationY: number | null;
-  handleLocationZ: number | null;
-  handleRotationX: number | null;
-  handleRotationY: number | null;
-  handleRotationZ: number | null;
 }

@@ -29,7 +29,7 @@ const state = proxy<State>({
     bladeCoatingColor: {
         id: 0,
         color: '',
-        colorCode: '#1810f3',
+        colorCode: '#c7cd63',
         engravingColorCode: ''
     },
     bladeCoating: {
@@ -42,7 +42,7 @@ const state = proxy<State>({
     bladeShape: {
         id: 0,
         name: '',
-        bladeShapeModelUrl: "https://res.cloudinary.com/ddcvocdfe/image/upload/v1735212813/tanto2.glb",
+        bladeShapeModelUrl: "",
         price: 0,
         totalLength: 0,
         bladeLength: 0,
@@ -56,14 +56,7 @@ const state = proxy<State>({
         engravingRotationX: 0,
         engravingRotationY: 0,
         engravingRotationZ: 0,
-        handleShapeModelUrl: '',
-        sheathModelUrl: '',
-        handleLocationX: null,
-        handleLocationY: null,
-        handleLocationZ: null,
-        handleRotationX: null,
-        handleRotationY: null,
-        handleRotationZ: null
+        sheathModelUrl: "",
     },
     engraving: [],
     fastening: [],

@@ -259,6 +259,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
         setEngravingMeshes(foundEngravingMeshes);
     }, [scene]);
     console.log(engravingMeshes);
+    console.log(snap);
     return (
         <group position={position} rotation={rotation}>
             <primitive
@@ -331,7 +332,7 @@ const KnifeConfigurator: React.FC = () => {
             </Canvas>
         );
     }
-
+    console.log(validateModelUrl(snap.bladeShape.sheathModelUrl));
     return (
         <Canvas camera={{ position: [0, 0, 100], fov: 45 }}>
             <Lighting />

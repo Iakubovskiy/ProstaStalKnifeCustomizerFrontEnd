@@ -63,30 +63,6 @@ class BladeShapeService {
       "engravingRotationZ",
       bladeShape.engravingRotationZ.toString()
     );
-    formData.append(
-      "handleLocationX",
-      bladeShape.handleLocationX?.toString() || ""
-    );
-    formData.append(
-      "handleLocationY",
-      bladeShape.handleLocationY?.toString() || ""
-    );
-    formData.append(
-      "handleLocationZ",
-      bladeShape.handleLocationZ?.toString() || ""
-    );
-    formData.append(
-      "handleRotationX",
-      bladeShape.handleRotationX?.toString() || ""
-    );
-    formData.append(
-      "handleRotationY",
-      bladeShape.handleRotationY?.toString() || ""
-    );
-    formData.append(
-      "handleRotationZ",
-      bladeShape.handleRotationZ?.toString() || ""
-    );
     formData.append("bladeShapeModelUrl", "1");
     formData.append("sheathModelUrl", "1");
 
@@ -145,30 +121,6 @@ class BladeShapeService {
     formData.append(
       "engravingRotationZ",
       bladeShape.engravingRotationZ.toString()
-    );
-    formData.append(
-      "handleLocationX",
-      bladeShape.handleLocationX?.toString() || ""
-    );
-    formData.append(
-      "handleLocationY",
-      bladeShape.handleLocationY?.toString() || ""
-    );
-    formData.append(
-      "handleLocationZ",
-      bladeShape.handleLocationZ?.toString() || ""
-    );
-    formData.append(
-      "handleRotationX",
-      bladeShape.handleRotationX?.toString() || ""
-    );
-    formData.append(
-      "handleRotationY",
-      bladeShape.handleRotationY?.toString() || ""
-    );
-    formData.append(
-      "handleRotationZ",
-      bladeShape.handleRotationZ?.toString() || ""
     );
     formData.append("bladeShapeModelUrl", bladeShape.bladeShapeModelUrl);
     formData.append("sheathModelUrl", bladeShape.sheathModelUrl);
