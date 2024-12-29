@@ -1,4 +1,4 @@
-.card {
+ .card {
   border: 1px solid #eaeaea;
   border-radius: 12px;
   padding: 20px;
@@ -7,7 +7,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
 }
-
+/* 
 .card:hover {
   box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
   transform: translateY(-3px);
@@ -51,4 +51,4 @@
   color: #ff4d4f;
   font-weight: bold;
   text-align: center;
-}
+} */ 

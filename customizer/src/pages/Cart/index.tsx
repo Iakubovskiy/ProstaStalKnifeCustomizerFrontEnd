@@ -77,7 +77,7 @@ const CartAndOrderPage = () => {
       city: clientInfo.city,
       email: clientInfo.email,
       comment: comment || null,
-      status: { id: 1, status: "New" }, // Assuming "New" status ID is 1
+      status: { id: 1, status: "New" },
     };
 
     try {

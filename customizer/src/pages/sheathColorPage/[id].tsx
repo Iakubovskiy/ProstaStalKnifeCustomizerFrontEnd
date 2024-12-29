@@ -116,7 +116,10 @@ const SheathColorPage = () => {
           <h1 className="text-2xl font-bold text-center mb-4">Піхви</h1>
 
           <div className="mb-6">
-            <DragNDrop onFileSelected={handleFileSelected} />
+            <DragNDrop
+              onFileSelected={handleFileSelected}
+              validExtensions={[".glb", "gltf"]}
+            />
           </div>
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-2">Оберіть кольори</h3>
