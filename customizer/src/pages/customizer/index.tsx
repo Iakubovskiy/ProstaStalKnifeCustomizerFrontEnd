@@ -2,6 +2,9 @@ import React from "react";
 import "../../styles/globals.css";
 import CustomCanvas from "@/app/components/CustomCanvas/CustomCanvas";
 import CustomizationPanel from "@/app/components/CustomizationPanel/CustomizationPanel"
+import {
+    KnifePurchaseContainer
+} from "@/app/components/CustomizationPanel/Components/KnifePurchase/KnifePurchaseContainer";
 
 const customizerPage = () =>{
     return (
@@ -11,6 +14,7 @@ const customizerPage = () =>{
             </div>
             <div className="custom-panel h-full md:w-2/5 lg:w-3/10 bg-gray-800 text-white p-4 overflow-y-auto">
                 <CustomizationPanel/>
+                <KnifePurchaseContainer />
             </div>
         </div>
     );

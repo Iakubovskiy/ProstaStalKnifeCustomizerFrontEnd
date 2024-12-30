@@ -6,6 +6,12 @@ import BladeShapeService from "@/app/services/BladeShapeService";
 import CardComponent from "./CardComponent";
 import BladeShape from "@/app/Models/BladeShape";
 import { useCanvasState } from '@/app/state/canvasState';
+import SheathColor from "@/app/Models/SheathColor";
+import HandleColor from "@/app/Models/HandleColor";
+import Fastening from "@/app/Models/Fastening";
+import BladeCoating from "@/app/Models/BladeCoating";
+import Characteristics from "@/app/components/Characteristics/Characteristics";
+import {useSnapshot} from "valtio";
 
 const PreviewGenerator = dynamic(() => import('./PreviewGenerator'), {
     ssr: false,
@@ -17,6 +23,7 @@ const BladeShapeCustomizationComponent: React.FC = () => {
     const [previews, setPreviews] = useState<{ [key: number]: string }>({});
     const bladeShapeService = new BladeShapeService();
     const state = useCanvasState();
+    const snap = useSnapshot(state);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -64,23 +71,32 @@ const BladeShapeCustomizationComponent: React.FC = () => {
 
     //"https://res.cloudinary.com/ddcvocdfe/image/upload/v1735212813/tanto2.glb"
     return (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", position: "relative" }}>
-            {bladeShapes.map((shape) => (
-                <React.Fragment key={shape.id}>
-                    <CardComponent
-                        backgroundPicture={previews[shape.id] || '#ffffff'}
-                        tooltipText={shape.name}
-                        onClick={() => bladeShapeSelection(shape)}
-                    />
-                    {!previews[shape.id] && (
-                        <PreviewGenerator
-                            modelUrl={shape.bladeShapeModelUrl}
-                            onPreviewGenerated={(preview) => handlePreviewGenerated(shape.id, preview)}
+        <>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", position: "relative" }}>
+                {bladeShapes.map((shape) => (
+                    <React.Fragment key={shape.id}>
+                        <CardComponent
+                            backgroundPicture={previews[shape.id] || '#ffffff'}
+                            tooltipText={shape.name}
+                            onClick={() => bladeShapeSelection(shape)}
                         />
-                    )}
-                </React.Fragment>
-            ))}
-        </div>
+                        {!previews[shape.id] && (
+                            <PreviewGenerator
+                                modelUrl={shape.bladeShapeModelUrl}
+                                onPreviewGenerated={(preview) => handlePreviewGenerated(shape.id, preview)}
+                            />
+                        )}
+                    </React.Fragment>
+                ))}
+            </div>
+            <div style={{marginTop: "16px"}}>
+                <Characteristics data={snap.bladeShape} isReadOnly1={true}
+                                 currentBladeCoatingColor={""}
+                                 onChange={() => {}}
+                                 type="BladeShape"
+                />
+            </div>
+        </>
     );
 };
 

@@ -5,6 +5,7 @@ import HandleCustomizationComponent from "./Components/HandleCustomizationCompon
 import SheathCustomizationComponent from "./Components/SheathCustomizationComponent";
 import FasteningCustomizationComponent from "./Components/FasteningCustomizationComponent";
 import BladeCoatingCustomizationComponent from "./Components/BladeCoatingsCustomizationComponent";
+import Characteristics from "../Characteristics/Characteristics";
 import { useState } from "react";
 
 const CustomizationPanel =()=>{
@@ -13,7 +14,9 @@ const CustomizationPanel =()=>{
     const renderContent = () => {
         switch (selectedOption) {
             case "bladeShape":
-                return <BladeShapeCustomizationComponent/>;
+                return (
+                    <BladeShapeCustomizationComponent/>
+                );
             case "bladeCoating":
                 return <BladeCoatingCustomizationComponent/>;
             case "handleColor":

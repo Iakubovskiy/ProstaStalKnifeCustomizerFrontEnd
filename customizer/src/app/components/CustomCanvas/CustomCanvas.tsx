@@ -262,7 +262,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
 
           case "handle":
             updateMaterial(child.material, materialName, {
-              color: snap.handleColor,
+              color: snap.handleColor.colorCode,
               metalness: 0.1,
               roughness: 0.8,
             });

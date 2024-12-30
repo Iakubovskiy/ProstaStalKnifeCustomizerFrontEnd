@@ -4,9 +4,11 @@ import BladeCoating from "@/app/Models/BladeCoating";
 import BladeShape from "@/app/Models/BladeShape";
 import Fastening from "@/app/Models/Fastening";
 import SheathColor from "@/app/Models/SheathColor";
+import HandleColor from "@/app/Models/HandleColor";
+import Engraving from "@/app/Models/Engraving";
 
 interface State {
-  handleColor: string;
+  handleColor: HandleColor;
   sheathColor: SheathColor;
   bladeCoatingColor: BladeCoatingColor;
   bladeCoating: BladeCoating;
@@ -16,7 +18,13 @@ interface State {
 }
 
 const state = proxy<State>({
-  handleColor: "#2ff310",
+  handleColor: {
+    id: 0,
+    colorName: "",
+    colorCode: "#d8a635",
+    material: "",
+    materialUrl: ""
+  },
   sheathColor: {
     id: 0,
     colorName: "",

@@ -4,12 +4,15 @@ import BladeCoatingService from "../../../services/BladeCoatingService";
 import CardComponent from "./CardComponent";
 import { useCanvasState } from '@/app/state/canvasState';
 import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
+import Characteristics from "@/app/components/Characteristics/Characteristics";
+import {useSnapshot} from "valtio";
 
 const BladeCoatingCustomizationComponent: React.FC = () => {
     const [bladeCoatingOptions, setBladeCoatingOptions] = useState<
         { coating: BladeCoating; color: BladeCoatingColor; }[]
     >([]);
     const state = useCanvasState();
+    const snap = useSnapshot(state);
 
     useEffect(() => {
         const fetchBladeCoatings = async () => {
@@ -46,18 +49,29 @@ const BladeCoatingCustomizationComponent: React.FC = () => {
     };
 
     return (
-        <div className="grid grid-cols-3 gap-4">
-            {bladeCoatingOptions.map((option, index) => (
-                <CardComponent
-                    key={index}
-                    backgroundPicture={option.color.colorCode}
-                    tooltipText={`${option.coating.name}, ${option.color.color}`}
-                    onClick={() =>
-                        handleCoatingSelection(option.coating, option.color)
-                    }
+        <>
+            <div className="grid grid-cols-3 gap-4">
+                {bladeCoatingOptions.map((option, index) => (
+                    <CardComponent
+                        key={index}
+                        backgroundPicture={option.color.colorCode}
+                        tooltipText={`${option.coating.name}, ${option.color.color}`}
+                        onClick={() =>
+                            handleCoatingSelection(option.coating, option.color)
+                        }
+                    />
+                ))}
+            </div>
+            <div style={{marginTop: "16px"}}>
+                <Characteristics data={snap.bladeCoating as BladeCoating}
+                                 isReadOnly1={true}
+                                 currentBladeCoatingColor={snap.bladeCoatingColor.color}
+                                 onChange={() => {
+                                 }}
+                                 type="BladeCoating"
                 />
-            ))}
-        </div>
+            </div>
+        </>
     );
 };
 

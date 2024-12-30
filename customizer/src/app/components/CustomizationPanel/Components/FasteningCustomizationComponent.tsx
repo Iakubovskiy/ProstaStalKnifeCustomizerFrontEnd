@@ -6,6 +6,9 @@ import FasteningService from "@/app/services/FasteningService";
 import CardComponent from "./CardComponent";
 import Fastening from "@/app/Models/Fastening";
 import {useCanvasState} from "@/app/state/canvasState"
+import Characteristics from "@/app/components/Characteristics/Characteristics";
+import BladeCoating from "@/app/Models/BladeCoating";
+import {useSnapshot} from "valtio";
 
 const PreviewGenerator = dynamic(() => import('./PreviewGenerator'), {
     ssr: false,
@@ -17,6 +20,7 @@ const FasteningCustomizationComponent: React.FC = () => {
     const [previews, setPreviews] = useState<{ [key: number]: string }>({});
     const fasteningService = new FasteningService();
     const state = useCanvasState();
+    const snap = useSnapshot(state);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
@@ -45,23 +49,34 @@ const FasteningCustomizationComponent: React.FC = () => {
     };
 
     return (
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "16px", position: "relative" }}>
-            {fastenings.map((fastening) => (
-                <React.Fragment key={fastening.id}>
-                    <CardComponent
-                        backgroundPicture={previews[fastening.id] || '#ffffff'}
-                        tooltipText={fastening.name}
-                        onClick={() => fasteningOptionClick(fastening)}
-                    />
-                    {!previews[fastening.id] && (
-                        <PreviewGenerator
-                            modelUrl={fastening.modelUrl}
-                            onPreviewGenerated={(preview) => handlePreviewGenerated(fastening.id, preview)}
+        <>
+            <div style={{display: "flex", flexWrap: "wrap", gap: "16px", position: "relative"}}>
+                {fastenings.map((fastening) => (
+                    <React.Fragment key={fastening.id}>
+                        <CardComponent
+                            backgroundPicture={previews[fastening.id] || '#ffffff'}
+                            tooltipText={fastening.name}
+                            onClick={() => fasteningOptionClick(fastening)}
                         />
-                    )}
-                </React.Fragment>
-            ))}
-        </div>
+                        {!previews[fastening.id] && (
+                            <PreviewGenerator
+                                modelUrl={fastening.modelUrl}
+                                onPreviewGenerated={(preview) => handlePreviewGenerated(fastening.id, preview)}
+                            />
+                        )}
+                    </React.Fragment>
+                ))}
+            </div>
+            <div style={{marginTop: "16px"}}>
+                <Characteristics data={snap.fastening[0]}
+                                 isReadOnly1={true}
+                                 currentBladeCoatingColor={""}
+                                 onChange={() => {
+                                 }}
+                                 type="Fastening"
+                />
+            </div>
+        </>
     );
 };
 

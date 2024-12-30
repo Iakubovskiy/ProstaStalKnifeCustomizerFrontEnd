@@ -24,12 +24,6 @@ const defaultBladeShape: BladeShape = {
   engravingRotationZ: 0,
   bladeShapeModelUrl: "1",
   sheathModelUrl: "1",
-  handleLocationX: null,
-  handleLocationY: null,
-  handleLocationZ: null,
-  handleRotationX: null,
-  handleRotationY: null,
-  handleRotationZ: null,
 };
 
 const BladeShapeEditPage = () => {
