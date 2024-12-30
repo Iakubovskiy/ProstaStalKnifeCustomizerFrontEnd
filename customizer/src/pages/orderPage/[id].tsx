@@ -186,7 +186,7 @@ const OrderDetailsPage = () => {
                     <strong>Blade Length:</strong> {knife.shape.bladeLength} mm
                   </p>
                   <p>
-                    <strong>Coating:</strong> {knife.bladeCoating.type}
+                    <strong>Coating:</strong> {knife.bladeCoating.name}
                   </p>
                   <p>
                     <strong>Handle Material:</strong>{" "}
@@ -244,18 +244,11 @@ const exampleOrder: Order = {
         engravingRotationY: 0,
         engravingRotationZ: 0,
         bladeShapeModelUrl: "https://example.com/models/drop-point.obj",
-        handleShapeModelUrl: "https://example.com/models/handle.obj",
         sheathModelUrl: "https://example.com/models/sheath.obj",
-        handleLocationX: null,
-        handleLocationY: null,
-        handleLocationZ: null,
-        handleRotationX: null,
-        handleRotationY: null,
-        handleRotationZ: null,
       },
       bladeCoating: {
         id: 1,
-        type: "Cerakote",
+        name: "Cerakote",
         price: 20.0,
         colors: [
           {
@@ -265,6 +258,7 @@ const exampleOrder: Order = {
             engravingColorCode: "#FFFFFF",
           },
         ],
+        materialUrl: "",
       },
       bladeCoatingColor: {
         id: 1,
@@ -286,6 +280,7 @@ const exampleOrder: Order = {
         material: "Leather",
         materialUrl: "https://example.com/materials/leather.jpg",
         price: 15.0,
+        EngravingColorCode: "",
       },
       fastening: [
         {
@@ -304,7 +299,7 @@ const exampleOrder: Order = {
           name: "Custom Text",
           side: 1,
           text: "For John",
-          font: 3,
+          font: "Montserrat",
           pictureUrl: null,
           rotationX: 0,
           rotationY: 0,
@@ -338,18 +333,11 @@ const exampleOrder: Order = {
         engravingRotationY: 0,
         engravingRotationZ: 0,
         bladeShapeModelUrl: "https://example.com/models/tanto.obj",
-        handleShapeModelUrl: "https://example.com/models/handle.obj",
         sheathModelUrl: "https://example.com/models/sheath.obj",
-        handleLocationX: null,
-        handleLocationY: null,
-        handleLocationZ: null,
-        handleRotationX: null,
-        handleRotationY: null,
-        handleRotationZ: null,
       },
       bladeCoating: {
         id: 2,
-        type: "Powder Coating",
+        name: "Powder Coating",
         price: 25.0,
         colors: [
           {
@@ -359,6 +347,7 @@ const exampleOrder: Order = {
             engravingColorCode: "#000000",
           },
         ],
+        materialUrl: "",
       },
       bladeCoatingColor: {
         id: 2,
@@ -380,6 +369,7 @@ const exampleOrder: Order = {
         material: "Leather",
         materialUrl: "https://example.com/materials/leather-black.jpg",
         price: 20.0,
+        EngravingColorCode: "#ffffff",
       },
       fastening: [
         {
@@ -398,7 +388,7 @@ const exampleOrder: Order = {
           name: "Logo Engraving",
           side: 2,
           text: null,
-          font: 1,
+          font: "Montserrat",
           pictureUrl: "https://example.com/images/logo.jpg",
           rotationX: 5,
           rotationY: 10,

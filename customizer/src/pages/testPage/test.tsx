@@ -27,7 +27,7 @@ const TextureFileInput = () => {
     if (file) {
       const url = URL.createObjectURL(file);
       console.log(url);
-      state.bladeCoating = { ...state.bladeCoating, MaterialUrl: url };
+      state.bladeCoating = { ...state.bladeCoating, materialUrl: url };
       state.bladeCoatingColor = {
         ...state.bladeCoatingColor,
         colorCode: "#ffffff",

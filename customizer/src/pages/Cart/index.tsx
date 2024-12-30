@@ -43,7 +43,12 @@ const CartAndOrderPage = () => {
     // Fetch delivery types from API
     deliveryTypeService.getAll().then((types) => setDeliveryTypes(types));
   }, []);
-
+  const handleSelectionChange = (key: string | number | undefined) => {
+    if (key) {
+      setSelectedDeliveryType(parseInt(key.toString(), 10));
+      console.log(key);
+    }
+  };
   const createOrder = async () => {
     if (
       !clientInfo.fullName ||
@@ -210,12 +215,15 @@ const CartAndOrderPage = () => {
             <Select
               label="Тип доставки"
               required
-              onChange={(e) =>
-                setSelectedDeliveryType(parseInt(e.currentTarget.value))
-              }
+              selectedKeys={selectedDeliveryType ? [selectedDeliveryType] : []}
+              onSelectionChange={(selection) => {
+                const selectedId = Array.from(selection)[0];
+                console.log(selectedId);
+                setSelectedDeliveryType(Number(selectedId));
+              }}
             >
               {deliveryTypes.map((type) => (
-                <SelectItem key={type.id} value={type.id.toString()}>
+                <SelectItem key={type.id} value={type.id}>
                   {type.name} - ${type.price}
                 </SelectItem>
               ))}

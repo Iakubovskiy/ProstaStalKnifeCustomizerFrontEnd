@@ -23,7 +23,7 @@ const state = proxy<State>({
     colorName: "",
     colorCode: "#d8a635",
     material: "",
-    materialUrl: ""
+    materialUrl: "",
   },
   sheathColor: {
     id: 0,

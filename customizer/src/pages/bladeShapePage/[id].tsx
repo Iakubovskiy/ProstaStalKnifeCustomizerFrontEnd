@@ -5,6 +5,7 @@ import BladeShape from "@/app/Models/BladeShape";
 import BladeShapeService from "@/app/services/BladeShapeService";
 import "../../styles/globals.css";
 import DragNDrop from "@/app/components/DragNDrop/DragNDrop";
+import CustomCanvas from "@/app/components/CustomCanvas/CustomCanvas";
 
 const defaultBladeShape: BladeShape = {
   id: 0,
@@ -160,7 +161,7 @@ const BladeShapeEditPage = () => {
     <div className="min-h-screen p-8 bg-gray-50">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white p-4 border border-gray-200 shadow-md">
-          {/* Empty div for future use */}
+          <CustomCanvas />
         </div>
         <div className="max-w-4xl mx-auto">
           <h1 className="text-2xl font-bold mb-6">

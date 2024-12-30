@@ -113,7 +113,10 @@ const HandleColorPage = () => {
           </h1>
 
           <div className="mb-6">
-            <DragNDrop onFileSelected={handleFileSelected} />
+            <DragNDrop
+              onFileSelected={handleFileSelected}
+              validExtensions={["image/*"]}
+            />
           </div>
           <div className="mb-6">
             <h3 className="text-lg font-semibold">Оберіть колір</h3>

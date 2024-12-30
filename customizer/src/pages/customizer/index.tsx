@@ -1,23 +1,21 @@
 import React from "react";
-import "../../styles/globals.css";
 import CustomCanvas from "@/app/components/CustomCanvas/CustomCanvas";
-import CustomizationPanel from "@/app/components/CustomizationPanel/CustomizationPanel"
-import {
-    KnifePurchaseContainer
-} from "@/app/components/CustomizationPanel/Components/KnifePurchase/KnifePurchaseContainer";
-
-const customizerPage = () =>{
-    return (
-        <div className="customizer flex flex-col lg:flex-row max-h-screen h-screen w-screen">
-            <div className="custom-canvas-div h-full md:w-3/5 lg:w-7/10">
-                <CustomCanvas/>
-            </div>
-            <div className="custom-panel h-full md:w-2/5 lg:w-3/10 bg-gray-800 text-white p-4 overflow-y-auto">
-                <CustomizationPanel/>
-                <KnifePurchaseContainer />
-            </div>
-        </div>
-    );
+import CustomizationPanel from "@/app/components/CustomizationPanel/CustomizationPanel";
+import { KnifePurchaseContainer } from "@/app/components/CustomizationPanel/Components/KnifePurchase/KnifePurchaseContainer";
+import styles from "./customizer.module.css";
+import "../../styles/globals.css";
+const CustomizerPage = () => {
+  return (
+    <div className={styles.customizer}>
+      <div className={styles.canvasContainer}>
+        <CustomCanvas />
+      </div>
+      <div className={styles.controlsContainer}>
+        <CustomizationPanel />
+        <KnifePurchaseContainer />
+      </div>
+    </div>
+  );
 };
 
-export default customizerPage;
+export default CustomizerPage;

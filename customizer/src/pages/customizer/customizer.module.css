@@ -1,0 +1,53 @@
+.customizer {
+    display: flex;
+    flex-direction: column;
+    max-height: 100vh;
+    height: 100%;
+    width: 100vw;
+  }
+  
+  .canvasContainer {
+    height: 100vh;
+  }
+  
+  .controlsContainer {
+    background-color: rgb(31, 41, 55);
+    color: white;
+    gap: 1rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  @media (min-width: 768px) {
+    .canvasContainer {
+      width: 100%;
+    }
+    
+    .controlsContainer {
+      width: 100%;
+    }
+    .canvasContainer {
+        height: 100vh;
+      }
+  }
+  @media (max-width: 1024px) {
+    
+    .canvasContainer {
+        height: 80vh;
+      }
+  }
+  @media (min-width: 1024px) {
+    .customizer {
+      flex-direction: row;
+    }
+    
+    .canvasContainer {
+      width: 57%;
+    }
+    
+    .controlsContainer {
+      width: 43%;
+    }
+  }

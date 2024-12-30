@@ -1,5 +1,12 @@
 import { NextUIProvider } from "@nextui-org/react";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <NextUIProvider>{children}</NextUIProvider>;
+  return (
+    <NextThemesProvider attribute="class" defaultTheme="system">
+      <NextUIProvider className="text-white">
+        <main>{children}</main>
+      </NextUIProvider>
+    </NextThemesProvider>
+  );
 }

@@ -2,10 +2,10 @@ interface Admin extends User {}
 
 interface BladeCoating {
   id: number;
-  type: string;
+  name: string;
   price: number;
   colors: BladeCoatingColor[];
-  MaterialUrl: string;
+  materialUrl: string;
 }
 interface BladeCoatingColor {
   id: number;

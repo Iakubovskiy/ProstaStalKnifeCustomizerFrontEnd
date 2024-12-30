@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls, useGLTF, Decal, useTexture } from "@react-three/drei";
 import { useSnapshot } from "valtio";
 import { useCanvasState } from "@/app/state/canvasState";
@@ -166,7 +166,28 @@ const EngravedMesh = ({
     </group>
   );
 };
+const Background: React.FC = () => {
+  const { gl } = useThree();
 
+  // Завантаження текстури
+  const texture = useTexture("/background.jpg");
+
+  // Створюємо кубічний фон
+  const formatted = new THREE.WebGLCubeRenderTarget(
+    texture.image.height
+  ).fromEquirectangularTexture(gl, texture);
+
+  // Ви можете збільшити позицію фонового зображення, наприклад, змістити його назад на більшу відстань.
+  const distance = 50; // Розмістити фон на відстані 50 одиниць
+
+  return (
+    <primitive
+      attach="background"
+      object={formatted.texture}
+      position={[0, 0, -distance]} // Тепер фон знаходиться на відстані 50 одиниць позаду
+    />
+  );
+};
 const ModelPart: React.FC<ModelPartProps> = ({
   url,
   materialProps = {},
@@ -415,6 +436,7 @@ const KnifeConfigurator: React.FC = () => {
     <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
       <Lighting />
       <Controls />
+      <Background />
 
       {validateModelUrl(snap.bladeShape.bladeShapeModelUrl) && (
         //@ts-ignore

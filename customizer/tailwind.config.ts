@@ -11,11 +11,27 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        text: "#ffffff", // або бажаний колір
+        foreground: "#ffffff",
       },
     },
   },
-  darkMode: "class",
-  plugins: [nextui()],
+  plugins: [
+    nextui({
+      themes: {
+        light: {
+          colors: {
+            text: "#ffffff",
+            foreground: "#ffffff",
+          },
+        },
+        dark: {
+          colors: {
+            text: "#ffffff",
+            foreground: "#ffffff",
+          },
+        },
+      },
+    }),
+  ],
 } satisfies Config;

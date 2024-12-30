@@ -32,9 +32,9 @@ const CustomizationPanel = () => {
     }
   };
   return (
-    <div className="customization-panel flex flex-col h-full">
+    <div className="customization-panel flex flex-col h-full bg-gray-800">
       <CustomizationPanelMenu setSelectedOption={setSelectedOption} />
-      <div className="customization-content mt-4 p-4 bg-gray-700 rounded flex-1">
+      <div className="customization-content mt-4 p-4 bg-gray-700 rounded flex-1 h-full overflow-auto">
         {renderContent()}
       </div>
     </div>

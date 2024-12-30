@@ -119,7 +119,7 @@ const EngravingComponent: React.FC = () => {
           const updatedItem = { ...item, text: value };
           customState.engraving[id].pictureUrl = textToSvgUrl(
             value,
-            item.font,
+            item.font ? item.font : "Montserrat",
             customState.bladeCoatingColor.engravingColorCode
               ? customState.bladeCoatingColor.engravingColorCode
               : "#000000"
