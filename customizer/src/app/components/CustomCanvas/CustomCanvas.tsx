@@ -71,15 +71,15 @@ const DecalWithControls = ({ meshRef, engraving, index }) => {
     positionX: {
       label: "Горизонтальне розміщення",
       value: engraving.locationX,
-      min: -50,
-      max: 50,
+      min: -0,
+      max: 40,
       step: 0.1,
     },
     positionY: {
       label: "Вертикальне розміщення",
       value: engraving.locationY,
-      min: -50,
-      max: 50,
+      min: -5,
+      max: 5,
       step: 0.1,
     },
     rotationZ: {
@@ -89,7 +89,7 @@ const DecalWithControls = ({ meshRef, engraving, index }) => {
       step: 1,
       label: "Кут",
     },
-    scale: { value: 20, min: 0.1, max: 50, step: 0.1 },
+    scale: { value: 20, min: 0.1, max: 100, step: 0.1 },
   });
 
   useEffect(() => {
@@ -114,8 +114,8 @@ const DecalWithControls = ({ meshRef, engraving, index }) => {
       controls={{
         ...controls,
         positionZ: 0,
+        rotationY: engraving.side === 2 ? 180 : 0,
         rotationX: 0,
-        rotationY: 0,
         rotationZ: engraving.rotationZ,
       }}
     />
@@ -137,7 +137,8 @@ const EngravedMesh = ({
   // @ts-ignore
   const meshRef = useRef();
 
-  return (// @ts-ignore
+  return (
+    // @ts-ignore
     <group>
       {/*@ts-ignore*/}
       <mesh
@@ -147,7 +148,8 @@ const EngravedMesh = ({
         position={position}
         rotation={rotation}
       >
-        {engravings?.map(// @ts-ignore
+        {engravings?.map(
+          // @ts-ignore
           (eng, index) =>
             "engravingSide" + eng.side === material.name && (
               <DecalWithControls
@@ -329,7 +331,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
   console.log(engravingMeshes);
   console.log(snap);
   return (
-      // @ts-ignore
+    // @ts-ignore
     <group position={position} rotation={rotation}>
       {/*@ts-ignore*/}
       <primitive ref={modelRef} object={scene} />
@@ -415,15 +417,15 @@ const KnifeConfigurator: React.FC = () => {
       <Controls />
 
       {validateModelUrl(snap.bladeShape.bladeShapeModelUrl) && (
-          //@ts-ignore
-          <ModelPart
+        //@ts-ignore
+        <ModelPart
           url={snap.bladeShape.bladeShapeModelUrl}
           {...bladeSettings}
         />
       )}
 
       {validateModelUrl(snap.bladeShape.sheathModelUrl) && (
-          //@ts-ignore
+        //@ts-ignore
         <ModelPart
           url={snap.bladeShape.sheathModelUrl}
           {...sheathSettings}

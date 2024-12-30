@@ -78,7 +78,7 @@ const BladeShapeEditPage = () => {
       if (!prev) return prev;
       return {
         ...prev,
-        [name]: value === "" ? null : Number(value) || value,
+        [name]: value === "" ? 0 : Number(value) || value,
       };
     });
   };
