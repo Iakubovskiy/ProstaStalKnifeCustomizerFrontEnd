@@ -113,11 +113,11 @@ const OrderDetailsPage = () => {
     <div className="min-h-screen p-8 bg-gray-50">
       {/* Order Info */}
       <Card className="p-6 mb-6 max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Order Details</h1>
+        <h1 className="text-2xl font-bold mb-4">Замовлення</h1>
         <div className="flex flex-col gap-4">
           <div className="w-full">
             <Input
-              label="Order Number"
+              label="Номер замовлення"
               name="number"
               fullWidth
               value={formData.number}
@@ -126,7 +126,7 @@ const OrderDetailsPage = () => {
           </div>
           <div className="w-full">
             <Input
-              label="Client Name"
+              label="Ім'я клієнта"
               name="clientFullName"
               fullWidth
               value={formData.clientFullName}
@@ -135,7 +135,7 @@ const OrderDetailsPage = () => {
           </div>
           <div className="w-full">
             <Input
-              label="Total Price"
+              label="Сума"
               name="total"
               type="number"
               fullWidth
@@ -145,7 +145,7 @@ const OrderDetailsPage = () => {
           </div>
           <div className="w-full">
             <Input
-              label="Comment"
+              label="Коментар"
               name="comment"
               fullWidth
               defaultValue={formData.comment ?? ""}
@@ -158,13 +158,13 @@ const OrderDetailsPage = () => {
           color="primary"
           className="mt-4 w-full"
         >
-          Save Changes
+          Зберегти
         </Button>
       </Card>
 
       {/* Knifes Block */}
       <Card className="p-6 shadow-md rounded-lg">
-        <h2 className="text-xl font-bold mb-4">Knifes</h2>
+        <h2 className="text-xl font-bold mb-4">Ножі</h2>
         <div className="space-y-6">
           {paginatedKnifes.map((knife) => (
             <Card
@@ -176,27 +176,25 @@ const OrderDetailsPage = () => {
                   {/* Image Placeholder */}
                 </div>
                 <div className="w-full md:w-1/2 p-6">
-                  <h3 className="text-lg font-semibold mb-2">
-                    Knife ID: {knife.id}
-                  </h3>
                   <p>
-                    <strong>Shape:</strong> {knife.shape.name}
+                    <strong>Форма:</strong> {knife.shape.name}
                   </p>
                   <p>
-                    <strong>Blade Length:</strong> {knife.shape.bladeLength} mm
+                    <strong>Довжина клинка:</strong> {knife.shape.bladeLength}{" "}
+                    mm
                   </p>
                   <p>
-                    <strong>Coating:</strong> {knife.bladeCoating.name}
+                    <strong>Покриття:</strong> {knife.bladeCoating.name}
                   </p>
                   <p>
-                    <strong>Handle Material:</strong>{" "}
+                    <strong>Матеріал руків'я:</strong>{" "}
                     {knife.handleColor.material}
                   </p>
                   <p>
-                    <strong>Sheath Color:</strong> {knife.sheathColor.colorName}
+                    <strong>Колір піхв:</strong> {knife.sheathColor.colorName}
                   </p>
                   <p>
-                    <strong>Price:</strong> ${knife.sheathColor.price}
+                    <strong>Ціна:</strong> ${knife.sheathColor.price}
                   </p>
                 </div>
               </div>

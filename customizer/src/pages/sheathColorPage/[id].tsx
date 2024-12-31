@@ -113,7 +113,9 @@ const SheathColorPage = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-center mb-4">Піхви</h1>
+          <h1 className="text-2xl text-black font-bold text-center mb-4">
+            Піхви
+          </h1>
 
           <div className="mb-6">
             <DragNDrop
@@ -122,14 +124,14 @@ const SheathColorPage = () => {
             />
           </div>
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-2">Оберіть кольори</h3>
-            <div className="flex items-center space-x-4">
+            <h3 className="text-lg  font-semibold mb-2">Оберіть кольори</h3>
+            <div className="flex items-center  space-x-4">
               <div className="flex-1">
-                <h4 className="text-md font-medium">Колір піхв</h4>
+                <h4 className="text-md mb-2 font-medium">Колір піхв</h4>
                 <ColorPicker value={color} onChange={SheathColorChange} />
               </div>
               <div className="flex-1">
-                <h4 className="text-md font-medium">Колір гравіювання</h4>
+                <h4 className="text-md mb-2 font-medium">Колір гравіювання</h4>
                 <ColorPicker
                   value={color}
                   onChange={SheathEngravingColorChange}

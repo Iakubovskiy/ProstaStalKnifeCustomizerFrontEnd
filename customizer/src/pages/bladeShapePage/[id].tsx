@@ -6,6 +6,7 @@ import BladeShapeService from "@/app/services/BladeShapeService";
 import "../../styles/globals.css";
 import DragNDrop from "@/app/components/DragNDrop/DragNDrop";
 import CustomCanvas from "@/app/components/CustomCanvas/CustomCanvas";
+import { useCanvasState } from "@/app/state/canvasState";
 
 const defaultBladeShape: BladeShape = {
   id: 0,
@@ -32,15 +33,73 @@ const BladeShapeEditPage = () => {
   const { id } = router.query;
   const [isLoading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
+  const state = useCanvasState();
+
   const [bladeShape, setBladeShape] = useState<BladeShape | null>(null);
   const [bladeShapeService, setbladeShapeService] = useState<BladeShapeService>(
     new BladeShapeService()
   );
-  const [files, setFiles] = useState({
+  const [files, setFiles] = useState<{
+    bladeShapeModel: File | null;
+    sheathModel: File | null;
+  }>({
     bladeShapeModel: null,
     sheathModel: null,
   });
+  const bladeAllSelection = (shape: BladeShape) => {
+    state.bladeShape = {
+      ...state.bladeShape,
+      id: shape.id,
+      name: shape.name,
+      price: shape.price,
+      totalLength: shape.totalLength,
+      bladeLength: shape.bladeLength,
+      bladeWidth: shape.bladeWidth,
+      bladeWeight: shape.bladeWeight,
+      sharpeningAngle: shape.sharpeningAngle,
+      rockwellHardnessUnits: shape.rockwellHardnessUnits,
+      engravingLocationX: shape.engravingLocationX,
+      engravingLocationY: shape.engravingLocationY,
+      engravingLocationZ: shape.engravingLocationZ,
+      engravingRotationX: shape.engravingRotationX,
+      engravingRotationY: shape.engravingRotationY,
+      engravingRotationZ: shape.engravingRotationZ,
+      bladeShapeModelUrl: shape.bladeShapeModelUrl,
+      sheathModelUrl: shape.sheathModelUrl,
+    };
+  };
+  const bladeShapeSelection = (shape: BladeShape, file: File) => {
+    if (files.bladeShapeModel) {
+      state.bladeShape = {
+        ...state.bladeShape,
+        id: shape.id,
+        name: shape.name,
+        price: shape.price,
+        totalLength: shape.totalLength,
+        bladeLength: shape.bladeLength,
+        bladeWidth: shape.bladeWidth,
+        bladeWeight: shape.bladeWeight,
+        sharpeningAngle: shape.sharpeningAngle,
+        rockwellHardnessUnits: shape.rockwellHardnessUnits,
+        engravingLocationX: shape.engravingLocationX,
+        engravingLocationY: shape.engravingLocationY,
+        engravingLocationZ: shape.engravingLocationZ,
+        engravingRotationX: shape.engravingRotationX,
+        engravingRotationY: shape.engravingRotationY,
+        engravingRotationZ: shape.engravingRotationZ,
+        bladeShapeModelUrl: URL.createObjectURL(file), // Only create URL if the model exists
+      };
+    }
+  };
 
+  const bladeSheathSelection = (shape: BladeShape, file: File) => {
+    if (files.sheathModel) {
+      state.bladeShape = {
+        ...state.bladeShape,
+        sheathModelUrl: URL.createObjectURL(file), // Only create URL if the sheath model exists
+      };
+    }
+  };
   useEffect(() => {
     const fetchBladeShape = async () => {
       if (id) {
@@ -61,6 +120,10 @@ const BladeShapeEditPage = () => {
         try {
           const data = await bladeShapeService.getById(numericId);
           setBladeShape(data);
+          console.log("1");
+          console.log(bladeShape);
+          bladeAllSelection(data);
+          console.log("1");
         } catch (error) {
           console.error("Error fetching blade shape:", error);
           alert("Error loading blade shape data");
@@ -96,9 +159,19 @@ const BladeShapeEditPage = () => {
         setFiles((prev) => ({ ...prev, [key]: null })); // Очищення файлу зі стану
         return;
       }
+      if (key == "bladeShapeModel") {
+        if (bladeShape) {
+          console.log(file);
+          bladeShapeSelection(bladeShape, file);
+        }
+      } else {
+        if (bladeShape) {
+          console.log("sheath");
+          bladeSheathSelection(bladeShape, file);
+        }
+      }
     }
 
-    // Оновлення файлу, якщо все гаразд
     setFiles((prev) => ({ ...prev, [key]: file }));
   };
 
@@ -170,7 +243,7 @@ const BladeShapeEditPage = () => {
 
           <Card className="p-6 mb-6">
             <h2 className="text-xl font-semibold mb-4">Базова інформація</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid text-black grid-cols-2 gap-4">
               <Input
                 label="Назва"
                 name="name"

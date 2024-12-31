@@ -4,6 +4,10 @@
     max-height: 100vh;
     height: 100%;
     width: 100vw;
+    /* background-image: url('/background.jpg'); 
+    background-size: auto; 
+  background-position: top left; 
+  background-repeat: repeat;  */
   }
   
   .canvasContainer {
@@ -44,10 +48,10 @@
     }
     
     .canvasContainer {
-      width: 57%;
+      width: 50%;
     }
     
     .controlsContainer {
-      width: 43%;
+      width: 50%;
     }
   }

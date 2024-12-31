@@ -17,6 +17,8 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import "../../styles/globals.css";
+import KnifeService from "@/app/services/KnifeService";
+import EngravingPriceService from "@/app/services/EngravingPriceService";
 
 const CartAndOrderPage = () => {
   const [cartItems, setCartItems] = useState<Knife[]>([]);
@@ -32,15 +34,18 @@ const CartAndOrderPage = () => {
     number | null
   >(null);
   const [comment, setComment] = useState<string>("");
-
+  const [engravingPriceService, setengravingPriceService] =
+    useState<EngravingPriceService>(new EngravingPriceService());
+  const [engravingPrice, setengravingPrice] = useState<EngravingPrice[]>([]);
   const orderService = new OrderService();
   const deliveryTypeService = new DeliveryTypeService();
+  const knifeService = new KnifeService();
 
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
     setCartItems(savedCart ? JSON.parse(savedCart) : []);
-
-    // Fetch delivery types from API
+    // const engpr: EngravingPrice[] = await engravingPriceService.getAll();
+    // setengravingPrice();
     deliveryTypeService.getAll().then((types) => setDeliveryTypes(types));
   }, []);
   const handleSelectionChange = (key: string | number | undefined) => {
@@ -61,6 +66,17 @@ const CartAndOrderPage = () => {
     }
 
     const total = cartItems.reduce((sum, item) => {
+      let uniqueSides;
+      if (item.engraving != null) {
+        const uniqueSides1 = new Set(
+          item.engraving.map((engraving) => engraving.side)
+        );
+        uniqueSides = uniqueSides1.size;
+      } else {
+        uniqueSides = 0;
+      }
+      const engravingPriceService = new EngravingPriceService();
+      // const prices = await engravingPriceService.getAll();
       const itemTotal =
         item.quantity *
         (item.shape.price +
@@ -70,7 +86,7 @@ const CartAndOrderPage = () => {
       return sum + itemTotal;
     }, 0);
 
-    const orderData = {
+    const orderData: Order = {
       id: 0,
       number: `ORD-${Date.now()}`,
       total,
@@ -82,10 +98,11 @@ const CartAndOrderPage = () => {
       city: clientInfo.city,
       email: clientInfo.email,
       comment: comment || null,
-      status: { id: 1, status: "New" },
+      status: { id: 1, status: "Активний" },
     };
 
     try {
+      console.log("Order Data: ", orderData);
       const createdOrder = await orderService.create(orderData);
       alert("Order created successfully!");
       console.log("Created Order: ", createdOrder);
@@ -120,6 +137,7 @@ const CartAndOrderPage = () => {
                       <Input
                         type="number"
                         value={item.quantity.toString()}
+                        readOnly
                         min={1}
                         onChange={(e) => {
                           const newQuantity = parseInt(e.target.value) || 1;

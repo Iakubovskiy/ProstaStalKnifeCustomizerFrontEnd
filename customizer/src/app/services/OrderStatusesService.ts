@@ -27,7 +27,11 @@ class OrderStatusesService {
   async create(orderStatus: OrderStatuses): Promise<OrderStatuses> {
     const formData = new FormData();
 
-    formData.append("status", orderStatus.status);
+    // Додаємо дані як звичайні поля
+
+    formData.append("Id", "0");
+    console.log("Status:", orderStatus.status);
+    formData.append("Status", orderStatus.status);
 
     const response = await this.apiService.create<OrderStatuses>(
       this.resource,

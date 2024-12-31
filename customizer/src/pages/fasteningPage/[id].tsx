@@ -123,7 +123,7 @@ const FasteningPage = () => {
             />
           </div>
           <div className="mb-6">
-            <h3 className="text-lg font-semibold">Оберіть колір</h3>
+            <h3 className="text-lg mb-2 font-semibold">Оберіть колір</h3>
             <ColorPicker value={color} onChange={fasteningChange} />
           </div>
           <div className="mb-6">
@@ -138,7 +138,7 @@ const FasteningPage = () => {
               label="Ціна"
               defaultValue={fastening.price.toString()}
               type="number"
-              className={styles.input}
+              className="mt-2"
               onChange={(e) => {
                 fastening.price = parseFloat(e.target.value);
                 fasteningObjectChange(fastening);

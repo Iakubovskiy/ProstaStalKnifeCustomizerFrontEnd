@@ -89,7 +89,7 @@ const DecalWithControls = ({ meshRef, engraving, index }) => {
       step: 1,
       label: "Кут",
     },
-    scale: { value: 20, min: 0.1, max: 100, step: 0.1 },
+    scale: { value: 20, min: 0.1, max: 100, step: 0.1, label: "Розміщення" },
   });
 
   useEffect(() => {
@@ -184,7 +184,7 @@ const Background: React.FC = () => {
     <primitive
       attach="background"
       object={formatted.texture}
-      position={[0, 0, -distance]} // Тепер фон знаходиться на відстані 50 одиниць позаду
+      position={[0, 0, -distance]}
     />
   );
 };

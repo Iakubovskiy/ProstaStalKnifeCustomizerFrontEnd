@@ -198,7 +198,7 @@ const BladeCoatingPage = () => {
           </div>
         </div>
         <div className="mb-6">
-          <h2 className="text-lg font-bold">Colors</h2>
+          <h2 className="text-lg font-bold">Кольори</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2  gap-4">
             {bladeCoating.colors.map((color) => (
               <div key={color.id} className="relative">
@@ -220,14 +220,14 @@ const BladeCoatingPage = () => {
             onClick={handleAddColor}
             className="mt-4 bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
-            Add Color
+            Додати
           </button>
         </div>
         <button
           onClick={handleSave}
           className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
         >
-          Save
+          Зберегти
         </button>
       </div>
     </div>

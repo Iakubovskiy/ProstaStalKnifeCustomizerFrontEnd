@@ -108,7 +108,7 @@ const HandleColorPage = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-center mb-4">
+          <h1 className="text-2xl text-black font-bold text-center mb-4">
             Кольори руків'я
           </h1>
 
@@ -119,7 +119,7 @@ const HandleColorPage = () => {
             />
           </div>
           <div className="mb-6">
-            <h3 className="text-lg font-semibold">Оберіть колір</h3>
+            <h3 className="text-lg mb-4 font-semibold">Оберіть колір</h3>
             <ColorPicker value={color} onChange={handleColorChange} />
           </div>
           <div className="mb-6">

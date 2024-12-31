@@ -44,11 +44,11 @@ const OrderStatusesPage = () => {
     }
   };
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPrice = parseFloat(e.target.value);
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newstatus = e.target.value;
     setOrderStatuses((prev) => ({
       ...prev,
-      price: isNaN(newPrice) ? 0 : newPrice,
+      status: newstatus,
     }));
   };
   useEffect(() => {
@@ -69,10 +69,11 @@ const OrderStatusesPage = () => {
             const fetchedOrderStatuses = await Engravingservice.getById(
               numericId
             );
+            console.log(fetchedOrderStatuses);
             setOrderStatuses(fetchedOrderStatuses);
             setLoading(false);
           } catch (error) {
-            console.error("Error fetching sheath color:", error);
+            console.error("Error fetching order status:", error);
             alert("Сталася помилка під час отримання даних. Перевірте ID.");
             router.push("/OrderStatusesPage/" + id);
           }
@@ -110,7 +111,7 @@ const OrderStatusesPage = () => {
               id="OrderStatuses"
               type="text"
               defaultValue={OrderStatuses.status}
-              onChange={handlePriceChange}
+              onChange={handleInputChange}
               aria-label="Engraving Status"
               placeholder="Введіть статус"
               size="lg"

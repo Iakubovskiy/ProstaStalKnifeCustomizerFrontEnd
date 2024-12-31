@@ -116,9 +116,7 @@ const DeliveryTypePage = () => {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-center mb-4">
-            Кольори руків'я
-          </h1>
+          <h1 className="text-2xl font-bold text-center mb-4">Типи доставки</h1>
           <div className={styles.input}>
             <label
               htmlFor="engravingPrice"
