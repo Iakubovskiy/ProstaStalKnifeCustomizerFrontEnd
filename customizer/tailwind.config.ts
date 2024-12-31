@@ -5,14 +5,14 @@ export default {
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/styles/**/*.css", // Додайте це
+    "./src/styles/**/*.css",
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
       colors: {
-        text: "#ffffff", // або бажаний колір
-        foreground: "#ffffff",
+        text: "#000000",
+        foreground: "#000000",
       },
     },
   },
@@ -21,14 +21,14 @@ export default {
       themes: {
         light: {
           colors: {
-            text: "#ffffff",
-            foreground: "#ffffff",
+            text: "#000000",
+            foreground: "#000000",
           },
         },
         dark: {
           colors: {
-            text: "#ffffff",
-            foreground: "#ffffff",
+            text: "#000000",
+            foreground: "#000000",
           },
         },
       },

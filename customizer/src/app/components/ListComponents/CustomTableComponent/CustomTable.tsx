@@ -55,8 +55,9 @@ export default function CustomTable<T extends Record<string, any>>({
   };
 
   const modifiedColumns = [...columns, { name: "Дії", uid: "actions" }];
+  console.log("Data = ", data);
   return (
-    <Table aria-label="Custom Table" className="custom-table">
+    <Table aria-label="Custom Table" className="custom-table text-black">
       <TableHeader columns={modifiedColumns} className="custom-table">
         {(column) => (
           <TableColumn

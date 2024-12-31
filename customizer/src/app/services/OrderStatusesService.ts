@@ -10,13 +10,12 @@ class OrderStatusesService {
     this.resource = "OrderStatus";
   }
 
-  // Отримати всі OrderStatuses
   async getAll(): Promise<OrderStatuses[]> {
     const response = await this.apiService.getAll<OrderStatuses>(this.resource);
-    return response;
+    // @ts-ignore
+    return response.orderStatuss;
   }
 
-  // Отримати OrderStatus за id
   async getById(id: number): Promise<OrderStatuses> {
     const response = await this.apiService.getById<OrderStatuses>(
       this.resource,
@@ -25,11 +24,9 @@ class OrderStatusesService {
     return response;
   }
 
-  // Створити новий OrderStatus
   async create(orderStatus: OrderStatuses): Promise<OrderStatuses> {
     const formData = new FormData();
 
-    // Додаємо дані як звичайні поля
     formData.append("status", orderStatus.status);
 
     const response = await this.apiService.create<OrderStatuses>(
@@ -39,11 +36,9 @@ class OrderStatusesService {
     return response;
   }
 
-  // Оновити OrderStatus
   async update(id: number, orderStatus: OrderStatuses): Promise<OrderStatuses> {
     const formData = new FormData();
 
-    // Додаємо дані як звичайні поля
     formData.append("status", orderStatus.status);
 
     const response = await this.apiService.update<OrderStatuses>(
@@ -54,7 +49,6 @@ class OrderStatusesService {
     return response;
   }
 
-  // Видалити OrderStatus
   async delete(id: number): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
