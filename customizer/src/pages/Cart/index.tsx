@@ -38,17 +38,93 @@ const CartAndOrderPage = () => {
   const [comment, setComment] = useState<string>("");
   const [engravingPriceService, setengravingPriceService] =
     useState<EngravingPriceService>(new EngravingPriceService());
-  const [engravingPrice, setengravingPrice] = useState<EngravingPrice[]>([]);
+  const [knifeService, setknifeService] = useState<KnifeService>(
+    new KnifeService()
+  );
+
+  const [engravingService, setengravingService] = useState<EngravingService>(
+    new EngravingService()
+  );
+  const [engravingPrice, setengravingPrice] = useState<number>(0);
   const orderService = new OrderService();
   const deliveryTypeService = new DeliveryTypeService();
-  const knifeService = new KnifeService();
 
+  const createEngravings = async (knife: Knife): Promise<Engraving[]> => {
+    const engravingService = new EngravingService();
+    const createdEngravings: Engraving[] = [];
+
+    if (knife.engraving && knife.engraving.length > 0) {
+      for (const engraving of knife.engraving) {
+        let file: File | null = null; // Ініціалізуємо як null
+
+        if (engraving.pictureUrl) {
+          file = await blobUrlToFile(engraving.pictureUrl);
+        }
+
+        const createdEngraving = await engravingService.create(engraving, file);
+        createdEngravings.push(createdEngraving);
+      }
+    }
+
+    return createdEngravings;
+  };
+  const blobUrlToFile = async (
+    blobUrl: string,
+    fileName: string = "image.png"
+  ): Promise<File> => {
+    try {
+      // Отримуємо Blob з URL
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
+
+      // Створюємо File об'єкт з Blob
+      const file = new File([blob], fileName, { type: blob.type });
+
+      return file;
+    } catch (error) {
+      console.error("Error converting blob URL to file:", error);
+      throw error;
+    }
+  };
+  const createKnivesInBackend = async (
+    cartItems: Knife[]
+  ): Promise<Knife[]> => {
+    const knifeService = new KnifeService();
+    const createdKnives: Knife[] = [];
+
+    try {
+      for (const knife of cartItems) {
+        // Спочатку створюємо гравіювання для ножа
+        const createdEngravings = await createEngravings(knife);
+
+        // Створюємо копію ножа з новими ID гравіювань
+        const knifeWithNewEngravings = {
+          ...knife,
+          engraving: createdEngravings,
+        };
+
+        const createdKnife = await knifeService.create(knifeWithNewEngravings);
+        createdKnives.push(createdKnife);
+      }
+      return createdKnives;
+    } catch (error) {
+      console.error("Failed to create knives:", error);
+      throw new Error("Failed to create knives in backend");
+    }
+  };
   useEffect(() => {
-    const savedCart = localStorage.getItem("cart");
-    setCartItems(savedCart ? JSON.parse(savedCart) : []);
-    // const engpr: EngravingPrice[] = await engravingPriceService.getAll();
-    // setengravingPrice();
-    deliveryTypeService.getAll().then((types) => setDeliveryTypes(types));
+    const handleGet = async () => {
+      const savedCart = localStorage.getItem("cart");
+      console.log(savedCart);
+      setCartItems(savedCart ? JSON.parse(savedCart) : []);
+      const engpr: EngravingPrice[] = await engravingPriceService.getAll();
+      if (engpr.length > 0) {
+        setengravingPrice(engpr[0].price);
+      }
+
+      deliveryTypeService.getAll().then((types) => setDeliveryTypes(types));
+    };
+    handleGet();
   }, []);
   const handleSelectionChange = (key: string | number | undefined) => {
     if (key) {
@@ -66,53 +142,55 @@ const CartAndOrderPage = () => {
       alert("Заповніть обов'язкові поля");
       return;
     }
-    console.log(cartItems);
-    const total = cartItems.reduce((sum, item) => {
-      let uniqueSides;
-      if (item.engravings != null) {
-        const uniqueSides1 = new Set(
-          item.engravings.map((engraving) => engraving.side)
-        );
-        uniqueSides = uniqueSides1.size;
-      } else {
-        uniqueSides = 0;
-      }
-      const engravingPriceService = new EngravingPriceService();
-      // const prices = await engravingPriceService.getAll();
-      const itemTotal =
-        item.quantity *
-        (item.shape.price +
-          item.bladeCoating.price +
-          (item.sheathColor.price || 0) +
-          (item.fastening?.reduce((fSum, f) => fSum + f.price, 0) || 0));
-      return sum + itemTotal;
-    }, 0);
-
-    const orderData: Order = {
-      id: 0,
-      number: `ORD-${Date.now()}`,
-      total,
-      knives: cartItems,
-      delivery: deliveryTypes.find((type) => type.id === selectedDeliveryType)!,
-      clientFullName: clientInfo.fullName,
-      clientPhoneNumber: clientInfo.phoneNumber,
-      countryForDelivery: clientInfo.country,
-      city: clientInfo.city,
-      email: clientInfo.email,
-      comment: comment || null,
-      status: { id: 1, status: "Активний" },
-    };
 
     try {
-      console.log("Order Data: ", orderData);
+      const createdKnives = await createKnivesInBackend(cartItems);
+
+      const total = createdKnives.reduce((sum, item) => {
+        let uniqueSides;
+        if (item.engraving != null) {
+          const uniqueSides1 = new Set(
+            item.engraving.map((engraving) => engraving.side)
+          );
+          uniqueSides = uniqueSides1.size;
+        } else {
+          uniqueSides = 0;
+        }
+        const engraving = engravingPrice * uniqueSides;
+        const itemTotal =
+          item.quantity *
+          (item.shape.price +
+            engraving +
+            item.bladeCoating.price +
+            (item.sheathColor.price || 0) +
+            (item.fastening?.reduce((fSum, f) => fSum + f.price, 0) || 0));
+        return sum + itemTotal;
+      }, 0);
+
+      const orderData: Order = {
+        id: 0,
+        number: `ORD-${Date.now()}`,
+        total,
+        knifes: createdKnives,
+        delivery: deliveryTypes.find(
+          (type) => type.id === selectedDeliveryType
+        )!,
+        clientFullName: clientInfo.fullName,
+        clientPhoneNumber: clientInfo.phoneNumber,
+        countryForDelivery: clientInfo.country,
+        city: clientInfo.city,
+        email: clientInfo.email,
+        comment: comment || null,
+        status: { id: 1, status: "Активний" },
+      };
+
       const createdOrder = await orderService.create(orderData);
-      alert("Order created successfully!");
-      console.log("Created Order: ", createdOrder);
+      alert("Замовлення успішно створено!");
       setCartItems([]);
       localStorage.removeItem("cart");
     } catch (error) {
-      console.error("Failed to create order: ", error);
-      alert("Failed to create order.");
+      console.error("Failed to process order: ", error);
+      alert("Помилка при створенні замовлення.");
     }
   };
   console.log(cartItems);

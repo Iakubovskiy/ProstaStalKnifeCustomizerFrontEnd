@@ -46,7 +46,7 @@ export const KnifePurchaseContainer: React.FC = () => {
 
   const handleAddToCart = () => {
     const knife = {
-      id: Date.now(),
+      id: 0,
       shape: snap.bladeShape,
       bladeCoating: snap.bladeCoating,
       bladeCoatingColor: snap.bladeCoatingColor,
@@ -73,7 +73,7 @@ export const KnifePurchaseContainer: React.FC = () => {
       />
       <OrderButton
         currentKnife={{
-          id: Date.now(),
+          id: 0,
           shape: snap.bladeShape,
           bladeCoating: snap.bladeCoating as BladeCoating,
           bladeCoatingColor: snap.bladeCoatingColor,
