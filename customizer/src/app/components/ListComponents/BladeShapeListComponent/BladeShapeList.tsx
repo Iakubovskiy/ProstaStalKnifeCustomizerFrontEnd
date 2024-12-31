@@ -52,7 +52,7 @@ export default function BladeShapeList() {
                         Create
                     </Button>
                 </Link>
-                <Link href="/dashboard" passHref>
+                <Link href="/admin/dashboard" passHref>
                     <Button color="primary">
                         Back
                     </Button>

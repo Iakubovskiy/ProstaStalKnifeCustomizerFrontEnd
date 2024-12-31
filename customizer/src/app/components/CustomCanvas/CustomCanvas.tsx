@@ -71,7 +71,7 @@ const DecalWithControls = ({ meshRef, engraving, index }) => {
     positionX: {
       label: "Горизонтальне розміщення",
       value: engraving.locationX,
-      min: -0,
+      min: -5,
       max: 40,
       step: 0.1,
     },

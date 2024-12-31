@@ -44,7 +44,7 @@ export default function OrderStatusesList() {
                         Create
                     </Button>
                 </Link>
-                <Link href="/dashboard" passHref>
+                <Link href="/admin/dashboard" passHref>
                     <Button color="primary">
                         Back
                     </Button>
