@@ -8,6 +8,7 @@ import SheathColorService from "@/app/services/SheathColorService";
 import "../../styles/globals.css";
 import { Spinner } from "@nextui-org/react";
 import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
+
 const initialSheathColorData: SheathColor = {
   id: 1,
   colorName: "",
@@ -23,25 +24,33 @@ const SheathColorPage = () => {
   const { id } = router.query;
   const [color, setColor] = useState<string>(initialSheathColorData.colorCode);
   const [Engravingcolor, setEngravingcolor] = useState<string>(
-    initialSheathColorData.EngravingColorCode
+      initialSheathColorData.EngravingColorCode
   );
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isCreating, setCreating] = useState<boolean>(false);
 
   const [file, setFile] = useState<File | null>(null);
   const [SheathColor, setSheathColor] = useState<SheathColor>(
-    initialSheathColorData
+      initialSheathColorData
   );
   const [handleservice, setHandleservice] = useState<SheathColorService>(
-    new SheathColorService()
+      new SheathColorService()
   );
+
   const handleFileSelected = (selectedFile: File | null) => {
     setFile(selectedFile);
   };
+
   const handleObjectChange = (updatedData: SheathColor) => {
-    setSheathColor(updatedData); // Оновлюємо об'єкт у стані
+    setSheathColor(updatedData);
     console.log(SheathColor);
   };
+
+  const handlePriceChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const updatedPrice = parseFloat(event.target.value);
+    setSheathColor((prev) => ({ ...prev, price: isNaN(updatedPrice) ? 0 : updatedPrice }));
+  };
+
   const handleSave = async () => {
     console.log("Saving data:", SheathColor, "Uploaded File:", file);
 
@@ -51,9 +60,9 @@ const SheathColorPage = () => {
         response = await handleservice.create(SheathColor, file);
       } else {
         response = await handleservice.update(
-          parseInt(id as string, 10),
-          SheathColor,
-          file
+            parseInt(id as string, 10),
+            SheathColor,
+            file
         );
       }
 
@@ -62,6 +71,7 @@ const SheathColorPage = () => {
       alert("Оберіть файл та заповніть поля");
     }
   };
+
   useEffect(() => {
     const fetchSheathColor = async () => {
       if (id) {
@@ -78,9 +88,6 @@ const SheathColorPage = () => {
           try {
             const fetchedsheathColor = await handleservice.getById(numericId);
             setSheathColor(fetchedsheathColor);
-            console.log("1");
-            console.log(fetchedsheathColor.colorCode);
-            console.log("1");
             setColor(fetchedsheathColor.colorCode);
             setEngravingcolor(fetchedsheathColor.EngravingColorCode);
             setLoading(false);
@@ -91,72 +98,88 @@ const SheathColorPage = () => {
           }
         }
       }
-      console.log(SheathColor);
     };
     fetchSheathColor();
   }, [id]);
+
   const SheathColorChange = (newColor: any) => {
     setColor(newColor);
     SheathColor.colorCode = newColor;
   };
+
   const SheathEngravingColorChange = (newColor: any) => {
     setEngravingcolor(newColor);
-    SheathColor.colorCode = newColor;
+    SheathColor.EngravingColorCode = newColor;
   };
+
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center ">
-        <Spinner size="lg" color="warning" label="Завантаження" />
-      </div>
+        <div className="flex min-h-screen items-center justify-center ">
+          <Spinner size="lg" color="warning" label="Завантаження" />
+        </div>
     );
   } else {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-        <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl text-black font-bold text-center mb-4">
-            Піхви
-          </h1>
+        <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+          <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
+            <h1 className="text-2xl text-black font-bold text-center mb-4">Піхви</h1>
 
-          <div className="mb-6">
-            <DragNDrop
-              onFileSelected={handleFileSelected}
-              validExtensions={[".glb", "gltf"]}
-            />
-          </div>
-          <div className="mb-6">
-            <h3 className="text-lg  font-semibold mb-2">Оберіть кольори</h3>
-            <div className="flex items-center  space-x-4">
-              <div className="flex-1">
-                <h4 className="text-md mb-2 font-medium">Колір піхв</h4>
-                <ColorPicker value={color} onChange={SheathColorChange} />
-              </div>
-              <div className="flex-1">
-                <h4 className="text-md mb-2 font-medium">Колір гравіювання</h4>
-                <ColorPicker
-                  value={color}
-                  onChange={SheathEngravingColorChange}
-                />
+            <div className="mb-6">
+              <DragNDrop
+                  onFileSelected={handleFileSelected}
+                  validExtensions={[".jpg", "jpeg", ".png"]}
+              />
+            </div>
+
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold mb-2">Оберіть кольори</h3>
+              <div className="flex items-center space-x-4">
+                <div className="flex-1">
+                  <h4 className="text-md mb-2 font-medium text-black">Колір піхв</h4>
+                  <ColorPicker value={color} onChange={SheathColorChange} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-md mb-2 font-medium text-black">Колір гравіювання</h4>
+                  <ColorPicker
+                      value={Engravingcolor}
+                      onChange={SheathEngravingColorChange}
+                  />
+                </div>
               </div>
             </div>
-          </div>
-          <div className="mb-6">
-            <Characteristics
-              data={SheathColor}
-              isReadOnly1={false}
-              currentBladeCoatingColor={color}
-              onChange={handleObjectChange}
-              type="SheathColor"
-            />
-          </div>
 
-          <button
-            onClick={handleSave}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-          >
-            Зберегти
-          </button>
+            <div className="mb-6">
+              <Characteristics
+                  data={SheathColor}
+                  isReadOnly1={false}
+                  currentBladeCoatingColor={color}
+                  onChange={handleObjectChange}
+                  type="SheathColor"
+              />
+            </div>
+
+            <div className="mb-6">
+              <label className="block text-md font-medium text-black mb-2" htmlFor="price">
+                Ціна
+              </label>
+              <input
+                  type="number"
+                  id="price"
+                  value={SheathColor.price}
+                  onChange={handlePriceChange}
+                  className="w-full border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring text-black focus:ring-blue-200"
+                  placeholder="Введіть ціну"
+              />
+            </div>
+
+            <button
+                onClick={handleSave}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+            >
+              Зберегти
+            </button>
+          </div>
         </div>
-      </div>
     );
   }
 };

@@ -113,7 +113,7 @@ const CartAndOrderPage = () => {
       alert("Failed to create order.");
     }
   };
-
+  console.log(cartItems);
   return (
     <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">

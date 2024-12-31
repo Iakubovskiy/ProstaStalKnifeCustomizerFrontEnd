@@ -23,7 +23,6 @@ const BladeCoatingColorComponent = ({
     useState<BladeCoatingColor>(value);
 
   useEffect(() => {
-    // Оновлення стану при зміні вхідного значення
     setBladeCoatingColor(value);
   }, [value]);
 
