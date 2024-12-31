@@ -293,6 +293,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
 
           case "engravingSide1":
           case "engravingSide2":
+          case "engravingSide3":
             updateMaterial(child.material, materialName, {
               color: snap.bladeCoatingColor.engravingColorCode,
               metalness: 0.6,
