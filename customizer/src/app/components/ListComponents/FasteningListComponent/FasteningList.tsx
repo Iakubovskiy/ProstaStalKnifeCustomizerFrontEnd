@@ -5,6 +5,7 @@ import { Button } from "@nextui-org/react";
 import FasteningService from "../../../services/FasteningService"
 import Link from "next/link";
 import {useRouter} from "next/router";
+import Fastening from "@/app/Models/Fastening";
 
 export default function FasteningList() {
     const [fastenings, setFastenings] = useState<Fastening[]>([]);

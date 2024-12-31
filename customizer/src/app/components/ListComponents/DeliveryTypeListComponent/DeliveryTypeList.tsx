@@ -5,6 +5,7 @@ import { Button } from "@nextui-org/react";
 import DeliveryTypeService from "../../../services/DeliveryTypeService"
 import Link from "next/link";
 import {useRouter} from "next/router";
+import DeliveryType from "@/app/Models/DeliveryType";
 
 export default function DeliveryTypeList() {
     const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);

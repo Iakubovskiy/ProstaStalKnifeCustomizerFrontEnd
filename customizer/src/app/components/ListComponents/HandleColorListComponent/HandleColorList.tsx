@@ -5,6 +5,7 @@ import { Button } from "@nextui-org/react";
 import HandleColorService from "../../../services/HandleColorService"
 import Link from "next/link";
 import { useRouter } from "next/router";
+import HandleColor from "@/app/Models/HandleColor";
 
 export default function HandleColorList() {
     const [handleColors, setHandleColors] = useState<HandleColor[]>([]);

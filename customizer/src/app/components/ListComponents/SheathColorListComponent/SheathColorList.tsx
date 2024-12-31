@@ -5,6 +5,7 @@ import { Button } from "@nextui-org/react";
 import SheathColorService from "../../../services/SheathColorService"
 import Link from "next/link";
 import {useRouter} from "next/router";
+import SheathColor from "@/app/Models/SheathColor";
 
 export default function SheathColorList() {
     const [sheathColors, setSheathColors] = useState<SheathColor[]>([]);

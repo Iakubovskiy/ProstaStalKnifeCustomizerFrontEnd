@@ -5,6 +5,7 @@ import { Button } from "@nextui-org/react";
 import OrderStatusesService from "../../../services/OrderStatusesService"
 import Link from "next/link";
 import {useRouter} from "next/router";
+import OrderStatuses from "@/app/Models/OrderStatuses";
 
 export default function OrderStatusesList() {
     const [orderStatuses, setOrderStatuses] = useState<OrderStatuses[]>([]);

@@ -26,7 +26,7 @@ class SheathColorService {
   async create(color: SheathColor, material: File): Promise<SheathColor> {
     const formData = new FormData();
     formData.append("Id", "0");
-    formData.append("Color", color.color);
+    formData.append("Color", color.colorName);
     formData.append("ColorCode", color.colorCode);
     formData.append("Material", color.material);
     formData.append("MaterialUrl", "");
@@ -48,7 +48,7 @@ class SheathColorService {
   ): Promise<SheathColor> {
     const formData = new FormData();
     formData.append("Id", "0");
-    formData.append("Color", color.color);
+    formData.append("Color", color.colorName);
     formData.append("ColorCode", color.colorCode);
     formData.append("Material", color.material);
     formData.append("MaterialUrl", "");

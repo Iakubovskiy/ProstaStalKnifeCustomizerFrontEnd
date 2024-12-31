@@ -5,6 +5,7 @@ import { Button } from "@nextui-org/react";
 import BladeShapeService from "../../../services/BladeShapeService"
 import Link from "next/link";
 import {useRouter} from "next/router";
+import BladeShape from "@/app/Models/BladeShape";
 
 export default function BladeShapeList() {
     const [bladeShapes, setBladeShapes] = useState<BladeShape[]>([]);
