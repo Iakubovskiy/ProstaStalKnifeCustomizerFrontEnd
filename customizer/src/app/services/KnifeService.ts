@@ -51,7 +51,7 @@ class KnifeService {
     });
 
     // Додаємо Engravings
-    knife.engraving?.forEach((engraving, index) => {
+    knife.engravings?.forEach((engraving, index) => {
       formData.append(`EngravingsJson[${index}]`, engraving.id.toString());
     });
 
@@ -94,7 +94,7 @@ class KnifeService {
     });
 
     // Додаємо Engravings
-    knife.engraving?.forEach((engraving, index) => {
+    knife.engravings?.forEach((engraving, index) => {
       formData.append(`Engravings[${index}]`, engraving.id.toString());
     });
 

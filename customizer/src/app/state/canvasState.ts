@@ -1,6 +1,7 @@
 import { proxy } from "valtio";
 import { useEffect } from "react";
 import BladeCoating from "@/app/Models/BladeCoating";
+import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import BladeShape from "@/app/Models/BladeShape";
 import Fastening from "@/app/Models/Fastening";
 import SheathColor from "@/app/Models/SheathColor";
@@ -13,7 +14,7 @@ interface State {
   bladeCoatingColor: BladeCoatingColor;
   bladeCoating: BladeCoating;
   bladeShape: BladeShape;
-  engraving: Engraving[];
+  engravings: Engraving[];
   fastening: Fastening[];
 }
 
@@ -66,7 +67,7 @@ const state = proxy<State>({
     engravingRotationZ: 0,
     sheathModelUrl: "",
   },
-  engraving: [],
+  engravings: [],
   fastening: [],
 });
 

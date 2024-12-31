@@ -24,11 +24,11 @@ export const KnifePurchaseContainer: React.FC = () => {
       price += snap.fastening.reduce((sum, item) => sum + item.price, 0);
     }
 
-    if (snap.engraving && snap.engraving.length > 0) {
+    if (snap.engravings && snap.engravings.length > 0) {
       const engravingService = new EngravingPriceService();
       const prices = await engravingService.getAll();
       if (prices.length > 0) {
-        const uniqueSides = new Set(snap.engraving.map((eng) => eng.side)).size;
+        const uniqueSides = new Set(snap.engravings.map((eng) => eng.side)).size;
         price += uniqueSides * prices[0].price;
       }
     }
@@ -53,7 +53,7 @@ export const KnifePurchaseContainer: React.FC = () => {
       handleColor: snap.handleColor,
       sheathColor: snap.sheathColor,
       fastening: snap.fastening,
-      engraving: snap.engraving,
+      engravings: snap.engravings,
       quantity: quantity,
     };
 
@@ -80,7 +80,7 @@ export const KnifePurchaseContainer: React.FC = () => {
           handleColor: snap.handleColor,
           sheathColor: snap.sheathColor,
           fastening: snap.fastening as Fastening[],
-          engraving: snap.engraving as Engraving[],
+          engravings: snap.engravings as Engraving[],
           quantity: quantity,
         }}
       />

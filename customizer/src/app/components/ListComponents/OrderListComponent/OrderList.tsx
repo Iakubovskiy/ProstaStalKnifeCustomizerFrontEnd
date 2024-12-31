@@ -17,19 +17,6 @@ export default function OrderList() {
                 const data = await orderService.getAll();
                 const sanitizedData = data.map((item) => ({
                     ...item,
-                    knifes: item.knifes.map((knife) => ({
-                        ...knife,
-                        sheathColor: {
-                            ...knife.sheathColor,
-                            materialUrl: knife.sheathColor.materialUrl || "",
-                            color: knife.sheathColor.colorName || "",
-                        },
-                        bladeCoating: {
-                            ...knife.bladeCoating,
-                            type: knife.bladeCoating?.name || "default", // Вкажи значення за замовчуванням
-                            materialUrl: knife.bladeCoating?.materialUrl || "",
-                        },
-                    })),
                     comment: item.comment || "",
                 }));
                 setOrders(sanitizedData);
@@ -49,21 +36,14 @@ export default function OrderList() {
             alert("Failed to delete the record.");
         }
     };
-    const preparedOrders = orders.map((order) => ({
-        ...order,
-        statusText: order.status.status,
-        deliveryName: order.delivery.name,
-    }));
-    const columns: Column<typeof preparedOrders[number]>[] = [
+    const columns: Column<typeof orders[number]>[] = [
         { name: "Номер", uid: "number" },
         { name: "Ціна", uid: "total" },
-        { name: "Статус", uid: "statusText" },
         { name: "ПІБ клієнта", uid: "clientFullName" },
         { name: "Номер телефону", uid: "clientPhoneNumber" },
         { name: "Email", uid: "email" },
         { name: "Місто", uid: "city" },
         { name: "Країна", uid: "countryForDelivery" },
-        { name: "Вид доставки", uid: "deliveryName" },
 
     ];
 
@@ -81,7 +61,7 @@ export default function OrderList() {
                     </Button>
                 </Link>
             </div>
-            <CustomTable data={preparedOrders} columns={columns} onDelete={bladeDelete}/>
+            <CustomTable data={orders} columns={columns} onDelete={bladeDelete}/>
         </div>
     );
 }

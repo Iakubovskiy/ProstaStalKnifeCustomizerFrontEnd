@@ -5,8 +5,12 @@ import { useRouter } from "next/router";
 import { Button, Input, Pagination, Spinner, Card } from "@nextui-org/react";
 import styles from "./orderDetails.module.css";
 import OrderService from "@/app/services/OrderService";
+import KnifeService from "@/app/services/KnifeService";
 import DeliveryDataDTO from "@/app/DTO/DeliveryDataDTO";
+import {useCanvasState} from "../../app/state/canvasState";
 import "../../styles/globals.css";
+import Order from "../../app/Models/Order";
+import CustomCanvas from "@/app/components/CustomCanvas/CustomCanvas";
 
 const OrderDetailsPage = () => {
   const router = useRouter();
@@ -14,6 +18,8 @@ const OrderDetailsPage = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isCreating, setCreating] = useState<boolean>(false);
   const [orderservice] = useState<OrderService>(new OrderService());
+  const knifeService = new KnifeService();
+  const state = useCanvasState();
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 1;
@@ -59,17 +65,19 @@ const OrderDetailsPage = () => {
           try {
             const fetchedOrder = await orderservice.getById(numericId);
 
+            const knives = await Promise.all(
+                fetchedOrder.knives.map(async (knife) => {
+                  const knifeData = await knifeService.getById(knife.id);
+                  return {
+                    ...knife,
+                    ...knifeData,
+                  };
+                })
+            );
             const normalizedOrder: Order = {
               ...fetchedOrder,
-              knifes: fetchedOrder.knifes.map((knife) => ({
-                ...knife,
-                sheathColor: {
-                  ...knife.sheathColor,
-                  materialUrl: knife.sheathColor?.materialUrl ?? "",
-                },
-              })),
+              knives,
             };
-
             setOrder(normalizedOrder);
             setFormData({
               number: fetchedOrder.number,
@@ -81,7 +89,7 @@ const OrderDetailsPage = () => {
           } catch (error) {
             console.error("Error fetching order details:", error);
             alert("Помилка отримання даних. Перевірте ID.");
-            router.push("/orderDetails/0");
+            //router.push("/orderDetails/0");
           }
         }
       }
@@ -89,13 +97,25 @@ const OrderDetailsPage = () => {
     fetchOrderDetails();
   }, [id]);
 
-  const totalPages = order ? Math.ceil(order.knifes.length / itemsPerPage) : 0;
+  const totalPages = order ? Math.ceil(order.knives.length / itemsPerPage) : 0;
   const paginatedKnifes = order
-    ? order.knifes.slice(
+    ? order.knives.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
       )
     : [];
+  useEffect(() => {
+    if (paginatedKnifes[0]) {
+      state.handleColor = paginatedKnifes[0].handleColor;
+      state.sheathColor = paginatedKnifes[0].sheathColor;
+      state.bladeCoatingColor = paginatedKnifes[0].bladeCoatingColor;
+      state.bladeCoating = paginatedKnifes[0].bladeCoating;
+      state.bladeShape = paginatedKnifes[0].shape;
+      state.engravings = paginatedKnifes[0].engravings || [];
+      state.fastening = paginatedKnifes[0].fastening || [];
+      console.log(state);
+    }
+  }, [currentPage, paginatedKnifes]);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -111,7 +131,6 @@ const OrderDetailsPage = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gray-50">
-      {/* Order Info */}
       <Card className="p-6 mb-6 max-w-2xl mx-auto">
         <h1 className="text-2xl font-bold mb-4">Замовлення</h1>
         <div className="flex flex-col gap-4">
@@ -162,7 +181,6 @@ const OrderDetailsPage = () => {
         </Button>
       </Card>
 
-      {/* Knifes Block */}
       <Card className="p-6 shadow-md rounded-lg">
         <h2 className="text-xl font-bold mb-4">Ножі</h2>
         <div className="space-y-6">
@@ -173,7 +191,7 @@ const OrderDetailsPage = () => {
             >
               <div className="flex flex-col md:flex-row">
                 <div className="w-full md:w-1/2 bg-gray-200 min-h-[200px]">
-                  {/* Image Placeholder */}
+                  <CustomCanvas/>
                 </div>
                 <div className="w-full md:w-1/2 p-6">
                   <p>
@@ -222,7 +240,7 @@ const exampleOrder: Order = {
   id: 1,
   number: "ORD-20231222-001",
   total: 750.0,
-  knifes: [
+  knives: [
     {
       id: 1,
       shape: {
@@ -291,7 +309,7 @@ const exampleOrder: Order = {
           modelUrl: "https://example.com/models/belt-clip.obj",
         },
       ],
-      engraving: [
+      engravings: [
         {
           id: 1,
           name: "Custom Text",
@@ -380,7 +398,7 @@ const exampleOrder: Order = {
           modelUrl: "https://example.com/models/snap-button.obj",
         },
       ],
-      engraving: [
+      engravings: [
         {
           id: 2,
           name: "Logo Engraving",

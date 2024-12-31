@@ -23,7 +23,7 @@ const CustomizationPanel = () => {
       case "scabbardColor":
         return <SheathCustomizationComponent />;
       case "attachments":
-        return <FasteningCustomizationComponent />;
+        return <div>ше не робить</div>;
       case "engraving":
         return <EngravingComponent />;
 

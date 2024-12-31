@@ -6,7 +6,7 @@ export default interface Order {
   id: number;
   number: string;
   total: number;
-  knifes: Knife[];
+  knives: Knife[];
   delivery: DeliveryType;
   clientFullName: string;
   clientPhoneNumber: string;

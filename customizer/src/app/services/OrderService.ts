@@ -1,5 +1,6 @@
 import APIService from "./ApiService";
 import Order from "../Models/Order";
+import DeliveryType from "../Models/DeliveryType";
 import DeliveryDataDTO from "@/app/DTO/DeliveryDataDTO";
 
 class OrderService {
@@ -36,7 +37,7 @@ class OrderService {
         formData.append("Total", Order.total.toString());
         formData.append("StatusId", Order.status.id.toString());
         formData.append("DeliveryTypeId", Order.delivery.id.toString());
-        formData.append("KnivesIdsJson", JSON.stringify(Order.knifes.map(knife => knife.id)));
+        formData.append("KnivesIdsJson", JSON.stringify(Order.knives.map(knife => knife.id)));
         formData.append("ClientFullName", Order.clientFullName);
         formData.append("ClientPhoneNumber", Order.clientPhoneNumber);
         formData.append("CountryForDelivery", Order.countryForDelivery);
@@ -45,6 +46,9 @@ class OrderService {
         if(Order.comment)
             formData.append("Comment", Order.comment);
 
+        for (let [key, value] of formData.entries()) {
+            console.log(key, value);
+        }
         const response = await this.apiService.create<Order>(
             this.resource,
             formData

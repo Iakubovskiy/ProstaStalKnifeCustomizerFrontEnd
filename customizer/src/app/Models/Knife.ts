@@ -14,6 +14,6 @@ export default interface Knife {
   handleColor: HandleColor;
   sheathColor: SheathColor;
   fastening: Fastening[] | null;
-  engraving: Engraving[] | null;
+  engravings: Engraving[] | null;
   quantity: number;
 }

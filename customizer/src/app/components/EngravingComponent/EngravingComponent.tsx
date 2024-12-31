@@ -18,9 +18,9 @@ const EngravingComponent: React.FC = () => {
 
   const customState = useCanvasState();
   useEffect(() => {
-    if (customState.engraving && customState.engraving.length > 0) {
-      console.log(customState.engraving);
-      const initialItems = customState.engraving.map(
+    if (customState.engravings && customState.engravings.length > 0) {
+      console.log(customState.engravings);
+      const initialItems = customState.engravings.map(
         (engraving: any, index: number) => ({
           id: index,
           type: engraving.text === "" ? "file" : ("text" as "text" | "file"), // Додаємо тип
@@ -32,7 +32,7 @@ const EngravingComponent: React.FC = () => {
       );
       setItems(initialItems);
     }
-  }, [customState.engraving]);
+  }, [customState.engravings]);
   const [items, setItems] = useState<CardItem[]>([]);
 
   const addCard = () => {
@@ -63,13 +63,13 @@ const EngravingComponent: React.FC = () => {
       scaleY: 1,
       scaleZ: 1,
     };
-    customState.engraving = [...(customState.engraving || []), newEngraving];
+    customState.engravings = [...(customState.engravings || []), newEngraving];
     console.log("Added new card");
   };
 
   const removeCard = (id: number) => {
     setItems((prev) => {
-      customState.engraving.splice(id, 1);
+      customState.engravings.splice(id, 1);
       const updatedItems = prev.filter((item) => item.id !== id);
       // Перенумеровуємо id
       return updatedItems.map((item, index) => ({ ...item, id: index }));
@@ -117,14 +117,14 @@ const EngravingComponent: React.FC = () => {
       prev.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, text: value };
-          customState.engraving[id].pictureUrl = textToSvgUrl(
+          customState.engravings[id].pictureUrl = textToSvgUrl(
             value,
             item.font ? item.font : "Montserrat",
             customState.bladeCoatingColor.engravingColorCode
               ? customState.bladeCoatingColor.engravingColorCode
               : "#000000"
           );
-          customState.engraving[id].text = value;
+          customState.engravings[id].text = value;
 
           return updatedItem;
         }
@@ -141,7 +141,7 @@ const EngravingComponent: React.FC = () => {
       prev.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, font: value };
-          customState.engraving[id].font = value;
+          customState.engravings[id].font = value;
           return updatedItem;
         }
         return item;
@@ -155,16 +155,16 @@ const EngravingComponent: React.FC = () => {
       prev.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, selectedSide: value };
-          customState.engraving[id].side = value;
+          customState.engravings[id].side = value;
           if (value === 2) {
-            customState.engraving[id].rotationY = 90;
+            customState.engravings[id].rotationY = 90;
           } else {
-            customState.engraving[id].rotationY = 0;
+            customState.engravings[id].rotationY = 0;
             console.log("000");
-            console.log(customState.engraving[id].rotationY);
+            console.log(customState.engravings[id].rotationY);
             console.log("000");
           }
-          console.log(customState.engraving[id].rotationY);
+          console.log(customState.engravings[id].rotationY);
           return updatedItem;
         }
         return item;
@@ -181,11 +181,11 @@ const EngravingComponent: React.FC = () => {
           if (value === "file") {
             updatedItem.text = "";
             updatedItem.font = "";
-            customState.engraving[id].text = "";
-            customState.engraving[id].font = "";
+            customState.engravings[id].text = "";
+            customState.engravings[id].font = "";
           } else {
             updatedItem.selectedFile = null;
-            customState.engraving[id].pictureUrl = emptyImage;
+            customState.engravings[id].pictureUrl = emptyImage;
           }
           return updatedItem;
         }
@@ -200,7 +200,7 @@ const EngravingComponent: React.FC = () => {
       prev.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, selectedFile: file };
-          customState.engraving[id].pictureUrl = file
+          customState.engravings[id].pictureUrl = file
             ? URL.createObjectURL(file)
             : "";
           return updatedItem;

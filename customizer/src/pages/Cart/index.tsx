@@ -3,6 +3,8 @@ import Knife from "@/app/Models/Knife";
 import DeliveryType from "@/app/Models/DeliveryType";
 import OrderService from "@/app/services/OrderService";
 import DeliveryTypeService from "@/app/services/DeliveryTypeService";
+import Order from "../../app/Models/Order";
+import EngravingPrice from "../../app/Models/EngravingPrice";
 import {
   Button,
   Card,
@@ -64,12 +66,12 @@ const CartAndOrderPage = () => {
       alert("Заповніть обов'язкові поля");
       return;
     }
-
+    console.log(cartItems);
     const total = cartItems.reduce((sum, item) => {
       let uniqueSides;
-      if (item.engraving != null) {
+      if (item.engravings != null) {
         const uniqueSides1 = new Set(
-          item.engraving.map((engraving) => engraving.side)
+          item.engravings.map((engraving) => engraving.side)
         );
         uniqueSides = uniqueSides1.size;
       } else {
@@ -90,7 +92,7 @@ const CartAndOrderPage = () => {
       id: 0,
       number: `ORD-${Date.now()}`,
       total,
-      knifes: cartItems,
+      knives: cartItems,
       delivery: deliveryTypes.find((type) => type.id === selectedDeliveryType)!,
       clientFullName: clientInfo.fullName,
       clientPhoneNumber: clientInfo.phoneNumber,

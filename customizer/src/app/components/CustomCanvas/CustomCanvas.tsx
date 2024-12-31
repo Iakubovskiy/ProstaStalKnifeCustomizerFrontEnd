@@ -102,9 +102,9 @@ const DecalWithControls = ({ meshRef, engraving, index }) => {
       scaleY: controls.scale,
       scaleZ: controls.scale,
     };
-    state.engraving[index] = updatedEngraving;
+    state.engravings[index] = updatedEngraving;
 
-    console.log("Updated engraving state:", state.engraving);
+    console.log("Updated engravings state:", state.engravings);
   }, [controls]);
 
   return (
@@ -364,7 +364,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
           material={mesh.material}
           position={mesh.position}
           rotation={mesh.rotation}
-          engravings={snap.engraving}
+          engravings={snap.engravings}
         />
       ))}
       {/*@ts-ignore*/}
