@@ -3,8 +3,10 @@ import Knife from "@/app/Models/Knife";
 import DeliveryType from "@/app/Models/DeliveryType";
 import OrderService from "@/app/services/OrderService";
 import DeliveryTypeService from "@/app/services/DeliveryTypeService";
+import Engraving from "../../app/Models/Engraving";
 import Order from "../../app/Models/Order";
 import EngravingPrice from "../../app/Models/EngravingPrice";
+import EngravingService from "../../app/services/EngravingService";
 import {
   Button,
   Card,
@@ -53,8 +55,8 @@ const CartAndOrderPage = () => {
     const engravingService = new EngravingService();
     const createdEngravings: Engraving[] = [];
 
-    if (knife.engraving && knife.engraving.length > 0) {
-      for (const engraving of knife.engraving) {
+    if (knife.engravings && knife.engravings.length > 0) {
+      for (const engraving of knife.engravings) {
         let file: File | null = null; // Ініціалізуємо як null
 
         if (engraving.pictureUrl) {
@@ -148,9 +150,9 @@ const CartAndOrderPage = () => {
 
       const total = createdKnives.reduce((sum, item) => {
         let uniqueSides;
-        if (item.engraving != null) {
+        if (item.engravings != null) {
           const uniqueSides1 = new Set(
-            item.engraving.map((engraving) => engraving.side)
+            item.engravings.map((engraving) => engraving.side)
           );
           uniqueSides = uniqueSides1.size;
         } else {
@@ -171,7 +173,7 @@ const CartAndOrderPage = () => {
         id: 0,
         number: `ORD-${Date.now()}`,
         total,
-        knifes: createdKnives,
+        knives: createdKnives,
         delivery: deliveryTypes.find(
           (type) => type.id === selectedDeliveryType
         )!,

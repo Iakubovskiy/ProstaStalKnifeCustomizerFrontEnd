@@ -50,8 +50,8 @@ class KnifeService {
       formData.append(`FasteningJson[${index}]`, fastening.id.toString());
     });
 
-    if (knife.engraving && knife.engraving.length > 0) {
-      const engravingIds = knife.engraving.map((eng) => eng.id);
+    if (knife.engravings && knife.engravings.length > 0) {
+      const engravingIds = knife.engravings.map((eng) => eng.id);
       formData.append("EngravingsJson", JSON.stringify(engravingIds));
     }
 
@@ -96,7 +96,7 @@ class KnifeService {
     });
 
     // Додаємо Engravings
-    knife.engraving?.forEach((engraving, index) => {
+    knife.engravings?.forEach((engraving, index) => {
       formData.append(`Engravings[${index}]`, engraving.id.toString());
     });
 

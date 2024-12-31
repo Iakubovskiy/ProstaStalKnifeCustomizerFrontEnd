@@ -31,7 +31,7 @@ export const PriceCalculator: React.FC<Props> = ({
                         min="1"
                         value={quantity}
                         onChange={(e) => onQuantityChange(Math.max(1, parseInt(e.target.value) || 1))}
-                        className="w-16 text-center"
+                        className="w-16 text-center text-black"
                     />
                     <button
                         onClick={() => onQuantityChange(quantity + 1)}
@@ -50,7 +50,7 @@ export const PriceCalculator: React.FC<Props> = ({
                 </button>
                 <button
                     onClick={onClearCart}
-                    className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200"
+                    className="px-4 py-2 bg-gray-100 rounded hover:bg-gray-200 text-black"
                 >
                     Очистити кошик
                 </button>
