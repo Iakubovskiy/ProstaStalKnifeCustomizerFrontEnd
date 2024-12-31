@@ -50,14 +50,16 @@ class KnifeService {
       formData.append(`FasteningJson[${index}]`, fastening.id.toString());
     });
 
-    // Додаємо Engravings
-    knife.engraving?.forEach((engraving, index) => {
-      formData.append(`EngravingsJson[${index}]`, engraving.id.toString());
-    });
+    if (knife.engraving && knife.engraving.length > 0) {
+      const engravingIds = knife.engraving.map((eng) => eng.id);
+      formData.append("EngravingsJson", JSON.stringify(engravingIds));
+    }
 
     // Додаємо кількість
     formData.append("Quantity", knife.quantity.toString());
-
+    formData.forEach((value, key) => {
+      console.log(`${key}: ${value}`);
+    });
     const response = await this.apiService.create<Knife>(
       this.resource,
       formData
