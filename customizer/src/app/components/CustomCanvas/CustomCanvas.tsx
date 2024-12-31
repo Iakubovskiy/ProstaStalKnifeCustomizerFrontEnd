@@ -36,7 +36,7 @@ const DecalMaterial: React.FC<DecalMaterialProps> = ({ pictureUrl }) => {
   const texture = useTexture(pictureUrl);
 
   return (
-    // @ts-ignore
+    //  
     <meshStandardMaterial
       map={texture}
       transparent
@@ -45,7 +45,7 @@ const DecalMaterial: React.FC<DecalMaterialProps> = ({ pictureUrl }) => {
     />
   );
 };
-// @ts-ignore
+//  
 const SingleDecal = ({ meshRef, engraving, controls }) => {
   if (!meshRef.current) return null;
 
@@ -63,7 +63,7 @@ const SingleDecal = ({ meshRef, engraving, controls }) => {
 
 const radiansToDegrees = (rad: number) => (rad * 180) / Math.PI;
 const degreesToRadians = (deg: number) => (deg * Math.PI) / 180;
-// @ts-ignore
+//  
 const DecalWithControls = ({ meshRef, engraving, index }) => {
   const state = useCanvasState();
 
@@ -123,24 +123,24 @@ const DecalWithControls = ({ meshRef, engraving, index }) => {
 };
 
 const EngravedMesh = ({
-  //@ts-ignore
+  // 
   geometry,
-  //@ts-ignore
+  // 
   material,
-  //@ts-ignore
+  // 
   position,
-  //@ts-ignore
+  // 
   rotation,
-  //@ts-ignore
+  // 
   engravings,
 }) => {
-  // @ts-ignore
+  //  
   const meshRef = useRef();
 
   return (
-    // @ts-ignore
+    //  
     <group>
-      {/*@ts-ignore*/}
+      {/* */}
       <mesh
         ref={meshRef}
         geometry={geometry}
@@ -149,7 +149,7 @@ const EngravedMesh = ({
         rotation={rotation}
       >
         {engravings?.map(
-          // @ts-ignore
+          //  
           (eng, index) =>
             "engravingSide" + eng.side === material.name && (
               <DecalWithControls
@@ -160,9 +160,9 @@ const EngravedMesh = ({
               />
             )
         )}
-        {/*@ts-ignore*/}
+        {/* */}
       </mesh>
-      {/*@ts-ignore*/}
+      {/* */}
     </group>
   );
 };
@@ -353,9 +353,9 @@ const ModelPart: React.FC<ModelPartProps> = ({
   console.log(engravingMeshes);
   console.log(snap);
   return (
-    // @ts-ignore
+    //  
     <group position={position} rotation={rotation}>
-      {/*@ts-ignore*/}
+      {/* */}
       <primitive ref={modelRef} object={scene} />
       {engravingMeshes.map((mesh, idx) => (
         <EngravedMesh
@@ -367,7 +367,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
           engravings={snap.engravings}
         />
       ))}
-      {/*@ts-ignore*/}
+      {/* */}
     </group>
   );
 };
@@ -405,11 +405,11 @@ const KnifeConfigurator: React.FC = () => {
 
   const Lighting: React.FC = () => (
     <>
-      {/*@ts-ignore*/}
+      {/* */}
       <ambientLight intensity={0.5} />
-      {/*@ts-ignore*/}
+      {/* */}
       <directionalLight position={[10, 10, 5]} intensity={0.8} />
-      {/*@ts-ignore*/}
+      {/* */}
       <directionalLight position={[-10, -10, -5]} intensity={0.4} />
     </>
   );
@@ -440,7 +440,7 @@ const KnifeConfigurator: React.FC = () => {
       <Background />
 
       {validateModelUrl(snap.bladeShape.bladeShapeModelUrl) && (
-        //@ts-ignore
+        // 
         <ModelPart
           url={snap.bladeShape.bladeShapeModelUrl}
           {...bladeSettings}
@@ -448,7 +448,7 @@ const KnifeConfigurator: React.FC = () => {
       )}
 
       {validateModelUrl(snap.bladeShape.sheathModelUrl) && (
-        //@ts-ignore
+        // 
         <ModelPart
           url={snap.bladeShape.sheathModelUrl}
           {...sheathSettings}
