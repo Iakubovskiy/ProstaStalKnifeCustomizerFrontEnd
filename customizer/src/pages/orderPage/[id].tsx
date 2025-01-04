@@ -209,7 +209,7 @@ const OrderDetailsPage = () => {
                     {knife.handleColor.material}
                   </p>
                   <p>
-                    <strong>Колір піхв:</strong> {knife.sheathColor.colorName}
+                    <strong>Колір піхв:</strong> {knife.sheathColor.color}
                   </p>
                   <p>
                     <strong>Ціна:</strong> ${knife.sheathColor.price}
@@ -291,12 +291,12 @@ const exampleOrder: Order = {
       },
       sheathColor: {
         id: 1,
-        colorName: "Dark Brown",
+        color: "Dark Brown",
         colorCode: "#ffffff",
         material: "Leather",
         materialUrl: "https://example.com/materials/leather.jpg",
         price: 15.0,
-        EngravingColorCode: "",
+        engravingColorCode: "",
       },
       fastening: [
         {
@@ -380,12 +380,12 @@ const exampleOrder: Order = {
       },
       sheathColor: {
         id: 2,
-        colorName: "Black",
+        color: "Black",
         colorCode: "#000000",
         material: "Leather",
         materialUrl: "https://example.com/materials/leather-black.jpg",
         price: 20.0,
-        EngravingColorCode: "#ffffff",
+        engravingColorCode: "#ffffff",
       },
       fastening: [
         {
