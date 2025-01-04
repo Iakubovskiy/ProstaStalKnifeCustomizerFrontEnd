@@ -34,7 +34,7 @@ const SheathCustomizationComponent: React.FC = () => {
                     <CardComponent
                         key={color.id}
                         backgroundPicture={color.colorCode}
-                        tooltipText={color.colorName}
+                        tooltipText={color.color}
                         onClick={() => sheathColorClick(color)}
                     />
                 ))}
