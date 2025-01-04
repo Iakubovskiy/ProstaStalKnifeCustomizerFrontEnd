@@ -1,0 +1,10 @@
+[build]
+  publish = ".next"
+  command = "npm run build"
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+[[redirects]]
+  from = "/api/proxy/*"
+  to = "https://new-repo-latest-gpe8.onrender.com/api/:splat"
+  status = 200
+  force = true
