@@ -137,7 +137,7 @@ const BladeCoatingPage = () => {
         <div className="mb-6">
           <DragNDrop
             onFileSelected={handleFileSelected}
-            validExtensions={[".png", ".jpeg"]}
+            validExtensions={[".jpg", "jpeg", ".png"]}
             fileUrl={!isCreating ? bladeCoating.materialUrl : undefined}
           />
         </div>

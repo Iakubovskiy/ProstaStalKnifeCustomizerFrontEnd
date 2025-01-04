@@ -45,7 +45,7 @@ const DashboardPage = () => {
             <Button
                 as={Link}
                 color="danger"
-                href="/engravingPricePage"
+                href="/engravingPricePage/1"
                 variant="solid"
                 className="w-80 text-2xl font-semibold"
             >

@@ -11,12 +11,12 @@ import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
 
 const initialSheathColorData: SheathColor = {
   id: 1,
-  colorName: "",
+  color: "",
   material: "",
   colorCode: "",
   materialUrl: "",
   price: 0,
-  EngravingColorCode: "",
+  engravingColorCode: "",
 };
 
 const SheathColorPage = () => {
@@ -24,7 +24,7 @@ const SheathColorPage = () => {
   const { id } = router.query;
   const [color, setColor] = useState<string>(initialSheathColorData.colorCode);
   const [Engravingcolor, setEngravingcolor] = useState<string>(
-      initialSheathColorData.EngravingColorCode
+      initialSheathColorData.engravingColorCode
   );
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isCreating, setCreating] = useState<boolean>(false);
@@ -89,7 +89,7 @@ const SheathColorPage = () => {
             const fetchedsheathColor = await handleservice.getById(numericId);
             setSheathColor(fetchedsheathColor);
             setColor(fetchedsheathColor.colorCode);
-            setEngravingcolor(fetchedsheathColor.EngravingColorCode);
+            setEngravingcolor(fetchedsheathColor.engravingColorCode);
             setLoading(false);
           } catch (error) {
             console.error("Error fetching sheath color:", error);
@@ -109,7 +109,7 @@ const SheathColorPage = () => {
 
   const SheathEngravingColorChange = (newColor: any) => {
     setEngravingcolor(newColor);
-    SheathColor.EngravingColorCode = newColor;
+    SheathColor.engravingColorCode = newColor;
   };
 
   if (isLoading) {

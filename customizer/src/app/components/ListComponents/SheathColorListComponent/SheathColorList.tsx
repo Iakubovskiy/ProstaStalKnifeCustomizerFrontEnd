@@ -38,7 +38,7 @@ export default function SheathColorList() {
     };
 
     const columns: Column<SheathColor>[] = [
-        { name: "Колір", uid: "colorName" },
+        { name: "Колір", uid: "color" },
         { name: "Ціна", uid: "price" },
         { name: "Матеріал", uid: "material" },
 

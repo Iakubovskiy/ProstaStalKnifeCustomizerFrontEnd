@@ -115,7 +115,7 @@ const HandleColorPage = () => {
           <div className="mb-6">
             <DragNDrop
               onFileSelected={handleFileSelected}
-              validExtensions={["image/*"]}
+              validExtensions={[".jpg", "jpeg", ".png"]}
             />
           </div>
           <div className="mb-6">
