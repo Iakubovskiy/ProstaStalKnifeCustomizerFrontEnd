@@ -36,11 +36,11 @@ function Characteristics<
           <>
             <Input
               label="Назва кольору"
-              defaultValue={(data as SheathColor).colorName}
-              value={(data as SheathColor).colorName}
+              defaultValue={(data as SheathColor).color}
+              value={(data as SheathColor).color}
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
               className={styles.input}
-              onChange={(e) => onChange({ ...data, colorName: e.target.value })}
+              onChange={(e) => onChange({ ...data, color: e.target.value })}
             />
             <Input
               label="Матеріал"
