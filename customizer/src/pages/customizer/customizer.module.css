@@ -10,7 +10,7 @@
   background-repeat: repeat;  */
   }
   
-  .canvasContainer {
+.canvasContainer {
     height: 100vh;
   }
   
@@ -42,6 +42,11 @@
         height: 80vh;
       }
   }
+  @media (max-width: 500px) {
+    .customizer {
+      width: 100vh;
+    }
+  }
   @media (min-width: 1024px) {
     .customizer {
       flex-direction: row;
@@ -50,8 +55,11 @@
     .canvasContainer {
       width: 50%;
     }
-    
+  
     .controlsContainer {
-      width: 50%;
-    }
+  width: 50%;
+  height: 100vh;
+  overflow-y: auto; /* Додає скрол-бар для вертикального прокручування */
+  box-sizing: border-box; /* У разі використання padding це забезпечує правильну роботу з height */
+}
   }
