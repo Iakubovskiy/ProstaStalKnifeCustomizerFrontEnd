@@ -117,9 +117,11 @@ const CustomizationPanel = () => {
 
   fetchBladeShapes();
   return (
-    <div className="customization-panel flex flex-col h-full bg-gray-800">
-      <CustomizationPanelMenu setSelectedOption={setSelectedOption} />
-      <div className="customization-content mt-4 p-4 bg-gray-700 rounded flex-1 h-full overflow-auto">
+    <div className="customization- flex flex-col h-full bg-gray-800">
+      <div className="overflow-x-auto scrollbar-hide">
+        <CustomizationPanelMenu setSelectedOption={setSelectedOption} />
+      </div>
+      <div className="customization-content  mt-4 p-4 bg-gray-700 rounded scrollbar-hide flex-1 h-full overflow-auto">
         {renderContent()}
       </div>
     </div>
