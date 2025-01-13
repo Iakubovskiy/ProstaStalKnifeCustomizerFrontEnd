@@ -1,8 +1,4 @@
-html, body {
-  height: 100vh; /* Гарантуємо, що вони займають всю висоту */
-  margin: 0;
-  background-color: #1F2936; /* Фон-колір сторінки */
-}
+
 .customizer {
     display: flex;
     flex-direction: column;
