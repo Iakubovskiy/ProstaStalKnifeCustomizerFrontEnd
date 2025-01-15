@@ -19,8 +19,10 @@ import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import HandleColorService from "@/app/services/HandleColorService";
 import { useCanvasState } from "@/app/state/canvasState";
 import HandleColor from "@/app/Models/HandleColor";
+import { tslFn } from "three/tsl";
 const scrollLeft = () => {
   const container = document.getElementById("scrollContainer");
+  // @ts-ignore
   container.scrollBy({
     left: -200, // Прокрутка вліво на 200px
     behavior: "smooth",
@@ -29,6 +31,7 @@ const scrollLeft = () => {
 
 const scrollRight = () => {
   const container = document.getElementById("scrollContainer");
+  // @ts-ignore
   container.scrollBy({
     left: 200, // Прокрутка вправо на 200px
     behavior: "smooth",
