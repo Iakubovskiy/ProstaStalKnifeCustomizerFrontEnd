@@ -33,6 +33,7 @@ const CardComponent: React.FC<CardComponentProps> = ({
                         md:w-[75px] md:h-[75px]  
                         sm:w-[75px] sm:h-[75px] 
                         xs:w-[75px] xs:h-[75px]
+                        2xs:w-[75px] 2xs:h-[75px]
                     `}
         ></Card>
       </Tooltip>

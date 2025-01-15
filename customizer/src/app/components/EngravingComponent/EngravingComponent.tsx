@@ -93,7 +93,13 @@ const EngravingComponent: React.FC = () => {
         height="${textHeight}"
         viewBox="0 0 ${textWidth} ${textHeight}"
         xmlns="http://www.w3.org/2000/svg"
+        
       >
+        <rect 
+      width="100%" 
+      height="100%" 
+      fill="none" 
+    />
         <text
           x="50%"
           y="50%"

@@ -27,7 +27,7 @@ const CustomizationPanelMenu: React.FC<CustomizationPanelMenuProps> = ({
 
   return (
     <div className="customization-menu grid grid-cols-2 gap-4 p-4 bg-gray-800 text-white">
-      <div className="menu flex space-x-4  mb-4">
+      <div className="menu flex space-x-4  mb-0">
         {menuOptions.map((option) => (
           <MenuCard
             key={option.id}

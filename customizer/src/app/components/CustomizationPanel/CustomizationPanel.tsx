@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import CustomizationPanelMenu from "./Menu/CustomizationPanelMenu";
 import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizationComponent";
 import HandleCustomizationComponent from "./Components/HandleCustomizationComponent";
@@ -19,7 +19,21 @@ import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import HandleColorService from "@/app/services/HandleColorService";
 import { useCanvasState } from "@/app/state/canvasState";
 import HandleColor from "@/app/Models/HandleColor";
+const scrollLeft = () => {
+  const container = document.getElementById("scrollContainer");
+  container.scrollBy({
+    left: -200, // Прокрутка вліво на 200px
+    behavior: "smooth",
+  });
+};
 
+const scrollRight = () => {
+  const container = document.getElementById("scrollContainer");
+  container.scrollBy({
+    left: 200, // Прокрутка вправо на 200px
+    behavior: "smooth",
+  });
+};
 const CustomizationPanel = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const bladeShapeService = new BladeShapeService();
@@ -30,39 +44,42 @@ const CustomizationPanel = () => {
   const state = useCanvasState();
 
   let detailedCoatings;
-  const fetchBladeShapes = async () => {
-    try {
-      const shapes = await bladeShapeService.getAll();
-      const coatings = await bladeCoatingService.getAll();
-      const detailedCoatings: {
-        coating: BladeCoating;
-        color: BladeCoatingColor;
-      }[] = [];
+  useEffect(() => {
+    const fetchBladeShapes = async () => {
+      try {
+        const shapes = await bladeShapeService.getAll();
+        const coatings = await bladeCoatingService.getAll();
+        const detailedCoatings: {
+          coating: BladeCoating;
+          color: BladeCoatingColor;
+        }[] = [];
 
-      for (const coating of coatings) {
-        const detailedCoating = await bladeCoatingService.getById(coating.id);
-        detailedCoating.colors.forEach((color: BladeCoatingColor) => {
-          detailedCoatings.push({
-            coating: detailedCoating,
-            color: color,
+        for (const coating of coatings) {
+          const detailedCoating = await bladeCoatingService.getById(coating.id);
+          detailedCoating.colors.forEach((color: BladeCoatingColor) => {
+            detailedCoatings.push({
+              coating: detailedCoating,
+              color: color,
+            });
           });
-        });
-      }
-      const handlecolors = await handleColors.getAll();
-      const sheaths = await SheathColorservice.getAll();
-      console.log(coatings);
-      SelectByDefault(
-        shapes[0],
-        detailedCoatings[0].coating,
-        detailedCoatings[0].color,
-        sheaths[0],
-        handlecolors[0]
-      );
-    } catch (error) {
-      console.error("Error fetching blade shapes:", error);
-    }
-  };
+        }
+        const handlecolors = await handleColors.getAll();
+        const sheaths = await SheathColorservice.getAll();
+        console.log(coatings);
 
+        SelectByDefault(
+          shapes[0],
+          detailedCoatings[0].coating,
+          detailedCoatings[0].color,
+          sheaths[0],
+          handlecolors[0]
+        );
+      } catch (error) {
+        console.error("Error fetching blade shapes:", error);
+      }
+    };
+    fetchBladeShapes();
+  }, []);
   const SelectByDefault = (
     shape: BladeShape,
     coating: BladeCoating,
@@ -115,12 +132,36 @@ const CustomizationPanel = () => {
     }
   };
 
-  fetchBladeShapes();
   return (
     <div className="customization- flex flex-col h-full bg-gray-800">
-      <div className="overflow-x-auto scrollbar-hide">
-        <CustomizationPanelMenu setSelectedOption={setSelectedOption} />
+      <div className="overflow-x-auto scrollbar-hide"></div>
+
+      <div className="relative">
+        {/* Кнопка вліво */}
+        <button
+          onClick={() => scrollLeft()}
+          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-2 z-10 rounded-l-md"
+        >
+          ←
+        </button>
+
+        {/* Панель з контентом */}
+        <div
+          className="overflow-x-auto mx-10 scrollbar-hide flex items-center"
+          id="scrollContainer"
+        >
+          <CustomizationPanelMenu setSelectedOption={setSelectedOption} />
+        </div>
+
+        {/* Кнопка вправо */}
+        <button
+          onClick={() => scrollRight()}
+          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-2 z-10 rounded-r-md"
+        >
+          →
+        </button>
       </div>
+
       <div className="customization-content  mt-4 p-4 bg-gray-700 rounded scrollbar-hide flex-1 h-full overflow-auto">
         {renderContent()}
       </div>

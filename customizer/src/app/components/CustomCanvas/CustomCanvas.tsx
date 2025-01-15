@@ -71,7 +71,9 @@ const Background: React.FC = () => {
   return null;
 };
 
-const DecalMaterial: React.FC<DecalMaterialProps> = ({ pictureUrl }) => {
+const DecalMaterial: React.FC<
+  DecalMaterialProps & { offsetFactor?: number }
+> = ({ pictureUrl, offsetFactor = 2 }) => {
   const texture = useTexture(pictureUrl);
 
   return (
@@ -80,12 +82,13 @@ const DecalMaterial: React.FC<DecalMaterialProps> = ({ pictureUrl }) => {
       map={texture}
       transparent
       polygonOffset
-      polygonOffsetFactor={-1}
+      polygonOffsetFactor={offsetFactor} // Зміщення для уникнення накладання
+      polygonOffsetUnits={-2} // Базова одиниця зміщенняor={-1}
     />
   );
 };
 // @ts-ignore
-const SingleDecal = ({ meshRef, engraving, controls }) => {
+const SingleDecal = ({ meshRef, engraving, controls, offsetFactor }) => {
   if (!meshRef.current) return null;
 
   return (
@@ -95,7 +98,10 @@ const SingleDecal = ({ meshRef, engraving, controls }) => {
       rotation={[controls.rotationX, controls.rotationY, controls.rotationZ]}
       scale={controls.scale}
     >
-      <DecalMaterial pictureUrl={engraving.pictureUrl} />
+      <DecalMaterial
+        pictureUrl={engraving.pictureUrl}
+        offsetFactor={offsetFactor}
+      />
     </Decal>
   );
 };
@@ -152,11 +158,12 @@ const DecalWithControls = ({ meshRef, engraving, index }) => {
       engraving={engraving}
       controls={{
         ...controls,
-        positionZ: 0,
-        rotationY: engraving.side === 2 ? 180 : 0,
+        positionZ: engraving.text === null ? 0 : -1,
+        rotationY: engraving.side === 2 ? Math.PI : 0,
         rotationX: 0,
         rotationZ: engraving.rotationZ,
       }}
+      offsetFactor={index * -0.1}
     />
   );
 };
