@@ -1,9 +1,12 @@
 export default interface SheathColor {
-  id: number;
+  id: string;
   color: string;
   colorCode: string;
   material: string;
-  materialUrl: string;
   price: number;
   engravingColorCode: string;
+  isActive: boolean;
+  colorMapUrl: string | null;
+  normalMapUrl: string | null;
+  roughnessMapUrl: string | null;
 }

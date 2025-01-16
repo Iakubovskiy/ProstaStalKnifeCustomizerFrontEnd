@@ -1,4 +1,4 @@
 export default interface EngravingPrice {
-  id: number;
+  id: string;
   price: number;
 }

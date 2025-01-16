@@ -16,7 +16,7 @@ class OrderStatusesService {
     return response.orderStatuss;
   }
 
-  async getById(id: number): Promise<OrderStatuses> {
+  async getById(id: string): Promise<OrderStatuses> {
     const response = await this.apiService.getById<OrderStatuses>(
       this.resource,
       id
@@ -26,11 +26,6 @@ class OrderStatusesService {
 
   async create(orderStatus: OrderStatuses): Promise<OrderStatuses> {
     const formData = new FormData();
-
-    // Додаємо дані як звичайні поля
-
-    formData.append("Id", "0");
-    console.log("Status:", orderStatus.status);
     formData.append("Status", orderStatus.status);
 
     const response = await this.apiService.create<OrderStatuses>(
@@ -40,11 +35,9 @@ class OrderStatusesService {
     return response;
   }
 
-  async update(id: number, orderStatus: OrderStatuses): Promise<OrderStatuses> {
+  async update(id: string, orderStatus: OrderStatuses): Promise<OrderStatuses> {
     const formData = new FormData();
-
     formData.append("status", orderStatus.status);
-
     const response = await this.apiService.update<OrderStatuses>(
       this.resource,
       id,
@@ -53,7 +46,7 @@ class OrderStatusesService {
     return response;
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id

@@ -5,7 +5,8 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/proxy/:path*",
-        destination: "https://new-repo-latest-gpe8.onrender.com/api/:path*",
+        destination: "https://prostastal-backend-5bd4ca6915d2.herokuapp.com/api/:path*",
+        //destination: "https://new-repo-latest-gpe8.onrender.com/api/:path*",
       },
     ];
   },

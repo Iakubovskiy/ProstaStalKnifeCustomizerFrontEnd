@@ -1,5 +1,5 @@
 export default interface BladeShape {
-  id: number;
+  id: string;
   name: string;
   price: number;
   totalLength: number;
@@ -8,12 +8,7 @@ export default interface BladeShape {
   bladeWeight: number;
   sharpeningAngle: number;
   rockwellHardnessUnits: number;
-  engravingLocationX: number;
-  engravingLocationY: number;
-  engravingLocationZ: number;
-  engravingRotationX: number;
-  engravingRotationY: number;
-  engravingRotationZ: number;
   bladeShapeModelUrl: string;
   sheathModelUrl: string;
+  isActive: boolean;
 }

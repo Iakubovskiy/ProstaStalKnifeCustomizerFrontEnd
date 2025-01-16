@@ -1,5 +1,4 @@
 import { API_BASE_URL } from "../config";
-import DeliveryType from "./../Models/DeliveryType";
 
 class APIService {
   private baseURL: string;

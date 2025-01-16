@@ -1,5 +1,6 @@
-export default interface Fastening {
-  id: number;
+import Product from "@/app/Models/Product";
+
+export default interface Fastening extends Product {
   name: string;
   color: string;
   colorCode: string;

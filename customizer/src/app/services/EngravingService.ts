@@ -10,14 +10,12 @@ class EngravingService {
     this.resource = "Engraving";
   }
 
-  // Отримати всі Engravings
   async getAll(): Promise<Engraving[]> {
     const response = await this.apiService.getAll<Engraving>(this.resource);
     return response;
   }
 
-  // Отримати Engraving за id
-  async getById(id: number): Promise<Engraving> {
+  async getById(id: string): Promise<Engraving> {
     const response = await this.apiService.getById<Engraving>(
       this.resource,
       id
@@ -25,12 +23,9 @@ class EngravingService {
     return response;
   }
 
-  // Створити новий Engraving
   async create(engraving: Engraving, engPic: File | null): Promise<Engraving> {
     const formData = new FormData();
 
-    // Додаємо дані як звичайні поля
-    formData.append("Id", "0");
     formData.append("Name", engraving.name ?? "");
     formData.append("Side", engraving.side.toString());
     formData.append("Text", engraving.text ?? "");
@@ -57,14 +52,11 @@ class EngravingService {
 
   // Оновити Engraving
   async update(
-    id: number,
+    id: string,
     engraving: Engraving,
     engPic: File | null
   ): Promise<Engraving> {
     const formData = new FormData();
-
-    // Додаємо дані як звичайні поля
-    formData.append("Id", id.toString());
     formData.append("Name", engraving.name ?? "");
     formData.append("Side", engraving.side.toString());
     formData.append("Text", engraving.text ?? "");
@@ -91,8 +83,7 @@ class EngravingService {
     return response;
   }
 
-  // Видалити Engraving
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id

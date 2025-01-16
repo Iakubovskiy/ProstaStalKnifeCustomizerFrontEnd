@@ -10,7 +10,6 @@ class BladeCoatingColorService {
     this.resource = "BladeCoatingColor";
   }
 
-  // Get all BladeCoatingColors
   async getAll(): Promise<BladeCoatingColor[]> {
     const response = await this.apiService.getAll<BladeCoatingColor>(
       this.resource
@@ -18,8 +17,7 @@ class BladeCoatingColorService {
     return response;
   }
 
-  // Get BladeCoatingColor by id
-  async getById(id: number): Promise<BladeCoatingColor> {
+  async getById(id: string): Promise<BladeCoatingColor> {
     const response = await this.apiService.getById<BladeCoatingColor>(
       this.resource,
       id
@@ -27,17 +25,28 @@ class BladeCoatingColorService {
     return response;
   }
 
-  // Create new BladeCoatingColor
   async create(
-    bladeCoatingColor: BladeCoatingColor
+    bladeCoatingColor: BladeCoatingColor,
+    colorMap: File | null,
+    normalMap: File | null,
+    roughnessMap: File | null
   ): Promise<BladeCoatingColor> {
     const formData = new FormData();
-
-    // Add data as form fields
-    formData.append("Id", "0");
+    formData.append("Type", bladeCoatingColor.type);
     formData.append("Color", bladeCoatingColor.color);
     formData.append("ColorCode", bladeCoatingColor.colorCode);
     formData.append("EngravingColorCode", bladeCoatingColor.engravingColorCode);
+    formData.append("Price", bladeCoatingColor.price.toString());
+    formData.append("IsActive", bladeCoatingColor.isActive.toString());
+    formData.append("ColorMapUrl", "1");
+    formData.append("NormalMapUrl", "1");
+    formData.append("RoughnessMapUrl", "1");
+    if(colorMap)
+      formData.append("colorMap", colorMap);
+    if (normalMap)
+      formData.append("normalMap", normalMap);
+    if(roughnessMap)
+      formData.append("roughnesMap", roughnessMap);
 
     const response = await this.apiService.create<BladeCoatingColor>(
       this.resource,
@@ -46,18 +55,33 @@ class BladeCoatingColorService {
     return response;
   }
 
-  // Update BladeCoatingColor
   async update(
     id: number,
-    bladeCoatingColor: BladeCoatingColor
+    bladeCoatingColor: BladeCoatingColor,
+    colorMap: File | null,
+    normalMap: File | null,
+    roughnessMap: File | null
   ): Promise<BladeCoatingColor> {
     const formData = new FormData();
 
-    // Add data as form fields
-    formData.append("Id", "0");
     formData.append("Color", bladeCoatingColor.color);
     formData.append("ColorCode", bladeCoatingColor.colorCode);
     formData.append("EngravingColorCode", bladeCoatingColor.engravingColorCode);
+    formData.append("Type", bladeCoatingColor.type);
+    formData.append("Color", bladeCoatingColor.color);
+    formData.append("ColorCode", bladeCoatingColor.colorCode);
+    formData.append("EngravingColorCode", bladeCoatingColor.engravingColorCode);
+    formData.append("Price", bladeCoatingColor.price.toString());
+    formData.append("IsActive", bladeCoatingColor.isActive.toString());
+    formData.append("ColorMapUrl", "1");
+    formData.append("NormalMapUrl", "1");
+    formData.append("RoughnessMapUrl", "1");
+    if(colorMap)
+      formData.append("colorMap", colorMap);
+    if (normalMap)
+      formData.append("normalMap", normalMap);
+    if(roughnessMap)
+      formData.append("roughnesMap", roughnessMap);
 
     const response = await this.apiService.update<BladeCoatingColor>(
       this.resource,
@@ -67,13 +91,32 @@ class BladeCoatingColorService {
     return response;
   }
 
-  // Delete BladeCoatingColor
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id
     );
     return response.isDeleted;
+  }
+
+  async activate(id: string): Promise<BladeCoatingColor> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<BladeCoatingColor>(
+        `${this.resource}/activate`,
+        id,
+        formData
+    );
+    return response;
+  }
+
+  async deactivate(id: string): Promise<BladeCoatingColor> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<BladeCoatingColor>(
+        `${this.resource}/deactivate`,
+        id,
+        formData
+    );
+    return response;
   }
 }
 

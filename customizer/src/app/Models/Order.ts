@@ -1,18 +1,17 @@
-import Knife from "./Knife";
+import Product from "./Product";
 import DeliveryType from "./DeliveryType";
-import OrderStatuses from "./OrderStatuses";
 
 export default interface Order {
-  id: number;
+  id: string;
   number: string;
   total: number;
-  knives: Knife[];
-  delivery: DeliveryType;
+  products: Product[];
+  deliveryType: DeliveryType;
   clientFullName: string;
   clientPhoneNumber: string;
   countryForDelivery: string;
   city: string;
   email: string;
   comment: string | null;
-  status: OrderStatuses;
+  status: string;
 }

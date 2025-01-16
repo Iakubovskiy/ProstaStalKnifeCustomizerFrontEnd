@@ -15,7 +15,7 @@ class SheathColorService {
     return response;
   }
 
-  async getById(id: number): Promise<SheathColor> {
+  async getById(id: string): Promise<SheathColor> {
     const response = await this.apiService.getById<SheathColor>(
       this.resource,
       id
@@ -23,16 +23,28 @@ class SheathColorService {
     return response;
   }
 
-  async create(color: SheathColor, material: File): Promise<SheathColor> {
+  async create(
+      color: SheathColor,
+      colorMap: File | null,
+      normalMap: File | null,
+      roughnessMap: File | null
+  ): Promise<SheathColor> {
     const formData = new FormData();
-    formData.append("Id", "0");
     formData.append("Color", color.color);
     formData.append("ColorCode", color.colorCode);
     formData.append("Material", color.material);
-    formData.append("MaterialUrl", "");
     formData.append("Price", color.price.toString());
-    formData.append("handleMaterial", material);
     formData.append("EngravingColorCode", color.engravingColorCode);
+    formData.append("IsActive", color.isActive.toString());
+    formData.append("ColorMapUrl", "1");
+    formData.append("NormalMapUrl", "1");
+    formData.append("RoughnessMapUrl", "1");
+    if(colorMap)
+      formData.append("colorMap", colorMap);
+    if (normalMap)
+      formData.append("normalMap", normalMap);
+    if(roughnessMap)
+      formData.append("roughnesMap", roughnessMap);
 
     const response = await this.apiService.create<SheathColor>(
       this.resource,
@@ -42,21 +54,28 @@ class SheathColorService {
   }
 
   async update(
-    id: number,
+    id: string,
     color: SheathColor,
-    material?: File
+    colorMap: File | null,
+    normalMap: File | null,
+    roughnessMap: File | null
   ): Promise<SheathColor> {
     const formData = new FormData();
-    formData.append("Id", "0");
     formData.append("Color", color.color);
     formData.append("ColorCode", color.colorCode);
     formData.append("Material", color.material);
-    formData.append("MaterialUrl", "");
     formData.append("Price", color.price.toString());
     formData.append("EngravingColorCode", color.engravingColorCode);
-    if (material) {
-      formData.append("handleMaterial", material);
-    }
+    formData.append("IsActive", color.isActive.toString());
+    formData.append("ColorMapUrl", "1");
+    formData.append("NormalMapUrl", "1");
+    formData.append("RoughnessMapUrl", "1");
+    if(colorMap)
+      formData.append("colorMap", colorMap);
+    if (normalMap)
+      formData.append("normalMap", normalMap);
+    if(roughnessMap)
+      formData.append("roughnesMap", roughnessMap);
 
     const response = await this.apiService.update<SheathColor>(
       this.resource,
@@ -66,12 +85,31 @@ class SheathColorService {
     return response;
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id
     );
     return response.isDeleted;
+  }
+
+  async activate(id: string): Promise<SheathColor> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<SheathColor>(
+        `${this.resource}/activate`,
+        id,
+        formData
+    );
+    return response;
+  }
+  async deactivate(id: string): Promise<SheathColor> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<SheathColor>(
+        `${this.resource}/deactivate`,
+        id,
+        formData
+    );
+    return response;
   }
 }
 

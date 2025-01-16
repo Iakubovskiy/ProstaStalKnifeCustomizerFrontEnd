@@ -15,7 +15,7 @@ class FasteningService {
     return response;
   }
 
-  async getById(id: number): Promise<Fastening> {
+  async getById(id: string): Promise<Fastening> {
     const response = await this.apiService.getById<Fastening>(
       this.resource,
       id
@@ -25,14 +25,13 @@ class FasteningService {
 
   async create(fastening: Fastening, model: File): Promise<Fastening> {
     const formData = new FormData();
-
-    formData.append("Id", "0");
     formData.append("Name", fastening.name);
     formData.append("Color", fastening.color);
     formData.append("ColorCode", fastening.colorCode);
     formData.append("price", fastening.price.toString());
     formData.append("Material", fastening.material);
     formData.append("ModelUrl", fastening.modelUrl? fastening.modelUrl: "");
+    formData.append("IsActive", fastening.isActive.toString());
     formData.append("model", model);
     const response = await this.apiService.create<Fastening>(
       this.resource,
@@ -43,22 +42,19 @@ class FasteningService {
     return response;
   }
 
-  // Оновити Fastening
   async update(
-    id: number,
+    id: string,
     fastening: Fastening,
     model: File | null
   ): Promise<Fastening> {
     const formData = new FormData();
-
-    // Додаємо дані як звичайні поля
-    formData.append("Id", "0");
     formData.append("Name", fastening.name);
     formData.append("Color", fastening.color);
     formData.append("ColorCode", fastening.colorCode);
     formData.append("price", fastening.price.toString());
     formData.append("Material", fastening.material);
     formData.append("ModelUrl", fastening.modelUrl);
+    formData.append("IsActive", fastening.isActive.toString());
     if (model) {
       formData.append("model", model);
     }
@@ -70,13 +66,32 @@ class FasteningService {
     return response;
   }
 
-  // Видалити Fastening
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id
     );
     return response.isDeleted;
+  }
+
+  async activate(id: string): Promise<Fastening> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<Fastening>(
+        `${this.resource}/activate`,
+        id,
+        formData
+    );
+    return response;
+  }
+
+  async deactivate(id: string): Promise<Fastening> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<Fastening>(
+        `${this.resource}/deactivate`,
+        id,
+        formData
+    );
+    return response;
   }
 }
 

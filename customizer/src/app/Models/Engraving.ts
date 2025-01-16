@@ -1,5 +1,5 @@
 export default interface Engraving {
-  id: number;
+  id: string;
   name: string | null;
   side: number;
   text: string | null;

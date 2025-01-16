@@ -2,6 +2,8 @@ import APIService from "./ApiService";
 import Order from "../Models/Order";
 import DeliveryType from "../Models/DeliveryType";
 import DeliveryDataDTO from "@/app/DTO/DeliveryDataDTO";
+import ReturnOrderDTO from "@/app/DTO/ReturnOrderDTO";
+import CreateOrderDTO from "@/app/DTO/CreateOrderDTO";
 
 class OrderService {
     private apiService: APIService;
@@ -19,8 +21,8 @@ class OrderService {
         return response;
     }
 
-    async getById(id: number): Promise<Order> {
-        const response = await this.apiService.getById<Order>(
+    async getById(id: string): Promise<ReturnOrderDTO> {
+        const response = await this.apiService.getById<ReturnOrderDTO>(
             this.resource,
             id
         );
@@ -28,16 +30,16 @@ class OrderService {
     }
 
     async create(
-        Order: Order
+        Order: CreateOrderDTO
     ): Promise<Order> {
         const formData = new FormData();
 
-        formData.append("Id", "0");
         formData.append("Number", Order.number);
         formData.append("Total", Order.total.toString());
-        formData.append("StatusId", Order.status.id.toString());
-        formData.append("DeliveryTypeId", Order.delivery.id.toString());
-        formData.append("KnivesIdsJson", JSON.stringify(Order.knives.map(knife => knife.id)));
+        formData.append("Status", Order.status);
+        formData.append("DeliveryTypeId", Order.deliveryTypeId);
+        formData.append("ProductIdsJson", JSON.stringify(Order.products.map(product => product.id)));
+        formData.append("ProductQuantitiesJson", JSON.stringify(Order.productQuantities));
         formData.append("ClientFullName", Order.clientFullName);
         formData.append("ClientPhoneNumber", Order.clientPhoneNumber);
         formData.append("CountryForDelivery", Order.countryForDelivery);
@@ -112,7 +114,7 @@ class OrderService {
         return response;
     }
 
-    async delete(id: number): Promise<boolean> {
+    async delete(id: string): Promise<boolean> {
         const response = await this.apiService.delete<{ isDeleted: boolean }>(
             this.resource,
             id

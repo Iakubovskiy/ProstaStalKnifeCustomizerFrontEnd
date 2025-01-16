@@ -17,7 +17,7 @@ class EngravingPriceService {
     return response;
   }
 
-  async getById(id: number): Promise<EngravingPrice> {
+  async getById(id: string): Promise<EngravingPrice> {
     const response = await this.apiService.getById<EngravingPrice>(
       this.resource,
       id
@@ -27,7 +27,6 @@ class EngravingPriceService {
 
   async create(engravingPrice: EngravingPrice): Promise<EngravingPrice> {
     const formData = new FormData();
-    formData.append("Id", "0");
     formData.append("Price", engravingPrice.price.toString());
 
     const response = await this.apiService.create<EngravingPrice>(
@@ -38,11 +37,10 @@ class EngravingPriceService {
   }
 
   async update(
-    id: number,
+    id: string,
     engravingPrice: EngravingPrice
   ): Promise<EngravingPrice> {
     const formData = new FormData();
-    formData.append("Id", "0");
     formData.append("Price", engravingPrice.price.toString());
 
     const response = await this.apiService.update<EngravingPrice>(
@@ -53,7 +51,7 @@ class EngravingPriceService {
     return response;
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id

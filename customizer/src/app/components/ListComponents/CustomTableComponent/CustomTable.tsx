@@ -8,7 +8,7 @@ import {
   TableCell,
   Tooltip,
 } from "@nextui-org/react";
-import { DeleteIcon, EditIcon } from "@nextui-org/shared-icons";
+import { DeleteIcon, EditIcon, EyeSlashFilledIcon } from "@nextui-org/shared-icons";
 import { router } from "next/client";
 import "./style.css";
 import { useRouter } from "next/router";
@@ -21,7 +21,7 @@ export type Column<T> = {
 type CustomTableProps<T> = {
   data: T[];
   columns: Column<T>[];
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 };
 
 export default function CustomTable<T extends Record<string, any>>({

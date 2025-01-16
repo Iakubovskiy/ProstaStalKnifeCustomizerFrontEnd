@@ -1,6 +1,7 @@
 export default interface DeliveryType {
-  id: number;
+  id: string;
   name: string;
   price: number;
   comment: string | null;
+  isActive: boolean;
 }

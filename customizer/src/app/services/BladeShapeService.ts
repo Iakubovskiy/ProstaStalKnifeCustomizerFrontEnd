@@ -15,7 +15,7 @@ class BladeShapeService {
     return response;
   }
 
-  async getById(id: number): Promise<BladeShape> {
+  async getById(id: string): Promise<BladeShape> {
     const response = await this.apiService.getById<BladeShape>(
       this.resource,
       id
@@ -28,45 +28,21 @@ class BladeShapeService {
     modelFiles: { [key: string]: File }
   ): Promise<BladeShape> {
     const formData = new FormData();
-    formData.append("name", bladeShape.name);
-    formData.append("price", bladeShape.price.toString());
+    formData.append("Name", bladeShape.name);
+    formData.append("Price", bladeShape.price.toString());
     formData.append("totalLength", bladeShape.totalLength.toString());
     formData.append("bladeLength", bladeShape.bladeLength.toString());
     formData.append("bladeWidth", bladeShape.bladeWidth.toString());
     formData.append("bladeWeight", bladeShape.bladeWeight.toString());
     formData.append("sharpeningAngle", bladeShape.sharpeningAngle.toString());
     formData.append(
-      "rockwellHardnessUnits",
-      bladeShape.rockwellHardnessUnits.toString()
-    );
-    formData.append(
-      "engravingLocationX",
-      bladeShape.engravingLocationX.toString()
-    );
-    formData.append(
-      "engravingLocationY",
-      bladeShape.engravingLocationY.toString()
-    );
-    formData.append(
-      "engravingLocationZ",
-      bladeShape.engravingLocationZ.toString()
-    );
-    formData.append(
-      "engravingRotationX",
-      bladeShape.engravingRotationX.toString()
-    );
-    formData.append(
-      "engravingRotationY",
-      bladeShape.engravingRotationY.toString()
-    );
-    formData.append(
-      "engravingRotationZ",
-      bladeShape.engravingRotationZ.toString()
+        "rockwellHardnessUnits",
+        bladeShape.rockwellHardnessUnits.toString()
     );
     formData.append("bladeShapeModelUrl", "1");
     formData.append("sheathModelUrl", "1");
+    formData.append("IsActive", bladeShape.isActive.toString());
 
-    // Додавання файлів моделей (якщо є)
     Object.keys(modelFiles).forEach((key) => {
       formData.append(key, modelFiles[key]);
     });
@@ -81,12 +57,11 @@ class BladeShapeService {
   }
 
   async update(
-    id: number,
+    id: string,
     bladeShape: BladeShape,
     modelFiles?: { [key: string]: File }
   ): Promise<BladeShape> {
     const formData = new FormData();
-    formData.append("Id", "0");
     formData.append("Name", bladeShape.name);
     formData.append("Price", bladeShape.price.toString());
     formData.append("totalLength", bladeShape.totalLength.toString());
@@ -95,37 +70,15 @@ class BladeShapeService {
     formData.append("bladeWeight", bladeShape.bladeWeight.toString());
     formData.append("sharpeningAngle", bladeShape.sharpeningAngle.toString());
     formData.append(
-      "rockwellHardnessUnits",
-      bladeShape.rockwellHardnessUnits.toString()
-    );
-    formData.append(
-      "engravingLocationX",
-      bladeShape.engravingLocationX.toString()
-    );
-    formData.append(
-      "engravingLocationY",
-      bladeShape.engravingLocationY.toString()
-    );
-    formData.append(
-      "engravingLocationZ",
-      bladeShape.engravingLocationZ.toString()
-    );
-    formData.append(
-      "engravingRotationX",
-      bladeShape.engravingRotationX.toString()
-    );
-    formData.append(
-      "engravingRotationY",
-      bladeShape.engravingRotationY.toString()
-    );
-    formData.append(
-      "engravingRotationZ",
-      bladeShape.engravingRotationZ.toString()
+        "rockwellHardnessUnits",
+        bladeShape.rockwellHardnessUnits.toString()
     );
     formData.append("bladeShapeModelUrl", bladeShape.bladeShapeModelUrl);
     formData.append("sheathModelUrl", bladeShape.sheathModelUrl);
+    formData.append("IsActive", bladeShape.isActive.toString());
+    formData.append("bladeShapeModelUrl", bladeShape.bladeShapeModelUrl);
+    formData.append("sheathModelUrl", bladeShape.sheathModelUrl);
 
-    // Додавання файлів моделей (якщо є)
     if (modelFiles) {
       Object.keys(modelFiles).forEach((key) => {
         formData.append(key, modelFiles[key]);
@@ -140,12 +93,32 @@ class BladeShapeService {
     return response;
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id
     );
     return response.isDeleted;
+  }
+
+  async activate(id: string): Promise<BladeShape> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<BladeShape>(
+        `${this.resource}/activate`,
+        id,
+        formData
+    );
+    return response;
+  }
+
+  async deactivate(id: string): Promise<BladeShape> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<BladeShape>(
+        `${this.resource}/deactivate`,
+        id,
+        formData
+    );
+    return response;
   }
 }
 

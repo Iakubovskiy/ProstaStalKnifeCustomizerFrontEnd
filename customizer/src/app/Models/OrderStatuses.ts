@@ -1,4 +1,4 @@
 export default interface OrderStatuses {
-  id: number;
+  id: string;
   status: string;
 }

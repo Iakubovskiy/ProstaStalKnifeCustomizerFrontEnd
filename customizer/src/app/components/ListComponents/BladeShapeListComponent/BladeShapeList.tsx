@@ -24,7 +24,7 @@ export default function BladeShapeList() {
         fetchBladeShapes();
     }, []);
 
-    const bladeDelete = async (id: number) => {
+    const bladeDelete = async (id: string) => {
         const isDeleted = await bladeShapeService.delete(id);
         if (isDeleted) {
             setBladeShapes((prevData) => prevData.filter((item) => item.id !== id));

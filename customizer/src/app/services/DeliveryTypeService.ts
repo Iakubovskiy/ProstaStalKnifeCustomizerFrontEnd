@@ -15,7 +15,7 @@ class DeliveryTypeService {
     return response;
   }
 
-  async getById(id: number): Promise<DeliveryType> {
+  async getById(id: string): Promise<DeliveryType> {
     const response = await this.apiService.getById<DeliveryType>(
       this.resource,
       id
@@ -30,6 +30,7 @@ class DeliveryTypeService {
     formData.append("Name", deliveryType.name);
     formData.append("Price", deliveryType.price.toString());
     formData.append("Comment", deliveryType.comment ?? "");
+    formData.append("IsActive", deliveryType.isActive.toString());
 
     const response = await this.apiService.create<DeliveryType>(
       this.resource,
@@ -38,15 +39,14 @@ class DeliveryTypeService {
     return response;
   }
 
-  // Оновити DeliveryType
-  async update(id: number, deliveryType: DeliveryType): Promise<DeliveryType> {
+  async update(id: string, deliveryType: DeliveryType): Promise<DeliveryType> {
     const formData = new FormData();
 
-    // Додаємо дані як звичайні поля
     formData.append("Id", deliveryType.name);
     formData.append("Name", deliveryType.name);
     formData.append("Price", deliveryType.price.toString());
     formData.append("Comment", deliveryType.comment ?? "");
+    formData.append("IsActive", deliveryType.isActive.toString());
     const response = await this.apiService.update<DeliveryType>(
       this.resource,
       id,
@@ -55,12 +55,32 @@ class DeliveryTypeService {
     return response;
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id
     );
     return response.isDeleted;
+  }
+
+  async activate(id: string): Promise<DeliveryType> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<DeliveryType>(
+        `${this.resource}/activate`,
+        id,
+        formData
+    );
+    return response;
+  }
+
+  async deactivate(id: string): Promise<DeliveryType> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<DeliveryType>(
+        `${this.resource}/deactivate`,
+        id,
+        formData
+    );
+    return response;
   }
 }
 

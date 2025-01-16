@@ -15,7 +15,7 @@ class HandleColorService {
     return response;
   }
 
-  async getById(id: number): Promise<HandleColor> {
+  async getById(id: string): Promise<HandleColor> {
     const response = await this.apiService.getById<HandleColor>(
       this.resource,
       id
@@ -23,14 +23,26 @@ class HandleColorService {
     return response;
   }
 
-  async create(color: HandleColor, material: File): Promise<HandleColor> {
+  async create(
+      color: HandleColor,
+      colorMap: File | null,
+      normalMap: File | null,
+      roughnessMap: File | null
+  ): Promise<HandleColor> {
     const formData = new FormData();
-    formData.append("Id", "0");
     formData.append("ColorName", color.colorName);
-    formData.append("material", material);
-    formData.append("Material", color.material);
-    formData.append("MaterialUrl", "");
     formData.append("ColorCode", color.colorCode);
+    formData.append("Material", color.material);
+    formData.append("IsActive", color.isActive.toString());
+    formData.append("ColorMapUrl", "1");
+    formData.append("NormalMapUrl", "1");
+    formData.append("RoughnessMapUrl", "1");
+    if(colorMap)
+      formData.append("colorMap", colorMap);
+    if (normalMap)
+      formData.append("normalMap", normalMap);
+    if(roughnessMap)
+      formData.append("roughnesMap", roughnessMap);
 
     const response = await this.apiService.create<HandleColor>(
       this.resource,
@@ -40,19 +52,26 @@ class HandleColorService {
   }
 
   async update(
-    id: number,
+    id: string,
     color: HandleColor,
-    material?: File
+    colorMap: File | null,
+    normalMap: File | null,
+    roughnessMap: File | null
   ): Promise<HandleColor> {
     const formData = new FormData();
-    formData.append("Id", "0");
     formData.append("ColorName", color.colorName);
-    formData.append("Material", color.material);
-    formData.append("MaterialUrl", color.materialUrl);
     formData.append("ColorCode", color.colorCode);
-    if (material) {
-      formData.append("material", material);
-    }
+    formData.append("Material", color.material);
+    formData.append("IsActive", color.isActive.toString());
+    formData.append("ColorMapUrl", "1");
+    formData.append("NormalMapUrl", "1");
+    formData.append("RoughnessMapUrl", "1");
+    if(colorMap)
+      formData.append("colorMap", colorMap);
+    if (normalMap)
+      formData.append("normalMap", normalMap);
+    if(roughnessMap)
+      formData.append("roughnesMap", roughnessMap);
 
     const response = await this.apiService.update<HandleColor>(
       this.resource,
@@ -62,12 +81,32 @@ class HandleColorService {
     return response;
   }
 
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id
     );
     return response.isDeleted;
+  }
+
+  async activate(id: string): Promise<HandleColor> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<HandleColor>(
+        `${this.resource}/activate`,
+        id,
+        formData
+    );
+    return response;
+  }
+
+  async deactivate(id: string): Promise<HandleColor> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<HandleColor>(
+        `${this.resource}/deactivate`,
+        id,
+        formData
+    );
+    return response;
   }
 }
 

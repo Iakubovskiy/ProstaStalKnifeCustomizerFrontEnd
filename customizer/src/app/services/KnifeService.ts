@@ -9,100 +9,49 @@ class KnifeService {
     this.apiService = apiService;
     this.resource = "Knife";
   }
-
-  // Отримати всі ножі
   async getAll(): Promise<Knife[]> {
     const response = await this.apiService.getAll<any>(this.resource);
-    return response; // Перевіряємо наявність поля data в відповіді
+    return response;
   }
-
-  // Отримати ніж за id
   async getById(id: number): Promise<Knife> {
     const response = await this.apiService.getById<Knife>(this.resource, id);
     return response;
   }
-
-  // Створити новий ніж
   async create(knife: Knife): Promise<Knife> {
     const formData = new FormData();
-
-    // Додаємо основні поля для Knife (є посилання на Shape, BladeCoating, HandleColor, SheathColor)
-    formData.append("Id", knife.id.toString());
-
-    // Додаємо дані для Shape
     formData.append("ShapeId", knife.shape.id.toString());
-
-    // Додаємо BladeCoating
-    formData.append("BladeCoatingId", knife.bladeCoating.id.toString());
-
-    // Додаємо HandleColor
     formData.append(
       "BladeCoatingColorId",
       knife.bladeCoatingColor.id.toString()
     );
     formData.append("HandleColorId", knife.handleColor.id.toString());
-
-    // Додаємо SheathColor
     formData.append("SheathColorId", knife.sheathColor.id.toString());
-
-    // Додаємо Fastening
-    knife.fastening?.forEach((fastening, index) => {
-      formData.append(`FasteningJson[${index}]`, fastening.id.toString());
-    });
-
+    if(knife.fastening)
+      formData.append(`FasteningId`, knife.fastening.id.toString());
     if (knife.engravings && knife.engravings.length > 0) {
       const engravingIds = knife.engravings.map((eng) => eng.id);
       formData.append("EngravingsJson", JSON.stringify(engravingIds));
     }
-
-    // Додаємо кількість
-    formData.append("Quantity", knife.quantity.toString());
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`);
-    });
     const response = await this.apiService.create<Knife>(
       this.resource,
       formData
     );
     return response;
   }
-
-  // Оновити ніж
-  async update(id: number, knife: Knife): Promise<Knife> {
+  async update(id: string, knife: Knife): Promise<Knife> {
     const formData = new FormData();
-
-    // Додаємо основні поля для Knife (є посилання на Shape, BladeCoating, HandleColor, SheathColor)
-    formData.append("Id", knife.id.toString());
-
-    // Додаємо дані для Shape
     formData.append("ShapeId", knife.shape.id.toString());
-
-    // Додаємо BladeCoating
-    formData.append("BladeCoatingId", knife.bladeCoating.id.toString());
-
-    // Додаємо HandleColor
     formData.append(
       "BladeCoatingColorId",
       knife.bladeCoatingColor.id.toString()
     );
     formData.append("HandleColorId", knife.handleColor.id.toString());
-
-    // Додаємо SheathColor
     formData.append("SheathColorId", knife.sheathColor.id.toString());
-
-    // Додаємо Fastening
-    knife.fastening?.forEach((fastening, index) => {
-      formData.append(`Fastening[${index}]`, fastening.id.toString());
-    });
-
-    // Додаємо Engravings
+    if(knife.fastening)
+      formData.append(`FasteningId`, knife.fastening.id.toString());
     knife.engravings?.forEach((engraving, index) => {
       formData.append(`Engravings[${index}]`, engraving.id.toString());
     });
-
-    // Додаємо кількість
-    formData.append("Quantity", knife.quantity.toString());
-
     const response = await this.apiService.update<Knife>(
       this.resource,
       id,
@@ -111,13 +60,32 @@ class KnifeService {
     return response;
   }
 
-  // Видалити ніж
-  async delete(id: number): Promise<boolean> {
+  async delete(id: string): Promise<boolean> {
     const response = await this.apiService.delete<{ isDeleted: boolean }>(
       this.resource,
       id
     );
     return response.isDeleted;
+  }
+
+  async activate(id: string): Promise<Knife> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<Knife>(
+        `${this.resource}/activate`,
+        id,
+        formData
+    );
+    return response;
+  }
+
+  async deactivate(id: string): Promise<Knife> {
+    const formData = new FormData();
+    const response = await this.apiService.partialUpdate<Knife>(
+        `${this.resource}/deactivate`,
+        id,
+        formData
+    );
+    return response;
   }
 }
 
