@@ -1,10 +1,15 @@
-
+html, body {
+  height: 100%; /* Гарантує, що весь вміст займатиме 100% висоти вікна */
+  margin: 0; /* Забирає відступи браузера */
+  padding: 0;
+  overflow:visible; /* Запобігає появі скролбарів */
+}
 .customizer {
     display: flex;
     flex-direction: column;
     min-height: 100vh;  
+    align-items: center;
     min-width: 100vh;
-    height: auto;
      background-color:#1F2936;
     width: 100vw;
     /* background-image: url('/background.jpg'); 
@@ -12,10 +17,7 @@
   background-position: top left; 
   background-repeat: repeat;  */
   }
-  
-.canvasContainer {
-    height: 100vh;
-  }
+
   
   .controlsContainer {
     background-color: rgb(31, 41, 55);
@@ -35,10 +37,11 @@
   @media (max-width: 1023px) {
     
     .canvasContainer {
-        height: 70vh;
+        height: 100vh;
       }
       .controlsContainer {
         overflow-y: visible;
+        height: 100%;
       }
   }
   @media (max-width: 500px) {

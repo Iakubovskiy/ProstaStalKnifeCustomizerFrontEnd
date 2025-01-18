@@ -28,7 +28,8 @@ export const KnifePurchaseContainer: React.FC = () => {
       const engravingService = new EngravingPriceService();
       const prices = await engravingService.getAll();
       if (prices.length > 0) {
-        const uniqueSides = new Set(snap.engravings.map((eng) => eng.side)).size;
+        const uniqueSides = new Set(snap.engravings.map((eng) => eng.side))
+          .size;
         price += uniqueSides * prices[0].price;
       }
     }
