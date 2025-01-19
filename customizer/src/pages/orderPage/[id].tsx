@@ -1,18 +1,21 @@
-import React, {Suspense, useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { OrderHeader } from '@/app/components/OrderDetails/OrderHeader';
 import { OrderForm } from '@/app/components/OrderDetails/OrderForm';
 import { ProductList } from '@/app/components/OrderDetails/ProductList';
 import { useOrder } from '@/app/hooks/useOrder';
-import DeliveryTypeService from "@/app/services/DeliveryTypeService";
-import DeliveryType from "@/app/Models/DeliveryType";
+import DeliveryTypeService from '@/app/services/DeliveryTypeService';
+import KnifeService from '@/app/services/KnifeService';
+import DeliveryType from '@/app/Models/DeliveryType';
+import Engraving from "@/app/Models/Engraving";
 
 const OrderDetailsPage: React.FC = () => {
     const router = useRouter();
     const { id } = router.query;
-    const { isLoading, error } = useOrder(id as string);
+    const { order, isLoading, error } = useOrder(id as string);
 
     const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);
+    const [engravings, setEngravings] = useState<Engraving[]>([]);
     const [isDeliveryTypesLoading, setIsDeliveryTypesLoading] = useState(true);
 
     useEffect(() => {
@@ -33,48 +36,97 @@ const OrderDetailsPage: React.FC = () => {
         }
     }, [id]);
 
+    useEffect(() => {
+        const fetchEngravings = async () => {
+            const data: Engraving[] = [];
+            const knifeService = new KnifeService();
+            if (order?.products) {
+                for (const product of order.products) {
+                    if (product.productType.toLowerCase() === "knife") {
+                        try {
+                            const knife = await knifeService.getById(product.productId);
+                            if (knife.engravings) {
+                                data.push(...knife.engravings);
+                            }
+                        } catch (error) {
+                            console.error(`Error fetching knife data for product ID ${product.productId}:`, error);
+                        }
+                    }
+                }
+            }
+
+            setEngravings(data);
+        }
+        fetchEngravings();
+    }, []);
+
     if (isLoading || isDeliveryTypesLoading) {
         return (
             <div className="flex min-h-screen items-center justify-center">
-               Завантаження...
+                Завантаження...
             </div>
         );
     }
 
-  if (error) {
+    if (error) {
+        return (
+            <div className="flex min-h-screen items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-xl font-bold text-red-600">Помилка завантаження</h2>
+                    <p className="mt-2">{(error as Error).message}</p>
+                    <button
+                        onClick={() => router.push('/orders')}
+                        className="mt-4 px-4 py-2 bg-primary text-white rounded"
+                    >
+                        Повернутись до списку
+                    </button>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div className="flex min-h-screen items-center justify-center">
-          <div className="text-center">
-            <h2 className="text-xl font-bold text-red-600">Помилка завантаження</h2>
-            <p className="mt-2">{(error as Error).message}</p>
-            <button
-                onClick={() => router.push('/orders')}
-                className="mt-4 px-4 py-2 bg-primary text-white rounded"
-            >
-              Повернутись до списку
-            </button>
-          </div>
+        <div className="min-h-screen p-8 bg-gray-50">
+            <OrderHeader orderId={id as string} />
+            <div className="max-w-7xl mx-auto space-y-6">
+                <OrderForm orderId={id as string} deliveryTypes={deliveryTypes} />
+                <ProductList orderId={id as string} />
+                <EngravingFiles engravings={engravings} />
+            </div>
         </div>
     );
-  }
+};
 
-  return (
-      <div className="min-h-screen p-8 bg-gray-50">
-        <OrderHeader orderId={id as string}/>
-        <div className="max-w-7xl mx-auto space-y-6">
-          <OrderForm orderId={id as string} deliveryTypes={deliveryTypes}/>
-          <Suspense
-              fallback={
-                <div className="w-full h-[200px] flex items-center justify-center">
-                    Завантаження ...
-                </div>
-              }
-          >
-            <ProductList orderId={id as string} />
-          </Suspense>
+interface EngravingFilesProps {
+    engravings: Engraving[];
+}
+
+const EngravingFiles: React.FC<EngravingFilesProps> = ({ engravings }) => {
+    if (engravings.length === 0) {
+        return <p>Немає доступних файлів для гравіювання.</p>;
+    }
+
+    return (
+        <div>
+            <h3 className="text-lg font-semibold">Файли для гравіювання</h3>
+            <ul className="list-disc pl-5 space-y-2">
+                {engravings.map((engraving, index) => (
+                    engraving.pictureUrl && (
+                        <li key={index}>
+                            <a
+                                href={engraving.pictureUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary hover:underline"
+                            >
+                                Завантажити файл {index + 1}
+                            </a>
+                        </li>
+                    )
+                ))}
+            </ul>
         </div>
-      </div>
-  );
+    );
 };
 
 export default OrderDetailsPage;

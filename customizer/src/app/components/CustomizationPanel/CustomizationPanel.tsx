@@ -4,23 +4,19 @@ import CustomizationPanelMenu from "./Menu/CustomizationPanelMenu";
 import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizationComponent";
 import HandleCustomizationComponent from "./Components/HandleCustomizationComponent";
 import SheathCustomizationComponent from "./Components/SheathCustomizationComponent";
-import FasteningCustomizationComponent from "./Components/FasteningCustomizationComponent";
 import BladeCoatingCustomizationComponent from "./Components/BladeCoatingsCustomizationComponent";
-import Characteristics from "../Characteristics/Characteristics";
 import { useState } from "react";
 import EngravingComponent from "../EngravingComponent/EngravingComponent";
 import BladeShapeService from "@/app/services/BladeShapeService";
-import BladeCoatingService from "@/app/services/BladeCoatingService";
-import BladeCoatingColorService from "@/app/services/BladeCoatingColorService";
 import SheathColorService from "@/app/services/SheathColorService";
 import BladeShape from "@/app/Models/BladeShape";
-import BladeCoating from "@/app/Models/BladeCoating";
 import SheathColor from "@/app/Models/SheathColor";
 import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import HandleColorService from "@/app/services/HandleColorService";
 import { useCanvasState } from "@/app/state/canvasState";
 import HandleColor from "@/app/Models/HandleColor";
-import { tslFn } from "three/tsl";
+import BladeCoatingColorService from "@/app/services/BladeCoatingColorService";
+
 const scrollLeft = () => {
   const container = document.getElementById("scrollContainer");
   // @ts-ignore
@@ -41,39 +37,32 @@ const scrollRight = () => {
 const CustomizationPanel = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const bladeShapeService = new BladeShapeService();
-  const bladeCoatingService = new BladeCoatingService();
   const handleColors = new HandleColorService();
   const SheathColorservice = new SheathColorService();
+  const bladeCoatingColorService = new BladeCoatingColorService();
 
   const state = useCanvasState();
 
-  let detailedCoatings;
   useEffect(() => {
     const fetchBladeShapes = async () => {
       try {
         const shapes = await bladeShapeService.getAll();
-        const coatings = await bladeCoatingService.getAll();
         const detailedCoatings: {
-          coating: BladeCoating;
           color: BladeCoatingColor;
         }[] = [];
 
-        for (const coating of coatings) {
-          const detailedCoating = await bladeCoatingService.getById(coating.id);
-          detailedCoating.colors.forEach((color: BladeCoatingColor) => {
+        const colors = await bladeCoatingColorService.getAll();
+
+        for (const color of colors) {
             detailedCoatings.push({
-              coating: detailedCoating,
               color: color,
-            });
           });
         }
         const handlecolors = await handleColors.getAll();
         const sheaths = await SheathColorservice.getAll();
-        console.log(coatings);
 
         SelectByDefault(
           shapes[0],
-          detailedCoatings[0].coating,
           detailedCoatings[0].color,
           sheaths[0],
           handlecolors[0]
@@ -86,7 +75,6 @@ const CustomizationPanel = () => {
   }, []);
   const SelectByDefault = (
     shape: BladeShape,
-    coating: BladeCoating,
     coatingcolor: BladeCoatingColor,
     sheath: SheathColor,
     hadleColor: HandleColor
@@ -102,16 +90,9 @@ const CustomizationPanel = () => {
       bladeWeight: shape.bladeWeight,
       sharpeningAngle: shape.sharpeningAngle,
       rockwellHardnessUnits: shape.rockwellHardnessUnits,
-      engravingLocationX: shape.engravingLocationX,
-      engravingLocationY: shape.engravingLocationY,
-      engravingLocationZ: shape.engravingLocationZ,
-      engravingRotationX: shape.engravingRotationX,
-      engravingRotationY: shape.engravingRotationY,
-      engravingRotationZ: shape.engravingRotationZ,
       bladeShapeModelUrl: shape.bladeShapeModelUrl,
       sheathModelUrl: shape.sheathModelUrl,
     };
-    state.bladeCoating = coating;
     state.bladeCoatingColor = coatingcolor;
     state.handleColor = hadleColor;
     state.sheathColor = sheath;
