@@ -10,13 +10,16 @@ import { Spinner } from "@nextui-org/react";
 import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
 
 const initialSheathColorData: SheathColor = {
-  id: 1,
+  id: "",
   color: "",
   material: "",
   colorCode: "",
-  materialUrl: "",
   price: 0,
   engravingColorCode: "",
+  isActive: true,
+  colorMapUrl: "",
+  normalMapUrl: "",
+  roughnessMapUrl: "",
 };
 
 const SheathColorPage = () => {
@@ -29,16 +32,22 @@ const SheathColorPage = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isCreating, setCreating] = useState<boolean>(false);
 
-  const [file, setFile] = useState<File | null>(null);
+  const [colorMapFile, setColorMapFile] = useState<File | null>(null);
+  const [normalMapFile, setNormalMapFile] = useState<File | null>(null);
+  const [roughnessMapFile, setRoughnessMapFile] = useState<File | null>(null);
   const [SheathColor, setSheathColor] = useState<SheathColor>(
       initialSheathColorData
   );
-  const [handleservice, setHandleservice] = useState<SheathColorService>(
-      new SheathColorService()
-  );
+  const handleservice = new SheathColorService();
 
-  const handleFileSelected = (selectedFile: File | null) => {
-    setFile(selectedFile);
+  const handleColorMapSelected = (selectedFile: File | null) => {
+    setColorMapFile(selectedFile);
+  };
+  const handleNormalMapSelected = (selectedFile: File | null) => {
+    setNormalMapFile(selectedFile);
+  };
+  const handleRoughnessMapSelected = (selectedFile: File | null) => {
+    setRoughnessMapFile(selectedFile);
   };
 
   const handleObjectChange = (updatedData: SheathColor) => {
@@ -52,17 +61,16 @@ const SheathColorPage = () => {
   };
 
   const handleSave = async () => {
-    console.log("Saving data:", SheathColor, "Uploaded File:", file);
-
-    if (file && SheathColor) {
-      var response;
+    if (SheathColor) {
       if (isCreating) {
-        response = await handleservice.create(SheathColor, file);
+        await handleservice.create(SheathColor, colorMapFile, normalMapFile,roughnessMapFile);
       } else {
-        response = await handleservice.update(
-            parseInt(id as string, 10),
+        await handleservice.update(
+            id as string,
             SheathColor,
-            file
+            colorMapFile,
+            normalMapFile,
+            roughnessMapFile
         );
       }
 
@@ -75,18 +83,12 @@ const SheathColorPage = () => {
   useEffect(() => {
     const fetchSheathColor = async () => {
       if (id) {
-        const numericId = parseInt(id as string, 10);
-
-        if (isNaN(numericId)) {
-          console.error("ID is not a valid number");
-          return;
-        }
-        if (numericId == 0) {
+        if (id === "0") {
           setCreating(true);
           setLoading(false);
         } else {
           try {
-            const fetchedsheathColor = await handleservice.getById(numericId);
+            const fetchedsheathColor = await handleservice.getById(id as string);
             setSheathColor(fetchedsheathColor);
             setColor(fetchedsheathColor.colorCode);
             setEngravingcolor(fetchedsheathColor.engravingColorCode);
@@ -102,12 +104,12 @@ const SheathColorPage = () => {
     fetchSheathColor();
   }, [id]);
 
-  const SheathColorChange = (newColor: any) => {
+  const SheathColorChange = (newColor: string) => {
     setColor(newColor);
     SheathColor.colorCode = newColor;
   };
 
-  const SheathEngravingColorChange = (newColor: any) => {
+  const SheathEngravingColorChange = (newColor: string) => {
     setEngravingcolor(newColor);
     SheathColor.engravingColorCode = newColor;
   };
@@ -126,7 +128,19 @@ const SheathColorPage = () => {
 
             <div className="mb-6">
               <DragNDrop
-                  onFileSelected={handleFileSelected}
+                  onFileSelected={handleColorMapSelected}
+                  validExtensions={[".jpg", "jpeg", ".png"]}
+              />
+            </div>
+            <div className="mb-6">
+              <DragNDrop
+                  onFileSelected={handleNormalMapSelected}
+                  validExtensions={[".jpg", "jpeg", ".png"]}
+              />
+            </div>
+            <div className="mb-6">
+              <DragNDrop
+                  onFileSelected={handleRoughnessMapSelected}
                   validExtensions={[".jpg", "jpeg", ".png"]}
               />
             </div>
@@ -136,7 +150,7 @@ const SheathColorPage = () => {
               <div className="flex items-center space-x-4">
                 <div className="flex-1">
                   <h4 className="text-md mb-2 font-medium text-black">Колір піхв</h4>
-                  <ColorPicker value={color} onChange={SheathColorChange} />
+                  <ColorPicker value={color} onChange={SheathColorChange}/>
                 </div>
                 <div className="flex-1">
                   <h4 className="text-md mb-2 font-medium text-black">Колір гравіювання</h4>

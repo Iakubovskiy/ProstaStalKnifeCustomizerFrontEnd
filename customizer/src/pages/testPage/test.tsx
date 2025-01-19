@@ -27,7 +27,6 @@ const TextureFileInput = () => {
     if (file) {
       const url = URL.createObjectURL(file);
       console.log(url);
-      state.bladeCoating = { ...state.bladeCoating, materialUrl: url };
       state.bladeCoatingColor = {
         ...state.bladeCoatingColor,
         colorCode: "#ffffff",
@@ -46,7 +45,7 @@ const EngravingFileInput: React.FC = () => {
     if (file) {
       const url = URL.createObjectURL(file);
       const newEngraving = {
-        id: 1,
+        id: "",
         name: "",
         pictureUrl: url,
         side: 1,
@@ -63,7 +62,7 @@ const EngravingFileInput: React.FC = () => {
         scaleZ: 1,
       };
 
-      state.engraving = [...(state.engraving || []), newEngraving];
+      state.engravings = [...(state.engravings || []), newEngraving];
     }
   };
 

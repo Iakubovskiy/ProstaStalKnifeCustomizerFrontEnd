@@ -9,7 +9,7 @@ import CustomCanvas from "@/app/components/CustomCanvas/CustomCanvas";
 import { useCanvasState } from "@/app/state/canvasState";
 
 const defaultBladeShape: BladeShape = {
-  id: 0,
+  id: "",
   name: "",
   price: 0,
   totalLength: 0,
@@ -18,14 +18,9 @@ const defaultBladeShape: BladeShape = {
   bladeWeight: 0,
   sharpeningAngle: 0,
   rockwellHardnessUnits: 0,
-  engravingLocationX: 0,
-  engravingLocationY: 0,
-  engravingLocationZ: 0,
-  engravingRotationX: 0,
-  engravingRotationY: 0,
-  engravingRotationZ: 0,
   bladeShapeModelUrl: "1",
   sheathModelUrl: "1",
+  isActive: true,
 };
 
 const BladeShapeEditPage = () => {
@@ -36,9 +31,7 @@ const BladeShapeEditPage = () => {
   const state = useCanvasState();
 
   const [bladeShape, setBladeShape] = useState<BladeShape | null>(null);
-  const [bladeShapeService, setbladeShapeService] = useState<BladeShapeService>(
-    new BladeShapeService()
-  );
+  const bladeShapeService = new BladeShapeService();
   const [files, setFiles] = useState<{
     bladeShapeModel: File | null;
     sheathModel: File | null;
@@ -58,12 +51,6 @@ const BladeShapeEditPage = () => {
       bladeWeight: shape.bladeWeight,
       sharpeningAngle: shape.sharpeningAngle,
       rockwellHardnessUnits: shape.rockwellHardnessUnits,
-      engravingLocationX: shape.engravingLocationX,
-      engravingLocationY: shape.engravingLocationY,
-      engravingLocationZ: shape.engravingLocationZ,
-      engravingRotationX: shape.engravingRotationX,
-      engravingRotationY: shape.engravingRotationY,
-      engravingRotationZ: shape.engravingRotationZ,
       bladeShapeModelUrl: shape.bladeShapeModelUrl,
       sheathModelUrl: shape.sheathModelUrl,
     };
@@ -81,13 +68,7 @@ const BladeShapeEditPage = () => {
         bladeWeight: shape.bladeWeight,
         sharpeningAngle: shape.sharpeningAngle,
         rockwellHardnessUnits: shape.rockwellHardnessUnits,
-        engravingLocationX: shape.engravingLocationX,
-        engravingLocationY: shape.engravingLocationY,
-        engravingLocationZ: shape.engravingLocationZ,
-        engravingRotationX: shape.engravingRotationX,
-        engravingRotationY: shape.engravingRotationY,
-        engravingRotationZ: shape.engravingRotationZ,
-        bladeShapeModelUrl: URL.createObjectURL(file), // Only create URL if the model exists
+        bladeShapeModelUrl: URL.createObjectURL(file),
       };
     }
   };
@@ -96,21 +77,14 @@ const BladeShapeEditPage = () => {
     if (files.sheathModel) {
       state.bladeShape = {
         ...state.bladeShape,
-        sheathModelUrl: URL.createObjectURL(file), // Only create URL if the sheath model exists
+        sheathModelUrl: URL.createObjectURL(file),
       };
     }
   };
   useEffect(() => {
     const fetchBladeShape = async () => {
       if (id) {
-        const numericId = parseInt(id as string, 10);
-
-        if (isNaN(numericId)) {
-          console.error("Invalid ID");
-          return;
-        }
-
-        if (numericId === 0) {
+        if (id === "0") {
           setIsCreating(true);
           setBladeShape({ ...defaultBladeShape });
           setLoading(false);
@@ -118,7 +92,7 @@ const BladeShapeEditPage = () => {
         }
 
         try {
-          const data = await bladeShapeService.getById(numericId);
+          const data = await bladeShapeService.getById(id as string);
           setBladeShape(data);
           console.log("1");
           console.log(bladeShape);
@@ -138,7 +112,7 @@ const BladeShapeEditPage = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setBladeShape((prev: any) => {
+    setBladeShape((prev) => {
       if (!prev) return prev;
       return {
         ...prev,
@@ -191,9 +165,7 @@ const BladeShapeEditPage = () => {
       }
 
       if (isCreating) {
-        const createData = bladeShape;
-
-        var response = await bladeShapeService.create(
+        await bladeShapeService.create(
           bladeShape,
           modelFiles as { [key: string]: File }
         );

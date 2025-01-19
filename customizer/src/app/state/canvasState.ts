@@ -1,6 +1,4 @@
 import { proxy } from "valtio";
-import { useEffect } from "react";
-import BladeCoating from "@/app/Models/BladeCoating";
 import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import BladeShape from "@/app/Models/BladeShape";
 import Fastening from "@/app/Models/Fastening";
@@ -12,44 +10,48 @@ interface State {
   handleColor: HandleColor;
   sheathColor: SheathColor;
   bladeCoatingColor: BladeCoatingColor;
-  bladeCoating: BladeCoating;
   bladeShape: BladeShape;
   engravings: Engraving[];
-  fastening: Fastening[];
+  fastening: Fastening | null;
 }
 
 const state = proxy<State>({
   handleColor: {
-    id: 0,
+    id: "",
     colorName: "",
     colorCode: "#d8a635",
     material: "",
-    materialUrl: "",
+    isActive: false,
+    colorMapUrl: null,
+    normalMapUrl: null,
+    roughnessMapUrl: null
   },
   sheathColor: {
-    id: 0,
+    id: "",
     color: "",
-    materialUrl: "",
     price: 0,
     material: "",
     colorCode: "",
     engravingColorCode: "",
+    isActive: false,
+    colorMapUrl: null,
+    normalMapUrl: null,
+    roughnessMapUrl: null
   },
   bladeCoatingColor: {
-    id: 0,
+    id: "",
     color: "",
     colorCode: "#1810f3",
     engravingColorCode: "",
-  },
-  bladeCoating: {
-    id: 0,
-    name: "",
+    type: "",
     price: 0,
-    colors: [],
-    materialUrl: "",
+    isActive: true,
+    colorMapUrl: null,
+    normalMapUrl: null,
+    roughnessMapUrl: null
   },
   bladeShape: {
-    id: 0,
+    id: "",
     name: "",
     bladeShapeModelUrl: "",
     price: 0,
@@ -59,16 +61,20 @@ const state = proxy<State>({
     bladeWeight: 0,
     sharpeningAngle: 0,
     rockwellHardnessUnits: 0,
-    engravingLocationX: 0,
-    engravingLocationY: 0,
-    engravingLocationZ: 0,
-    engravingRotationX: 0,
-    engravingRotationY: 0,
-    engravingRotationZ: 0,
     sheathModelUrl: "",
+    isActive: true
   },
   engravings: [],
-  fastening: [],
+  fastening: {
+    id: "",
+    name: "",
+    color: "",
+    colorCode: "",
+    price: 0,
+    material: "",
+    modelUrl: "",
+    isActive: true
+  },
 });
 
 export const useCanvasState = () => {

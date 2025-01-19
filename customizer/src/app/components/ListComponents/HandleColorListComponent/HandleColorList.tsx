@@ -24,12 +24,18 @@ export default function HandleColorList() {
         fetchHandleColors();
     }, []);
 
-    const handleDelete = async (id: number) => {
-        const isDeleted = await handleColorService.delete(id);
-        if (isDeleted) {
-            setHandleColors((prevData) => prevData.filter((item) => item.id !== id));
+    const handleActivate = async (id: string, isActive?:boolean) => {
+        const updated = isActive
+            ? await handleColorService.deactivate(id)
+            : await handleColorService.activate(id);
+        if (updated) {
+            setHandleColors((prevData) =>
+                prevData.map((item) =>
+                    item.id === id ? { ...item, isActive: !isActive } : item
+                )
+            );
         } else {
-            alert("Failed to delete the record.");
+            alert(`Failed to ${isActive ? "deactivate" : "activate"} the record.`);
         }
     };
 
@@ -53,7 +59,7 @@ export default function HandleColorList() {
                 </Link>
 
             </div>
-            <CustomTable data={handleColors} columns={columns} onDelete={handleDelete}/>
+            <CustomTable data={handleColors} columns={columns} onDelete={handleActivate}/>
         </div>
     );
 }

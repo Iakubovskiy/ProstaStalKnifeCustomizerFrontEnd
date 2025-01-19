@@ -15,11 +15,7 @@ export default function SheathColorList() {
         const fetchSheathColors = async () => {
             try {
                 const data = await sheathColorService.getAll();
-                const sanitizedData = data.map((item) => ({
-                    ...item,
-                    materialUrl: item.materialUrl || "",
-                }));
-                setSheathColors(sanitizedData);
+                setSheathColors(data);
             } catch (error) {
                 console.error("Помилка при отриманні Кольорів:", error);
             }
@@ -28,7 +24,7 @@ export default function SheathColorList() {
         fetchSheathColors();
     }, []);
 
-    const bladeDelete = async (id: number) => {
+    const bladeDelete = async (id: string) => {
         const isDeleted = await sheathColorService.delete(id);
         if (isDeleted) {
             setSheathColors((prevData) => prevData.filter((item) => item.id !== id));
@@ -41,6 +37,7 @@ export default function SheathColorList() {
         { name: "Колір", uid: "color" },
         { name: "Ціна", uid: "price" },
         { name: "Матеріал", uid: "material" },
+        { name: "Активний", uid: "isActive" },
 
     ];
 

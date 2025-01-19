@@ -9,11 +9,14 @@ import "../../styles/globals.css";
 import { Spinner } from "@nextui-org/react";
 import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
 const initialHandleColorData: HandleColor = {
-  id: 1,
+  id: "",
   colorName: "",
   material: "",
   colorCode: "",
-  materialUrl: "",
+  colorMapUrl: "",
+  normalMapUrl: "",
+  roughnessMapUrl: "",
+  isActive: true,
 };
 
 const HandleColorPage = () => {
@@ -23,32 +26,37 @@ const HandleColorPage = () => {
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isCreating, setCreating] = useState<boolean>(false);
 
-  const [file, setFile] = useState<File | null>(null);
+  const [colorMapFile, setColorMapFile] = useState<File | null>(null);
+  const [normalMapFile, setNormalMapFile] = useState<File | null>(null);
+  const [roughnessrMapFile, setRoughnessMapFile] = useState<File | null>(null);
   const [handleColor, setHandleColor] = useState<HandleColor>(
     initialHandleColorData
   );
-  const [handleservice, setHandleservice] = useState<HandleColorService>(
-    new HandleColorService()
-  );
-  const handleFileSelected = (selectedFile: File | null) => {
-    setFile(selectedFile);
+  const handleservice = new HandleColorService();
+  const colorMapFileSelected = (selectedFile: File | null) => {
+    setColorMapFile(selectedFile);
+  };
+  const normalMapFileSelected = (selectedFile: File | null) => {
+    setNormalMapFile(selectedFile);
+  };
+  const roughnessrMapFileSelected = (selectedFile: File | null) => {
+    setRoughnessMapFile(selectedFile);
   };
   const handleObjectChange = (updatedData: HandleColor) => {
-    setHandleColor(updatedData); // Оновлюємо об'єкт у стані
+    setHandleColor(updatedData);
     console.log(handleColor);
   };
   const handleSave = async () => {
-    console.log("Saving data:", handleColor, "Uploaded File:", file);
-
-    if (file && handleColor) {
-      var response;
+    if (handleColor) {
       if (isCreating) {
-        response = await handleservice.create(handleColor, file);
+        await handleservice.create(handleColor, colorMapFile, normalMapFile, roughnessrMapFile);
       } else {
-        response = await handleservice.update(
-          parseInt(id as string, 10),
+        await handleservice.update(
+          id as string,
           handleColor,
-          file
+          colorMapFile,
+          normalMapFile,
+          roughnessrMapFile
         );
       }
 
@@ -60,23 +68,13 @@ const HandleColorPage = () => {
   useEffect(() => {
     const fetchHandleColor = async () => {
       if (id) {
-        // Перетворюємо id на число
-        const numericId = parseInt(id as string, 10);
-
-        if (isNaN(numericId)) {
-          console.error("ID is not a valid number");
-          return;
-        }
-        if (numericId == 0) {
+        if (id === "0") {
           setCreating(true);
           setLoading(false);
         } else {
           try {
-            const fetchedHandleColor = await handleservice.getById(numericId);
+            const fetchedHandleColor = await handleservice.getById(id as string);
             setHandleColor(fetchedHandleColor);
-            console.log("1");
-            console.log(fetchedHandleColor.colorCode);
-            console.log("1");
             setColor(fetchedHandleColor.colorCode);
             setLoading(false);
           } catch (error) {
@@ -90,8 +88,8 @@ const HandleColorPage = () => {
     };
     fetchHandleColor();
   }, [id]);
-  const handleColorChange = (newColor: any) => {
-    setColor(newColor); // Оновлюємо колір
+  const handleColorChange = (newColor: string) => {
+    setColor(newColor);
     handleColor.colorCode = newColor;
   };
   if (isLoading) {
@@ -109,32 +107,44 @@ const HandleColorPage = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
           <h1 className="text-2xl text-black font-bold text-center mb-4">
-            Кольори руків'я
+            Кольори руків&#39;я
           </h1>
 
           <div className="mb-6">
             <DragNDrop
-              onFileSelected={handleFileSelected}
-              validExtensions={[".jpg", "jpeg", ".png"]}
+                onFileSelected={colorMapFileSelected}
+                validExtensions={[".jpg", "jpeg", ".png"]}
+            />
+          </div>
+          <div className="mb-6">
+            <DragNDrop
+                onFileSelected={normalMapFileSelected}
+                validExtensions={[".jpg", "jpeg", ".png"]}
+            />
+          </div>
+          <div className="mb-6">
+            <DragNDrop
+                onFileSelected={roughnessrMapFileSelected}
+                validExtensions={[".jpg", "jpeg", ".png"]}
             />
           </div>
           <div className="mb-6">
             <h3 className="text-lg mb-4 font-semibold">Оберіть колір</h3>
-            <ColorPicker value={color} onChange={handleColorChange} />
+            <ColorPicker value={color} onChange={handleColorChange}/>
           </div>
           <div className="mb-6">
             <Characteristics
-              data={handleColor}
-              isReadOnly1={false}
-              currentBladeCoatingColor={color}
-              onChange={handleObjectChange}
-              type="HandleColor"
+                data={handleColor}
+                isReadOnly1={false}
+                currentBladeCoatingColor={color}
+                onChange={handleObjectChange}
+                type="HandleColor"
             />
           </div>
 
           <button
-            onClick={handleSave}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+              onClick={handleSave}
+              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
             Зберегти
           </button>

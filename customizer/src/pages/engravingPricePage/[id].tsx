@@ -1,16 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import DragNDrop from "@/app/components/DragNDrop/DragNDrop";
-import Characteristics from "@/app/components/Characteristics/Characteristics";
 import EngravingPrice from "@/app/Models/EngravingPrice";
 import { useRouter } from "next/router";
 import EngravingPriceService from "@/app/services/EngravingPriceService";
 import "../../styles/globals.css";
 import { Input, Spinner } from "@nextui-org/react";
-import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
 import styles from "./eng.module.css";
 const initialEngravingPriceData: EngravingPrice = {
-  id: 1,
+  id: "",
   price: 0,
 };
 
@@ -22,16 +19,13 @@ const EngravingPricePage = () => {
   const [EngravingPrice, setEngravingPrice] = useState<EngravingPrice>(
     initialEngravingPriceData
   );
-  const [Engravingservice, setEngravingservice] =
-    useState<EngravingPriceService>(new EngravingPriceService());
+  const Engravingservice = new EngravingPriceService();
   const handleSave = async () => {
     console.log("Saving data:", EngravingPrice);
 
     if (EngravingPrice) {
-      var response;
-
-      response = await Engravingservice.update(
-        parseInt(id as string, 10),
+      await Engravingservice.update(
+        id as string,
         EngravingPrice
       );
 
@@ -51,25 +45,18 @@ const EngravingPricePage = () => {
   useEffect(() => {
     const fetchEngravingPrice = async () => {
       if (id) {
-        // Перетворюємо id на число
-        const numericId = parseInt(id as string, 10);
-
-        if (isNaN(numericId)) {
-          console.error("ID is not a valid number");
-          return;
-        } else {
-          try {
-            const fetchedEngravingPrice = await Engravingservice.getById(
-              numericId
-            );
-            setEngravingPrice(fetchedEngravingPrice);
-            setLoading(false);
-          } catch (error) {
-            console.error("Error fetching sheath color:", error);
-            alert("Сталася помилка під час отримання даних. Перевірте ID.");
-            router.push("/EngravingPricePage/" + id);
-          }
+        try {
+          const fetchedEngravingPrice = await Engravingservice.getById(
+            id as string,
+          );
+          setEngravingPrice(fetchedEngravingPrice);
+          setLoading(false);
+        } catch (error) {
+          console.error("Error fetching sheath color:", error);
+          alert("Сталася помилка під час отримання даних. Перевірте ID.");
+          router.push("/EngravingPricePage/" + id);
         }
+
       }
       console.log(EngravingPrice);
     };

@@ -10,10 +10,10 @@ class KnifeService {
     this.resource = "Knife";
   }
   async getAll(): Promise<Knife[]> {
-    const response = await this.apiService.getAll<any>(this.resource);
+    const response = await this.apiService.getAll<Knife>(this.resource);
     return response;
   }
-  async getById(id: number): Promise<Knife> {
+  async getById(id: string): Promise<Knife> {
     const response = await this.apiService.getById<Knife>(this.resource, id);
     return response;
   }

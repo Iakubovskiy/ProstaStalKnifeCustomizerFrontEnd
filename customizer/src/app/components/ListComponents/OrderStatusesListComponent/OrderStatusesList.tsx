@@ -24,7 +24,7 @@ export default function OrderStatusesList() {
         fetchOrderStatuses();
     }, []);
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string) => {
         const isDeleted = await statusService.delete(id);
         if (isDeleted) {
             setOrderStatuses((prevData) => prevData.filter((item) => item.id !== id));

@@ -48,9 +48,6 @@ class OrderService {
         if(Order.comment)
             formData.append("Comment", Order.comment);
 
-        for (let [key, value] of formData.entries()) {
-            console.log(key, value);
-        }
         const response = await this.apiService.create<Order>(
             this.resource,
             formData
@@ -59,7 +56,7 @@ class OrderService {
     }
 
     async updateStatus(
-        id: number,
+        id: string,
         status: string
     ): Promise<Order> {
         const formData = new FormData();
@@ -75,7 +72,7 @@ class OrderService {
     }
 
     async updateDeliveryData(
-        id: number,
+        id: string,
         deliveryData: DeliveryDataDTO
     ): Promise<Order> {
         const formData = new FormData();
@@ -95,7 +92,7 @@ class OrderService {
     }
 
     async updateDeliveryType(
-        id: number,
+        id: string,
         deliveryType: DeliveryType
     ): Promise<Order> {
         const formData = new FormData();

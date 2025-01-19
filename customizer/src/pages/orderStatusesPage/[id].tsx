@@ -1,16 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import DragNDrop from "@/app/components/DragNDrop/DragNDrop";
-import Characteristics from "@/app/components/Characteristics/Characteristics";
 import OrderStatuses from "@/app/Models/OrderStatuses";
 import { useRouter } from "next/router";
 import OrderStatusesService from "@/app/services/OrderStatusesService";
 import "../../styles/globals.css";
 import { Input, Spinner } from "@nextui-org/react";
-import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
 import styles from "./eng.module.css";
 const initialOrderStatusesData: OrderStatuses = {
-  id: 0,
+  id: "",
   status: "",
 };
 
@@ -23,18 +20,16 @@ const OrderStatusesPage = () => {
   const [OrderStatuses, setOrderStatuses] = useState<OrderStatuses>(
     initialOrderStatusesData
   );
-  const [Engravingservice, setEngravingservice] =
-    useState<OrderStatusesService>(new OrderStatusesService());
+  const Engravingservice = new OrderStatusesService();
   const handleSave = async () => {
     console.log("Saving data:", OrderStatuses);
 
     if (OrderStatuses) {
-      var response;
       if (parseInt(id as string, 10) == 0) {
-        response = await Engravingservice.create(OrderStatuses);
+        await Engravingservice.create(OrderStatuses);
       }
-      response = await Engravingservice.update(
-        parseInt(id as string, 10),
+      await Engravingservice.update(
+        id as string,
         OrderStatuses
       );
 
@@ -54,20 +49,13 @@ const OrderStatusesPage = () => {
   useEffect(() => {
     const fetchOrderStatuses = async () => {
       if (id) {
-        // Перетворюємо id на число
-        const numericId = parseInt(id as string, 10);
-
-        if (isNaN(numericId)) {
-          console.error("ID is not a valid number");
-          return;
-        }
-        if (numericId == 0) {
+        if (id === "0") {
           setCreating(true);
           setLoading(false);
         } else {
           try {
             const fetchedOrderStatuses = await Engravingservice.getById(
-              numericId
+              id as string,
             );
             console.log(fetchedOrderStatuses);
             setOrderStatuses(fetchedOrderStatuses);

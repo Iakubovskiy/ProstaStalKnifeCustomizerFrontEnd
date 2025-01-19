@@ -6,10 +6,8 @@ import {
   TableBody,
   TableRow,
   TableCell,
-  Tooltip,
 } from "@nextui-org/react";
-import { DeleteIcon, EditIcon, EyeSlashFilledIcon } from "@nextui-org/shared-icons";
-import { router } from "next/client";
+import { DeleteIcon, EditIcon, EyeIcon, EyeSlashFilledIcon } from "@nextui-org/shared-icons";
 import "./style.css";
 import { useRouter } from "next/router";
 
@@ -21,7 +19,7 @@ export type Column<T> = {
 type CustomTableProps<T> = {
   data: T[];
   columns: Column<T>[];
-  onDelete: (id: string) => void;
+  onDelete: (id: string, isActive?: boolean) => void;
 };
 
 export default function CustomTable<T extends Record<string, any>>({
@@ -33,23 +31,32 @@ export default function CustomTable<T extends Record<string, any>>({
   const renderCell = (item: T, columnKey: keyof T) => {
     const cellValue = item[columnKey];
     if (columnKey === "actions") {
-      return (
-        <div className="flex gap-2">
-          <span
-            className="cursor-pointer icon"
-            onClick={() => router.push(`${router.asPath}/${item.id}`)}
-          >
-            <EditIcon />
-          </span>
-
-          <span
-            className="cursor-pointer icon"
-            onClick={() => onDelete(item.id)}
-          >
-            <DeleteIcon />
-          </span>
-        </div>
-      );
+        const isActive = item["isActive"]
+        return (
+            <div className="flex gap-2">
+                <span
+                className="cursor-pointer icon"
+                onClick={() => router.push(`${router.asPath}/${item.id}`)}
+              >
+                <EditIcon />
+                  </span>
+                {isActive !== undefined ? (
+                    <span
+                        className="cursor-pointer icon"
+                        onClick={() => onDelete(item.id, isActive)}
+                    >
+                    {isActive ? <EyeIcon /> : <EyeSlashFilledIcon />}
+                  </span>
+                                ) : (
+                                    <span
+                                        className="cursor-pointer icon"
+                                        onClick={() => onDelete(item.id)}
+                                    >
+                    <DeleteIcon />
+                  </span>
+                )}
+            </div>
+        );
     }
     return cellValue;
   };

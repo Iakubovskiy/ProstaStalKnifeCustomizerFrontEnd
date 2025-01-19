@@ -24,12 +24,18 @@ export default function FasteningList() {
         fetchFastenings();
     }, []);
 
-    const bladeDelete = async (id: number) => {
-        const isDeleted = await fasteningService.delete(id);
-        if (isDeleted) {
-            setFastenings((prevData) => prevData.filter((item) => item.id !== id));
+    const fasteningActivate = async (id: string, isActive?:boolean) => {
+        const updated = isActive
+            ? await fasteningService.deactivate(id)
+            : await fasteningService.activate(id);
+        if (updated) {
+            setFastenings((prevData) =>
+                prevData.map((item) =>
+                    item.id === id ? { ...item, isActive: !isActive } : item
+                )
+            );
         } else {
-            alert("Failed to delete the record.");
+            alert(`Failed to ${isActive ? "deactivate" : "activate"} the record.`);
         }
     };
 
@@ -37,6 +43,7 @@ export default function FasteningList() {
         { name: "Колір", uid: "color" },
         { name: "Ціна", uid: "price" },
         { name: "Матеріал", uid: "material" },
+        { name: "Активний", uid: "isActive" },
 
     ];
 
@@ -54,7 +61,7 @@ export default function FasteningList() {
                     </Button>
                 </Link>
             </div>
-            <CustomTable data={fastenings} columns={columns} onDelete={bladeDelete}/>
+            <CustomTable data={fastenings} columns={columns} onDelete={fasteningActivate}/>
         </div>
     );
 }

@@ -6,8 +6,6 @@ import { useCanvasState } from "@/app/state/canvasState";
 import * as THREE from "three";
 import { useControls } from "leva";
 
-const textureLoader = new THREE.TextureLoader();
-
 interface MaterialProps {
   color?: string;
   metalness?: number;
@@ -314,11 +312,11 @@ const ModelPart: React.FC<ModelPartProps> = ({
 
         switch (materialName) {
           case "bladeCoating":
+            console.log(1);
             updateMaterial(child.material, materialName, {
               color: snap.bladeCoatingColor.colorCode,
               metalness: 0.0,
               roughness: 0.0,
-              textureUrl: snap.bladeCoating.materialUrl,
             });
             break;
 
@@ -506,7 +504,8 @@ const KnifeConfigurator: React.FC = () => {
         <ModelPart
           url={snap.bladeShape.sheathModelUrl}
           {...sheathSettings}
-          position={[80, -40, 0]}
+          position={[0, -20, 0]}
+          rotation={[0, 0, Math.PI/2]}
         />
       )}
     </Canvas>

@@ -5,7 +5,7 @@ import { Button } from "@nextui-org/react";
 import BladeShapeService from "../../../services/BladeShapeService"
 import Link from "next/link";
 import {useRouter} from "next/router";
-import BladeShape from "@/app/Models/BladeShape";
+import BladeShape from "../../../Models/BladeShape";
 
 export default function BladeShapeList() {
     const [bladeShapes, setBladeShapes] = useState<BladeShape[]>([]);
@@ -24,12 +24,18 @@ export default function BladeShapeList() {
         fetchBladeShapes();
     }, []);
 
-    const bladeDelete = async (id: string) => {
-        const isDeleted = await bladeShapeService.delete(id);
-        if (isDeleted) {
-            setBladeShapes((prevData) => prevData.filter((item) => item.id !== id));
+    const bladeActivate = async (id: string, isActive?:boolean) => {
+        const updated = isActive
+            ? await bladeShapeService.deactivate(id)
+            : await bladeShapeService.activate(id);
+        if (updated) {
+            setBladeShapes((prevData) =>
+                prevData.map((item) =>
+                    item.id === id ? { ...item, isActive: !isActive } : item
+                )
+            );
         } else {
-            alert("Failed to delete the record.");
+            alert(`Failed to ${isActive ? "deactivate" : "activate"} the record.`);
         }
     };
 
@@ -42,6 +48,7 @@ export default function BladeShapeList() {
         { name: "Вага", uid: "bladeWeight" },
         { name: "Кут заточки", uid: "sharpeningAngle" },
         { name: "Твердість по Роквеллу", uid: "rockwellHardnessUnits" },
+        { name: "Активний", uid: "isActive" },
 
     ];
 
@@ -59,7 +66,7 @@ export default function BladeShapeList() {
                     </Button>
                 </Link>
             </div>
-            <CustomTable data={bladeShapes} columns={columns} onDelete={bladeDelete}/>
+            <CustomTable data={bladeShapes} columns={columns} onDelete={bladeActivate}/>
         </div>
     );
 }

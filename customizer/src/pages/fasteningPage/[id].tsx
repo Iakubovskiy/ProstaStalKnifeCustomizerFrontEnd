@@ -8,15 +8,15 @@ import FasteningService from "@/app/services/FasteningService";
 import "../../styles/globals.css";
 import { Input, Spinner } from "@nextui-org/react";
 import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
-import styles from "./fasteningPage.module.css";
 const initialFasteningData: Fastening = {
-  id: 1,
+  id: "",
   name: "",
   material: "",
   color: "",
   colorCode: "#000000",
   modelUrl: "1",
   price: 0,
+  isActive: true,
 };
 
 const FasteningPage = () => {
@@ -28,9 +28,7 @@ const FasteningPage = () => {
 
   const [file, setFile] = useState<File | null>(null);
   const [fastening, setFastening] = useState<Fastening>(initialFasteningData);
-  const [fasteningservice, setFasteningservice] = useState<FasteningService>(
-    new FasteningService()
-  );
+  const fasteningservice = new FasteningService();
   const fasteningFileSelected = (selectedFile: File | null) => {
     setFile(selectedFile);
   };
@@ -42,12 +40,11 @@ const FasteningPage = () => {
     console.log("Saving data:", fastening, "Uploaded File:", file);
 
     if (file && fastening) {
-      var response;
       if (isCreating) {
-        response = await fasteningservice.create(fastening, file);
+        await fasteningservice.create(fastening, file);
       } else {
-        response = await fasteningservice.update(
-          parseInt(id as string, 10),
+        await fasteningservice.update(
+          id as string,
           fastening,
           file
         );
@@ -56,8 +53,8 @@ const FasteningPage = () => {
       alert("Збережено");
     } else if (fastening && !isCreating) {
       console.log("updating...");
-      response = await fasteningservice.update(
-        parseInt(id as string, 10),
+      await fasteningservice.update(
+        id as string,
         fastening,
         file
       );
@@ -80,7 +77,7 @@ const FasteningPage = () => {
           setLoading(false);
         } else {
           try {
-            const fetchedFastening = await fasteningservice.getById(numericId);
+            const fetchedFastening = await fasteningservice.getById(id as string);
             setFastening(fetchedFastening);
             console.log("1");
             console.log(fetchedFastening.colorCode);
@@ -98,7 +95,7 @@ const FasteningPage = () => {
     };
     fetchFastening();
   }, [id]);
-  const fasteningChange = (newColor: any) => {
+  const fasteningChange = (newColor: string) => {
     setColor(newColor);
     fastening.colorCode = newColor;
   };

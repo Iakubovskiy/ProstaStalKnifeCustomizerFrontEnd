@@ -28,7 +28,7 @@ export default function OrderList() {
         fetchOrders();
     }, []);
 
-    const bladeDelete = async (id: number) => {
+    const bladeDelete = async (id: string) => {
         const isDeleted = await orderService.delete(id);
         if (isDeleted) {
             setOrders((prevData) => prevData.filter((item) => item.id !== id));

@@ -24,12 +24,18 @@ export default function DeliveryTypeList() {
         fetchDeliveryTypes();
     }, []);
 
-    const handleDelete = async (id: number) => {
-        const isDeleted = await deliveryService.delete(id);
-        if (isDeleted) {
-            setDeliveryTypes((prevData) => prevData.filter((item) => item.id !== id));
+    const deliveryActivate = async (id: string, isActive?:boolean) => {
+        const updated = isActive
+            ? await deliveryService.deactivate(id)
+            : await deliveryService.activate(id);
+        if (updated) {
+            setDeliveryTypes((prevData) =>
+                prevData.map((item) =>
+                    item.id === id ? { ...item, isActive: !isActive } : item
+                )
+            );
         } else {
-            alert("Failed to delete the record.");
+            alert(`Failed to ${isActive ? "deactivate" : "activate"} the record.`);
         }
     };
 
@@ -37,6 +43,7 @@ export default function DeliveryTypeList() {
         { name: "Назва", uid: "name" },
         { name: "Ціна", uid: "price" },
         { name: "Коментар", uid: "comment" },
+        { name: "Активний", uid: "isActive" },
     ];
 
     return (
@@ -53,7 +60,7 @@ export default function DeliveryTypeList() {
                     </Button>
                 </Link>
             </div>
-            <CustomTable data={deliveryTypes} columns={columns} onDelete={handleDelete}/>
+            <CustomTable data={deliveryTypes} columns={columns} onDelete={deliveryActivate}/>
         </div>
     );
 }

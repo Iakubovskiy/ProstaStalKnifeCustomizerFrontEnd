@@ -3,7 +3,6 @@ export default interface HandleColor {
   colorName: string;
   colorCode: string;
   material: string;
-  materialUrl: string;
   isActive: boolean;
   colorMapUrl: string | null;
   normalMapUrl: string | null;
