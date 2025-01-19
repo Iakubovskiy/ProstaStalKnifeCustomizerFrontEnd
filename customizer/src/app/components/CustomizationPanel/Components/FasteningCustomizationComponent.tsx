@@ -7,7 +7,6 @@ import CardComponent from "./CardComponent";
 import Fastening from "@/app/Models/Fastening";
 import { useCanvasState } from "@/app/state/canvasState";
 import Characteristics from "@/app/components/Characteristics/Characteristics";
-import BladeCoating from "@/app/Models/BladeCoating";
 import { useSnapshot } from "valtio";
 
 const PreviewGenerator = dynamic(() => import("./PreviewGenerator"), {
@@ -19,7 +18,7 @@ const PreviewGenerator = dynamic(() => import("./PreviewGenerator"), {
 
 const FasteningCustomizationComponent: React.FC = () => {
   const [fastenings, setFastenings] = useState<Fastening[]>([]);
-  const [previews, setPreviews] = useState<{ [key: number]: string }>({});
+  const [previews, setPreviews] = useState<{ [key: string]: string }>({});
   const fasteningService = new FasteningService();
   const state = useCanvasState();
   const snap = useSnapshot(state);
@@ -39,7 +38,7 @@ const FasteningCustomizationComponent: React.FC = () => {
     fetchFastenings();
   }, []);
 
-  const handlePreviewGenerated = (id: number, preview: string) => {
+  const handlePreviewGenerated = (id: string, preview: string) => {
     setPreviews((prev) => ({
       ...prev,
       [id]: preview,

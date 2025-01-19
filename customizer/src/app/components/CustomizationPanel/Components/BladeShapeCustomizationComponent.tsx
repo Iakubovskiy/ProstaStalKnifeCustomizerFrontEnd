@@ -9,7 +9,6 @@ import { useCanvasState } from "@/app/state/canvasState";
 import SheathColor from "@/app/Models/SheathColor";
 import HandleColor from "@/app/Models/HandleColor";
 import Fastening from "@/app/Models/Fastening";
-import BladeCoating from "@/app/Models/BladeCoating";
 import Characteristics from "@/app/components/Characteristics/Characteristics";
 import { useSnapshot } from "valtio";
 
@@ -22,7 +21,7 @@ const PreviewGenerator = dynamic(() => import("./PreviewGenerator"), {
 
 const BladeShapeCustomizationComponent: React.FC = () => {
   const [bladeShapes, setBladeShapes] = useState<BladeShape[]>([]);
-  const [previews, setPreviews] = useState<{ [key: number]: string }>({});
+  const [previews, setPreviews] = useState<{ [key: string]: string }>({});
   const bladeShapeService = new BladeShapeService();
   const state = useCanvasState();
   const snap = useSnapshot(state);
@@ -45,7 +44,7 @@ const BladeShapeCustomizationComponent: React.FC = () => {
     fetchBladeShapes();
   }, []);
 
-  const handlePreviewGenerated = (id: number, preview: string) => {
+  const handlePreviewGenerated = (id: string, preview: string) => {
     setPreviews((prev) => ({
       ...prev,
       [id]: preview,
@@ -65,12 +64,6 @@ const BladeShapeCustomizationComponent: React.FC = () => {
       bladeWeight: shape.bladeWeight,
       sharpeningAngle: shape.sharpeningAngle,
       rockwellHardnessUnits: shape.rockwellHardnessUnits,
-      engravingLocationX: shape.engravingLocationX,
-      engravingLocationY: shape.engravingLocationY,
-      engravingLocationZ: shape.engravingLocationZ,
-      engravingRotationX: shape.engravingRotationX,
-      engravingRotationY: shape.engravingRotationY,
-      engravingRotationZ: shape.engravingRotationZ,
       bladeShapeModelUrl: shape.bladeShapeModelUrl,
       sheathModelUrl: shape.sheathModelUrl,
     };

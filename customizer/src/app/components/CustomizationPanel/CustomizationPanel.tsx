@@ -4,10 +4,13 @@ import CustomizationPanelMenu from "./Menu/CustomizationPanelMenu";
 import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizationComponent";
 import HandleCustomizationComponent from "./Components/HandleCustomizationComponent";
 import SheathCustomizationComponent from "./Components/SheathCustomizationComponent";
-import BladeCoatingCustomizationComponent from "./Components/BladeCoatingsCustomizationComponent";
+import FasteningCustomizationComponent from "./Components/FasteningCustomizationComponent";
+// import BladeCoatingCustomizationComponent from "./Components/BladeCoatingsCustomizationComponent";
+import Characteristics from "../Characteristics/Characteristics";
 import { useState } from "react";
 import EngravingComponent from "../EngravingComponent/EngravingComponent";
 import BladeShapeService from "@/app/services/BladeShapeService";
+import BladeCoatingColorService from "@/app/services/BladeCoatingColorService";
 import SheathColorService from "@/app/services/SheathColorService";
 import BladeShape from "@/app/Models/BladeShape";
 import SheathColor from "@/app/Models/SheathColor";
@@ -15,8 +18,7 @@ import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import HandleColorService from "@/app/services/HandleColorService";
 import { useCanvasState } from "@/app/state/canvasState";
 import HandleColor from "@/app/Models/HandleColor";
-import BladeCoatingColorService from "@/app/services/BladeCoatingColorService";
-
+import { tslFn } from "three/tsl";
 const scrollLeft = () => {
   const container = document.getElementById("scrollContainer");
   // @ts-ignore
@@ -37,33 +39,24 @@ const scrollRight = () => {
 const CustomizationPanel = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const bladeShapeService = new BladeShapeService();
+  const bladeCoatingColorService = new BladeCoatingColorService();
   const handleColors = new HandleColorService();
   const SheathColorservice = new SheathColorService();
-  const bladeCoatingColorService = new BladeCoatingColorService();
 
   const state = useCanvasState();
 
+  let detailedCoatings;
   useEffect(() => {
     const fetchBladeShapes = async () => {
       try {
         const shapes = await bladeShapeService.getAll();
-        const detailedCoatings: {
-          color: BladeCoatingColor;
-        }[] = [];
-
-        const colors = await bladeCoatingColorService.getAll();
-
-        for (const color of colors) {
-            detailedCoatings.push({
-              color: color,
-          });
-        }
+        const ColorCoatings = await bladeCoatingColorService.getAll();
         const handlecolors = await handleColors.getAll();
         const sheaths = await SheathColorservice.getAll();
 
         SelectByDefault(
           shapes[0],
-          detailedCoatings[0].color,
+          ColorCoatings[0],
           sheaths[0],
           handlecolors[0]
         );
@@ -90,6 +83,7 @@ const CustomizationPanel = () => {
       bladeWeight: shape.bladeWeight,
       sharpeningAngle: shape.sharpeningAngle,
       rockwellHardnessUnits: shape.rockwellHardnessUnits,
+
       bladeShapeModelUrl: shape.bladeShapeModelUrl,
       sheathModelUrl: shape.sheathModelUrl,
     };
@@ -101,8 +95,8 @@ const CustomizationPanel = () => {
     switch (selectedOption) {
       case "bladeShape":
         return <BladeShapeCustomizationComponent />;
-      case "bladeCoating":
-        return <BladeCoatingCustomizationComponent />;
+      // case "bladeCoating":
+      //   return <BladeCoatingCustomizationComponent />;
       case "handleColor":
         return <HandleCustomizationComponent />;
       case "scabbardColor":

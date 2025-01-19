@@ -1,4 +1,5 @@
 import { proxy } from "valtio";
+import { useEffect } from "react";
 import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import BladeShape from "@/app/Models/BladeShape";
 import Fastening from "@/app/Models/Fastening";
@@ -24,19 +25,19 @@ const state = proxy<State>({
     isActive: false,
     colorMapUrl: null,
     normalMapUrl: null,
-    roughnessMapUrl: null
+    roughnessMapUrl: null,
   },
   sheathColor: {
     id: "",
     color: "",
     price: 0,
     material: "",
-    colorCode: "",
-    engravingColorCode: "",
-    isActive: false,
+    isActive: true,
     colorMapUrl: null,
     normalMapUrl: null,
-    roughnessMapUrl: null
+    roughnessMapUrl: null,
+    colorCode: "",
+    engravingColorCode: "",
   },
   bladeCoatingColor: {
     id: "",
@@ -48,8 +49,9 @@ const state = proxy<State>({
     isActive: true,
     colorMapUrl: null,
     normalMapUrl: null,
-    roughnessMapUrl: null
+    roughnessMapUrl: null,
   },
+
   bladeShape: {
     id: "",
     name: "",
@@ -62,7 +64,7 @@ const state = proxy<State>({
     sharpeningAngle: 0,
     rockwellHardnessUnits: 0,
     sheathModelUrl: "",
-    isActive: true
+    isActive: false,
   },
   engravings: [],
   fastening: {
@@ -73,7 +75,7 @@ const state = proxy<State>({
     price: 0,
     material: "",
     modelUrl: "",
-    isActive: true
+    isActive: true,
   },
 });
 
