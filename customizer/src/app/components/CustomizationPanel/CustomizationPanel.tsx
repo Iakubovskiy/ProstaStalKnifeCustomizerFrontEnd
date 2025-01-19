@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect } from "react";
 import CustomizationPanelMenu from "./Menu/CustomizationPanelMenu";
 import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizationComponent";

@@ -28,12 +28,13 @@ const CardComponent: React.FC<CardComponentProps> = ({
             borderRadius: "8px",
           }}
           className={`
-                        flex items-center justify-center
+                        flex  justify-center
                         lg:w-[75px] lg:h-[75px]
                         md:w-[75px] md:h-[75px]  
                         sm:w-[75px] sm:h-[75px] 
                         xs:w-[75px] xs:h-[75px]
-                        2xs:w-[75px] 2xs:h-[75px]
+                        min-w-[75px] min-h-[75px]
+                        
                     `}
         ></Card>
       </Tooltip>

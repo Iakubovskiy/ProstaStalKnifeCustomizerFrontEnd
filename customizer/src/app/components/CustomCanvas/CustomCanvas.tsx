@@ -31,23 +31,31 @@ interface DecalMaterialProps {
   pictureUrl: string;
 }
 
-const ResizeFix = () => {
-  const { gl } = useThree();
+// const ResizeFix = () => {
+//   const { gl, camera } = useThree(); // Отримуємо камеру і WebGL-контекст
 
-  useEffect(() => {
-    const handleResize = () => {
-      gl.setSize(window.innerWidth, window.innerHeight);
-    };
+//   useEffect(() => {
+//     const handleResize = () => {
+//       // Оновлюємо розмір WebGL-контексту
+//       gl.setSize(window.innerWidth, window.innerHeight);
 
-    window.addEventListener("resize", handleResize);
+//       // Оновлюємо співвідношення сторін камери
+//     };
 
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, [gl]);
+//     // Додаємо слухач для зміни розміру вікна
+//     window.addEventListener("resize", handleResize);
 
-  return null;
-};
+//     // Викликаємо перший раз для коректного налаштування
+//     handleResize();
+
+//     return () => {
+//       // Очищаємо слухач, щоб уникнути витоків пам'яті
+//       window.removeEventListener("resize", handleResize);
+//     };
+//   }, [gl, camera]);
+
+//   return null;
+// };
 
 const Background: React.FC = () => {
   const { scene, gl } = useThree(); // Отримуємо scene і renderer (gl)
@@ -210,29 +218,6 @@ const EngravedMesh = ({
     </group>
   );
 };
-// const Background: React.FC = () => {
-//   const { gl } = useThree();
-
-//   // Завантаження текстури
-//   const texture = useTexture("/background.jpg");
-
-//   // Створюємо кубічний фон
-//   const formatted = new THREE.WebGLCubeRenderTarget(
-//     texture.image.height
-//   ).fromEquirectangularTexture(gl, texture);
-
-//   // Ви можете збільшити позицію фонового зображення, наприклад, змістити його назад на більшу відстань.
-//   const distance = 50; // Розмістити фон на відстані 50 одиниць
-
-//   return (
-//     //@ts-ignore
-//     <primitive
-//       attach="background"
-//       object={formatted.texture}
-//       position={[0, 0, -distance]}
-//     />
-//   );
-// };
 const ModelPart: React.FC<ModelPartProps> = ({
   url,
   materialProps = {},
@@ -486,7 +471,7 @@ const KnifeConfigurator: React.FC = () => {
         preserveDrawingBuffer: false, // Уникайте збереження буферів для розробки
       }}
     >
-      <ResizeFix />
+      {/* <ResizeFix /> */}
       <Lighting />
       <Controls />
       <Background />
