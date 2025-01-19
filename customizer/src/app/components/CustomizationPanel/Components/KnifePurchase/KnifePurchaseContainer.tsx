@@ -4,7 +4,6 @@ import { PriceCalculator } from "./PriceCalculator";
 import { OrderButton } from "./OrderButton";
 import EngravingPriceService from "@/app/services/EngravingPriceService";
 import { useSnapshot } from "valtio";
-import BladeCoating from "@/app/Models/BladeCoating";
 import Fastening from "@/app/Models/Fastening";
 import Engraving from "@/app/Models/Engraving";
 
@@ -15,10 +14,7 @@ export const KnifePurchaseContainer: React.FC = () => {
   const [totalPrice, setTotalPrice] = useState(0);
 
   const calculatePrice = async () => {
-    let price =
-      snap.bladeShape.price +
-      snap.bladeCoating.price +
-      (snap.sheathColor?.price || 0);
+    let price = snap.bladeShape.price + (snap.sheathColor?.price || 0);
 
     if (snap.fastening) {
       price += snap.fastening.reduce((sum, item) => sum + item.price, 0);
@@ -49,7 +45,6 @@ export const KnifePurchaseContainer: React.FC = () => {
     const knife = {
       id: 0,
       shape: snap.bladeShape,
-      bladeCoating: snap.bladeCoating,
       bladeCoatingColor: snap.bladeCoatingColor,
       handleColor: snap.handleColor,
       sheathColor: snap.sheathColor,
@@ -72,19 +67,16 @@ export const KnifePurchaseContainer: React.FC = () => {
         onClearCart={handleClearCart}
         onAddToCart={handleAddToCart}
       />
-      <OrderButton
+      {/* <OrderButton
         currentKnife={{
-          id: 0,
+          id: "0",
           shape: snap.bladeShape,
-          bladeCoating: snap.bladeCoating as BladeCoating,
           bladeCoatingColor: snap.bladeCoatingColor,
           handleColor: snap.handleColor,
           sheathColor: snap.sheathColor,
-          fastening: snap.fastening as Fastening[],
           engravings: snap.engravings as Engraving[],
-          quantity: quantity,
-        }}
-      />
+        }} 
+      /> */}
     </div>
   );
 };

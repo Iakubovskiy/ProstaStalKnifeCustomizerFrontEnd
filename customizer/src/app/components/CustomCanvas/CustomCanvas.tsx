@@ -118,57 +118,22 @@ const degreesToRadians = (deg: number) => (deg * Math.PI) / 180;
 const DecalWithControls = ({ meshRef, engraving, index }) => {
   const state = useCanvasState();
 
-  const controls = useControls(`Гравіювання ${index}`, {
-    positionX: {
-      label: "Горизонтальне розміщення",
-      value: engraving.locationX,
-      min: -5,
-      max: 40,
-      step: 0.1,
-    },
-    positionY: {
-      label: "Вертикальне розміщення",
-      value: engraving.locationY,
-      min: -5,
-      max: 5,
-      step: 0.1,
-    },
-    rotationZ: {
-      value: radiansToDegrees(engraving.rotationZ),
-      min: -180,
-      max: 180,
-      step: 1,
-      label: "Кут",
-    },
-    scale: { value: 20, min: 0.1, max: 100, step: 0.1, label: "Розміщення" },
-  });
-
-  useEffect(() => {
-    const updatedEngraving = {
-      ...engraving,
-      locationX: controls.positionX,
-      locationY: controls.positionY,
-      rotationZ: degreesToRadians(controls.rotationZ),
-      scaleX: controls.scale,
-      scaleY: controls.scale,
-      scaleZ: controls.scale,
-    };
-    state.engravings[index] = updatedEngraving;
-
-    console.log("Updated engravings state:", state.engravings);
-  }, [controls]);
+  // Remove the Leva useControls hook and directly use the values from the engraving object
+  const controls = {
+    positionX: engraving.locationX,
+    positionY: engraving.locationY,
+    positionZ: engraving.text === null ? 0 : -1,
+    rotationX: 0,
+    rotationY: engraving.side === 2 ? Math.PI : 0,
+    rotationZ: engraving.rotationZ,
+    scale: engraving.scaleX,
+  };
 
   return (
     <SingleDecal
       meshRef={meshRef}
       engraving={engraving}
-      controls={{
-        ...controls,
-        positionZ: engraving.text === null ? 0 : -1,
-        rotationY: engraving.side === 2 ? Math.PI : 0,
-        rotationX: 0,
-        rotationZ: engraving.rotationZ,
-      }}
+      controls={controls}
       offsetFactor={index * -0.1}
     />
   );
@@ -490,7 +455,7 @@ const KnifeConfigurator: React.FC = () => {
           url={snap.bladeShape.sheathModelUrl}
           {...sheathSettings}
           position={[0, -20, 0]}
-          rotation={[0, 0, Math.PI/2]}
+          rotation={[0, 0, Math.PI / 2]}
         />
       )}
     </Canvas>

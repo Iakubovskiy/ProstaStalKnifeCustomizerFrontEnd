@@ -1,8 +1,7 @@
 html, body {
   height: 100%; /* Гарантує, що весь вміст займатиме 100% висоти вікна */
-  margin: 0; /* Забирає відступи браузера */
-  padding: 0;
-  overflow:visible; /* Запобігає появі скролбарів */
+  width: 100vw; /* Гарантує, що весь вміст займатиме 100% висоти вікна */
+
 }
 .customizer {
     display: flex;
@@ -38,6 +37,7 @@ html, body {
     
     .canvasContainer {
         height: 100vh;
+        width:100vh;
       }
       .controlsContainer {
         overflow-y: visible;
@@ -55,6 +55,7 @@ html, body {
     
     .canvasContainer {
       width: 70%;
+      height: 100vh;
     }
   
     .controlsContainer {
