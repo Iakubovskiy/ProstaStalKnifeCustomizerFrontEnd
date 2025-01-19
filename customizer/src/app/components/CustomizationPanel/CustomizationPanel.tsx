@@ -5,7 +5,6 @@ import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizati
 import HandleCustomizationComponent from "./Components/HandleCustomizationComponent";
 import SheathCustomizationComponent from "./Components/SheathCustomizationComponent";
 import FasteningCustomizationComponent from "./Components/FasteningCustomizationComponent";
-// import BladeCoatingCustomizationComponent from "./Components/BladeCoatingsCustomizationComponent";
 import Characteristics from "../Characteristics/Characteristics";
 import { useState } from "react";
 import EngravingComponent from "../EngravingComponent/EngravingComponent";
@@ -45,7 +44,6 @@ const CustomizationPanel = () => {
 
   const state = useCanvasState();
 
-  let detailedCoatings;
   useEffect(() => {
     const fetchBladeShapes = async () => {
       try {
