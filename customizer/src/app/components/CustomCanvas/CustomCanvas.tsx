@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, {useEffect, useRef, useState} from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { OrbitControls, useGLTF, Decal, useTexture } from "@react-three/drei";
+import {OrbitControls, useGLTF, Decal, useTexture, Html} from "@react-three/drei";
 import { useSnapshot } from "valtio";
 import { useCanvasState } from "@/app/state/canvasState";
 import * as THREE from "three";
-import { useControls } from "leva";
 
 interface MaterialProps {
   color?: string;
@@ -31,34 +30,8 @@ interface DecalMaterialProps {
   pictureUrl: string;
 }
 
-// const ResizeFix = () => {
-//   const { gl, camera } = useThree(); // Отримуємо камеру і WebGL-контекст
-
-//   useEffect(() => {
-//     const handleResize = () => {
-//       // Оновлюємо розмір WebGL-контексту
-//       gl.setSize(window.innerWidth, window.innerHeight);
-
-//       // Оновлюємо співвідношення сторін камери
-//     };
-
-//     // Додаємо слухач для зміни розміру вікна
-//     window.addEventListener("resize", handleResize);
-
-//     // Викликаємо перший раз для коректного налаштування
-//     handleResize();
-
-//     return () => {
-//       // Очищаємо слухач, щоб уникнути витоків пам'яті
-//       window.removeEventListener("resize", handleResize);
-//     };
-//   }, [gl, camera]);
-
-//   return null;
-// };
-
 const Background: React.FC = () => {
-  const { scene, gl } = useThree(); // Отримуємо scene і renderer (gl)
+  const { scene, gl } = useThree();
   const texture = useTexture("/background.jpg");
 
   useEffect(() => {
@@ -88,8 +61,8 @@ const DecalMaterial: React.FC<
       map={texture}
       transparent
       polygonOffset
-      polygonOffsetFactor={offsetFactor} // Зміщення для уникнення накладання
-      polygonOffsetUnits={-2} // Базова одиниця зміщенняor={-1}
+      polygonOffsetFactor={offsetFactor}
+      polygonOffsetUnits={-2}
     />
   );
 };
@@ -111,14 +84,8 @@ const SingleDecal = ({ meshRef, engraving, controls, offsetFactor }) => {
     </Decal>
   );
 };
-
-const radiansToDegrees = (rad: number) => (rad * 180) / Math.PI;
-const degreesToRadians = (deg: number) => (deg * Math.PI) / 180;
 // @ts-ignore
 const DecalWithControls = ({ meshRef, engraving, index }) => {
-  const state = useCanvasState();
-
-  // Remove the Leva useControls hook and directly use the values from the engraving object
   const controls = {
     positionX: engraving.locationX,
     positionY: engraving.locationY,
@@ -185,7 +152,6 @@ const EngravedMesh = ({
 };
 const ModelPart: React.FC<ModelPartProps> = ({
   url,
-  materialProps = {},
   position = [0, 0, 0],
   rotation = [0, 0, 0],
 }) => {
@@ -344,8 +310,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
 
     setEngravingMeshes(foundEngravingMeshes);
   }, [scene]);
-  console.log(engravingMeshes);
-  console.log(snap);
   return (
     // @ts-ignore
     <group position={position} rotation={rotation}>
@@ -366,99 +330,331 @@ const ModelPart: React.FC<ModelPartProps> = ({
   );
 };
 
-const KnifeConfigurator: React.FC = () => {
+//@ts-ignore
+const ControlButtons = ({handleArrowClick, handleZoom}) => {
+  return (
+      <>
+        <div style={{
+          position: 'absolute',
+          top: '12%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '200px',
+          height: '200px',
+        }}>
+          <button
+              onClick={() => handleArrowClick("up")}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: '50%',
+                color: "black",
+                transform: 'translateX(-50%)',
+                width: '40px',
+                height: '40px',
+                background: 'rgba(255, 255, 255, 0.7)',
+                border: '1px solid #666',
+                borderRadius: '50px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px'
+              }}
+          >
+            ↑
+          </button>
+        </div>
+        <div style={{
+          position: 'absolute',
+          bottom: '0%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: '200px',
+          height: '200px',
+        }}>
+          <button
+              onClick={() => handleArrowClick("down")}
+              style={{
+                position: 'absolute',
+                color: "black",
+                bottom: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: '40px',
+                height: '40px',
+                background: 'rgba(255, 255, 255, 0.7)',
+                border: '1px solid #666',
+                borderRadius: '50px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px'
+              }}
+          >
+            ↓
+          </button>
+        </div>
+
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '15%',
+          transform: 'translate(-50%, -50%)',
+          width: '200px',
+          height: '200px',
+        }}>
+          <button
+              onClick={() => handleArrowClick("left")}
+              style={{
+                position: 'absolute',
+                color: "black",
+                left: 0,
+                top: '15%',
+                transform: 'translateY(-50%)',
+                width: '40px',
+                height: '40px',
+                background: 'rgba(255, 255, 255, 0.7)',
+                border: '1px solid #666',
+                borderRadius: '50px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px'
+              }}
+          >
+            ←
+          </button>
+        </div>
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          right: '0%',
+          transform: 'translate(-50%, -50%)',
+          width: '200px',
+          height: '200px',
+        }}>
+          <button
+              onClick={() => handleArrowClick("right")}
+              style={{
+                position: 'absolute',
+                color: "black",
+                right: 0,
+                top: '15%',
+                transform: 'translateY(-50%)',
+                width: '40px',
+                height: '40px',
+                background: 'rgba(255, 255, 255, 0.7)',
+                border: '1px solid #666',
+                borderRadius: '50px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px'
+              }}
+          >
+            →
+          </button>
+        </div>
+
+        <div style={{
+          position: 'absolute',
+          right: '20px',
+          bottom: '10%',
+          transform: 'translateY(-50%)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '8px'
+        }}>
+          <button
+              onClick={() => handleZoom("in")}
+              style={{
+                width: '40px',
+                color: "black",
+                height: '40px',
+                background: 'rgba(255, 255, 255, 0.7)',
+                border: '1px solid #666',
+                borderRadius: '50px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px'
+              }}
+          >
+            +
+          </button>
+          <button
+              onClick={() => handleZoom("out")}
+              style={{
+                width: '40px',
+                color: "black",
+                height: '40px',
+                background: 'rgba(255, 255, 255, 0.7)',
+                border: '1px solid #666',
+                borderRadius: '50px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '18px'
+              }}
+          >
+            -
+          </button>
+        </div>
+      </>
+  );
+};
+
+const KnifeConfigurator = () => {
   const state = useCanvasState();
   const snap = useSnapshot(state);
+  //@ts-ignore
+  const controlsRef = useRef();
+
+  const handleArrowClick = (direction: "up" | "down" | "left" | "right") => {
+    if (!controlsRef.current) return;
+
+    const controls = controlsRef.current;
+    const delta = Math.PI / 18;
+
+    //@ts-ignore
+    const currentAzimuth = controls.getAzimuthalAngle();
+    //@ts-ignore
+    const currentPolar = controls.getPolarAngle();
+
+    switch (direction) {
+      case "up":
+        //@ts-ignore
+        controls.setPolarAngle(Math.max(0, currentPolar - delta));
+        break;
+      case "down":
+        //@ts-ignore
+        controls.setPolarAngle(Math.min(Math.PI, currentPolar + delta));
+        break;
+      case "left":
+        //@ts-ignore
+        controls.setAzimuthalAngle(currentAzimuth - delta);
+        break;
+      case "right":
+        //@ts-ignore
+        controls.setAzimuthalAngle(currentAzimuth + delta);
+        break;
+    }
+    //@ts-ignore
+    controls.update();
+  };
+
+  const handleZoom = (inOut: "in" | "out") => {
+    const delta = 1;
+    //@ts-ignore
+    const currentDistance = controlsRef.current.object.position.length();
+    if (inOut === "in" && currentDistance > 10) {
+      //@ts-ignore
+      controlsRef.current.object.position.setLength(currentDistance - delta);
+    } else if (inOut === "out" && currentDistance < 100) {
+      //@ts-ignore
+      controlsRef.current.object.position.setLength(currentDistance + delta);
+    }
+  };
 
   const validateModelUrl = (url: string): boolean => {
     return Boolean(
-      url &&
+        url &&
         (url.endsWith(".glb") ||
-          url.endsWith(".gltf") ||
-          url.startsWith("blob:"))
+            url.endsWith(".gltf") ||
+            url.startsWith("blob:"))
     );
   };
 
   const bladeSettings = {
     materialProps: {
-      color: snap.bladeCoatingColor.colorCode,
-      metalness: 0.8,
-      roughness: 0.2,
+      default: {
+        color: snap.bladeCoatingColor.colorCode,
+        metalness: 0.8,
+        roughness: 0.2,
+      },
     },
-    position: [0, 0, 0],
-    rotation: [0, 0, 0],
+    position: [0, 0, 0] as [number, number, number],
+    rotation: [0, 0, 0] as [number, number, number],
   };
 
   const sheathSettings = {
     materialProps: {
-      color: snap.sheathColor.colorCode,
-      metalness: 0.1,
-      roughness: 0.9,
+      default: {
+        metalness: 0.9,
+        roughness: 0.1,
+      },
     },
   };
 
-  const Lighting: React.FC = () => (
-    <>
-      {/*@ts-ignore*/}
-      <ambientLight intensity={0.5} />
-      {/*@ts-ignore*/}
-      <directionalLight position={[10, 10, 5]} intensity={0.8} />
-      {/*@ts-ignore*/}
-      <directionalLight position={[-10, -10, -5]} intensity={0.4} />
-    </>
+  const Lighting = () => (
+      <>
+        {/*@ts-ignore*/}
+        <ambientLight intensity={0.5}/>
+        {/*@ts-ignore*/}
+        <directionalLight position={[10, 10, 5]} intensity={0.8}/>
+        {/*@ts-ignore*/}
+        <directionalLight position={[-10, -10, -5]} intensity={0.4}/>
+      </>
   );
 
-  const Controls: React.FC = () => (
-    <OrbitControls
-      enablePan={true}
-      enableZoom={true}
-      enableRotate={true}
-      minDistance={10}
-      maxDistance={100}
-    />
+  const Controls = () => (
+      <OrbitControls
+          enablePan={true}
+          enableZoom={true}
+          enableRotate={true}
+          minDistance={10}
+          maxDistance={100}
+          //@ts-ignore
+          ref={controlsRef}
+      />
   );
 
   if (!validateModelUrl(snap.bladeShape.bladeShapeModelUrl)) {
     return (
-      <Canvas>
-        <Lighting />
-        <Controls />
-      </Canvas>
+        <Canvas>
+          <Lighting/>
+          <Controls/>
+        </Canvas>
     );
   }
 
   return (
-    <Canvas
-      camera={{ position: [0, 0, 5], fov: 45 }}
-      gl={{
-        powerPreference: "high-performance",
-        antialias: true,
-        preserveDrawingBuffer: false, // Уникайте збереження буферів для розробки
-      }}
-    >
-      {/* <ResizeFix /> */}
-      <Lighting />
-      <Controls />
-      <Background />
+      <>
+        <Canvas
+            gl={{
+              powerPreference: "high-performance",
+              antialias: true,
+              preserveDrawingBuffer: false, // Уникайте збереження буферів для розробки
+            }}
+        >
+          <Lighting/>
+          <Controls/>
+          <Background/>
 
-      {validateModelUrl(snap.bladeShape.bladeShapeModelUrl) && (
-        //@ts-ignore
-        <ModelPart
-          url={snap.bladeShape.bladeShapeModelUrl}
-          {...bladeSettings}
-        />
-      )}
+          {validateModelUrl(snap.bladeShape.bladeShapeModelUrl) && (
+              <ModelPart
+                  url={snap.bladeShape.bladeShapeModelUrl}
+                  {...bladeSettings}
+              />
+          )}
 
-      {validateModelUrl(snap.bladeShape.sheathModelUrl) && (
-        //@ts-ignore
-        <ModelPart
-          url={snap.bladeShape.sheathModelUrl}
-          {...sheathSettings}
-          position={[0, -20, 0]}
-          rotation={[0, 0, Math.PI / 2]}
-        />
-      )}
-    </Canvas>
+          {validateModelUrl(snap.bladeShape.sheathModelUrl) && (
+              <ModelPart
+                  url={snap.bladeShape.sheathModelUrl}
+                  {...sheathSettings}
+                  position={[0, -20, 0]}
+                  rotation={[0, 0, Math.PI / 2]}
+              />
+          )}
+        </Canvas>
+        <ControlButtons handleArrowClick={handleArrowClick} handleZoom={handleZoom}/>
+      </>
   );
 };
 
