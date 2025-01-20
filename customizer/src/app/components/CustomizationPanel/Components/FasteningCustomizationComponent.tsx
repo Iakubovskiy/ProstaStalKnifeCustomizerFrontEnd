@@ -46,7 +46,7 @@ const FasteningCustomizationComponent: React.FC = () => {
   };
 
   const fasteningOptionClick = (fastening: Fastening) => {
-    state.fastening.push(fastening);
+    state.fastening= fastening;
   };
 
   return (
@@ -77,15 +77,19 @@ const FasteningCustomizationComponent: React.FC = () => {
           </React.Fragment>
         ))}
       </div>
-      <div style={{ marginTop: "16px" }}>
-        <Characteristics
-          data={snap.fastening[0]}
-          isReadOnly1={true}
-          currentBladeCoatingColor={""}
-          onChange={() => {}}
-          type="Fastening"
-        />
-      </div>
+        <div style={{marginTop: "16px"}}>
+            {snap.fastening && (
+                <Characteristics
+                    data={snap.fastening}
+                    isReadOnly1={true}
+                    currentBladeCoatingColor={""}
+                    onChange={() => {
+                    }}
+                    type="Fastening"
+                />
+            )}
+        </div>
+
     </>
   );
 };

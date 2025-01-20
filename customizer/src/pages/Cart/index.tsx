@@ -23,6 +23,7 @@ import {
 import "../../styles/globals.css";
 import KnifeService from "@/app/services/KnifeService";
 import EngravingPriceService from "@/app/services/EngravingPriceService";
+import CreateOrderDTO from "@/app/DTO/CreateOrderDTO";
 
 const CartAndOrderPage = () => {
   const [cartItems, setCartItems] = useState<Knife[]>([]);
@@ -35,7 +36,7 @@ const CartAndOrderPage = () => {
     city: "",
   });
   const [selectedDeliveryType, setSelectedDeliveryType] = useState<
-    number | null
+    string | null
   >(null);
   const [comment, setComment] = useState<string>("");
   const [engravingPriceService, setengravingPriceService] =
@@ -57,7 +58,7 @@ const CartAndOrderPage = () => {
 
     if (knife.engravings && knife.engravings.length > 0) {
       for (const engraving of knife.engravings) {
-        let file: File | null = null; // Ініціалізуємо як null
+        let file: File | null = null;
 
         if (engraving.pictureUrl) {
           file = await blobUrlToFile(engraving.pictureUrl);
@@ -130,7 +131,7 @@ const CartAndOrderPage = () => {
   }, []);
   const handleSelectionChange = (key: string | number | undefined) => {
     if (key) {
-      setSelectedDeliveryType(parseInt(key.toString(), 10));
+      setSelectedDeliveryType(key.toString());
       console.log(key);
     }
   };
@@ -160,30 +161,26 @@ const CartAndOrderPage = () => {
         }
         const engraving = engravingPrice * uniqueSides;
         const itemTotal =
-          item.quantity *
           (item.shape.price +
             engraving +
-            item.bladeCoating.price +
             (item.sheathColor.price || 0) +
-            (item.fastening?.reduce((fSum, f) => fSum + f.price, 0) || 0));
+            (item.fastening?.price || 0));
         return sum + itemTotal;
       }, 0);
 
-      const orderData: Order = {
-        id: 0,
+      const orderData: CreateOrderDTO = {
         number: `ORD-${Date.now()}`,
         total,
-        knives: createdKnives,
-        delivery: deliveryTypes.find(
-          (type) => type.id === selectedDeliveryType
-        )!,
+        products: createdKnives,
+        productQuantities: [1],
+        deliveryTypeId: selectedDeliveryType,
         clientFullName: clientInfo.fullName,
         clientPhoneNumber: clientInfo.phoneNumber,
         countryForDelivery: clientInfo.country,
         city: clientInfo.city,
         email: clientInfo.email,
         comment: comment || null,
-        status: { id: 1, status: "Активний" },
+        status: "Активний",
       };
 
       const createdOrder = await orderService.create(orderData);
@@ -218,25 +215,25 @@ const CartAndOrderPage = () => {
                     <TableCell>
                       <Input
                         type="number"
-                        value={item.quantity.toString()}
+                        value="1"
                         readOnly
                         min={1}
                         onChange={(e) => {
-                          const newQuantity = parseInt(e.target.value) || 1;
-                          const updatedItems = [...cartItems];
-                          updatedItems[index].quantity = newQuantity;
-                          setCartItems(updatedItems);
-                          localStorage.setItem(
-                            "cart",
-                            JSON.stringify(updatedItems)
-                          );
+                          // const newQuantity = parseInt(e.target.value) || 1;
+                          // const updatedItems = [...cartItems];
+                          // updatedItems[index].quantity = newQuantity;
+                          // setCartItems(updatedItems);
+                          // localStorage.setItem(
+                          //   "cart",
+                          //   JSON.stringify(updatedItems)
+                          // );
                         }}
                       />
                     </TableCell>
                     <TableCell>
                       $
-                      {item.quantity *
-                        (item.shape.price + item.bladeCoating.price)}
+                      {/*{item.quantity **/}
+                      {/*  (item.shape.price + item.bladeCoating.price)}*/}
                     </TableCell>
                     <TableCell>
                       <Button
@@ -319,7 +316,7 @@ const CartAndOrderPage = () => {
               onSelectionChange={(selection) => {
                 const selectedId = Array.from(selection)[0];
                 console.log(selectedId);
-                setSelectedDeliveryType(Number(selectedId));
+                setSelectedDeliveryType(selectedId.toString());
               }}
             >
               {deliveryTypes.map((type) => (

@@ -1,8 +1,3 @@
-html, body {
-  height: 100%; /* Гарантує, що весь вміст займатиме 100% висоти вікна */
-  width: 100vw; /* Гарантує, що весь вміст займатиме 100% висоти вікна */
-
-}
 .customizer {
     display: flex;
     flex-direction: column;

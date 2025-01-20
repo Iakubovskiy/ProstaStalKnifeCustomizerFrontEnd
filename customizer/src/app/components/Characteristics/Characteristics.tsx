@@ -5,7 +5,6 @@ import BladeShape from "../../Models/BladeShape";
 import Fastening from "../../Models/Fastening";
 import HandleColor from "../../Models/HandleColor";
 import SheathColor from "../../Models/SheathColor";
-import BladeCoating from "../../Models/BladeCoating";
 
 interface CharacteristicsProps<T> {
   data: T;
@@ -21,7 +20,7 @@ interface CharacteristicsProps<T> {
 }
 
 function Characteristics<
-  T extends SheathColor | HandleColor | Fastening | BladeShape | BladeCoating
+  T extends SheathColor | HandleColor | Fastening | BladeShape
 >({
   data,
   isReadOnly1,
@@ -184,28 +183,6 @@ function Characteristics<
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
               className={styles.input}
             />
-          </>
-        );
-
-      case "BladeCoating":
-        return (
-          <>
-            <Input
-              label="Тип"
-              defaultValue={(data as BladeCoating).name}
-              value={(data as BladeCoating).name}
-              {...(isReadOnly1 ? { isReadOnly: true } : {})}
-              onChange={(e) => onChange({ ...data, type: e.target.value })}
-              className={styles.input}
-            />
-            {!isReadOnly1 && (
-              <Input
-                label="Обраний колір"
-                defaultValue={currentBladeCoatingColor}
-                value={currentBladeCoatingColor}
-                className={styles.input}
-              />
-            )}
           </>
         );
 

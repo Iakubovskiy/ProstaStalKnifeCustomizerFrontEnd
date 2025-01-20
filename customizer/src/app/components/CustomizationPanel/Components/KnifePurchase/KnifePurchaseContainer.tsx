@@ -17,7 +17,7 @@ export const KnifePurchaseContainer: React.FC = () => {
     let price = snap.bladeShape.price + (snap.sheathColor?.price || 0);
 
     if (snap.fastening) {
-      price += snap.fastening.reduce((sum, item) => sum + item.price, 0);
+      price += snap.fastening.price;
     }
 
     if (snap.engravings && snap.engravings.length > 0) {

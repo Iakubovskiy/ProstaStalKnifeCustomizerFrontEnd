@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Input, Button, Select, SelectItem } from '@nextui-org/react';
-import { useOrder } from '../../hooks/useOrder';
+import OrderService from '../../services/OrderService';
 import DeliveryType from '@/app/Models/DeliveryType';
 import DeliveryDataDTO from '@/app/DTO/DeliveryDataDTO';
 import DeliveryTypeService from "@/app/services/DeliveryTypeService";
@@ -20,43 +20,54 @@ interface OrderFormData {
 }
 
 export const OrderForm: React.FC<{ orderId: string; deliveryTypes: DeliveryType[] }> = ({ orderId, deliveryTypes }) => {
-    const {
-        order,
-        isLoading,
-        error,
-        updateOrderStatus,
-        updateDeliveryData,
-        updateDeliveryType,
-        isUpdatingStatus,
-        isUpdatingDeliveryData,
-        isUpdatingDeliveryType,
-    } = useOrder(orderId);
+    const [order, setOrder] = useState<OrderFormData | null>(null);
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
+    const orderService = new OrderService();
     const deliveryTypeService = new DeliveryTypeService();
 
-    const form = useForm<OrderFormData>({
-        defaultValues: {
-            number: order?.number ?? '',
-            status: order?.status ?? '',
-            clientPhoneNumber: order?.clientPhoneNumber ?? '',
-            clientFullName: order?.clientFullName ?? '',
-            total: order?.total ?? 0,
-            comment: order?.comment ?? '',
-            deliveryTypeId: order?.deliveryType?.id ?? '',
-        },
-    });
+    const form = useForm<OrderFormData>();
+
+    useEffect(() => {
+        const fetchOrder = async () => {
+            try {
+                const fetchedOrder = await orderService.getById(orderId);
+                const orderData: OrderFormData = {
+                    number: fetchedOrder.number,
+                    clientFullName: fetchedOrder.clientFullName,
+                    status: fetchedOrder.status,
+                    total: fetchedOrder.total,
+                    clientPhoneNumber: fetchedOrder.clientPhoneNumber,
+                    city: fetchedOrder.city,
+                    country: fetchedOrder.countryForDelivery,
+                    email: fetchedOrder.email,
+                    deliveryTypeId: fetchedOrder.deliveryType.id,
+                    comment: fetchedOrder.comment || '',
+                };
+                setOrder(orderData);
+                form.reset(orderData);  // Оновлюємо значення форми після перетворення
+                setIsLoading(false);
+            } catch (err) {
+                setError('Не вдалося завантажити замовлення');
+                setIsLoading(false);
+            }
+        };
+
+        fetchOrder();
+    }, [orderId, form]);
 
     const onSubmit = async (data: OrderFormData) => {
         try {
             if (data.status !== order?.status) {
-                updateOrderStatus(data.status);
+                await orderService.updateStatus(orderId, data.status);
             }
             if (
                 data.clientFullName !== order?.clientFullName ||
                 data.clientPhoneNumber !== order?.clientPhoneNumber ||
                 data.email !== order?.email ||
                 data.city !== order?.city ||
-                data.country !== order?.countryForDelivery
+                data.country !== order?.country
             ) {
                 const deliveryData: DeliveryDataDTO = {
                     ClientFullName: data.clientFullName,
@@ -65,11 +76,11 @@ export const OrderForm: React.FC<{ orderId: string; deliveryTypes: DeliveryType[
                     City: data.city,
                     CountryForDelivery: data.country,
                 };
-                updateDeliveryData(deliveryData);
+                await orderService.updateDeliveryData(orderId, deliveryData);
             }
-            if (data.deliveryTypeId !== order?.deliveryType?.id) {
+            if (data.deliveryTypeId !== order?.deliveryTypeId) {
                 const type = await deliveryTypeService.getById(data.deliveryTypeId);
-                updateDeliveryType(type);
+                await orderService.updateDeliveryType(orderId, type);
             }
 
             console.log('Замовлення успішно оновлено!');
@@ -79,7 +90,7 @@ export const OrderForm: React.FC<{ orderId: string; deliveryTypes: DeliveryType[
     };
 
     if (isLoading) return <p>Завантаження...</p>;
-    if (error) return <p>Помилка: {error.message}</p>;
+    if (error) return <p>Помилка: {error}</p>;
 
     return (
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -126,7 +137,7 @@ export const OrderForm: React.FC<{ orderId: string; deliveryTypes: DeliveryType[
                 <Select
                     label="Оберіть тип доставки"
                     placeholder="Тип доставки"
-                    value={order?.deliveryType?.id || ''}
+                    value={order?.deliveryTypeId || ''}
                     onChange={(e) => form.setValue('deliveryTypeId', e.target.value)}
                 >
                     {deliveryTypes.map((type) => (
@@ -137,7 +148,7 @@ export const OrderForm: React.FC<{ orderId: string; deliveryTypes: DeliveryType[
                 </Select>
             </div>
 
-            <Button type="submit" isLoading={isUpdatingStatus || isUpdatingDeliveryData || isUpdatingDeliveryType}>
+            <Button type="submit">
                 Зберегти зміни
             </Button>
         </form>
