@@ -336,18 +336,18 @@ const ControlButtons = ({handleArrowClick, handleZoom}) => {
       <>
         <div style={{
           position: 'absolute',
-          top: '12%',
-          left: '50%',
+          top: '2%',
+          left: '40%',
           transform: 'translate(-50%, -50%)',
-          width: '200px',
-          height: '200px',
+          width: '20px',
+          height: '20px',
         }}>
           <button
               onClick={() => handleArrowClick("up")}
               style={{
                 position: 'absolute',
                 top: 0,
-                left: '50%',
+                left: '0%',
                 color: "black",
                 transform: 'translateX(-50%)',
                 width: '40px',
@@ -368,10 +368,10 @@ const ControlButtons = ({handleArrowClick, handleZoom}) => {
         <div style={{
           position: 'absolute',
           bottom: '0%',
-          left: '50%',
+          left: '40%',
           transform: 'translate(-50%, -50%)',
-          width: '200px',
-          height: '200px',
+          width: '20px',
+          height: '20px',
         }}>
           <button
               onClick={() => handleArrowClick("down")}
@@ -379,7 +379,7 @@ const ControlButtons = ({handleArrowClick, handleZoom}) => {
                 position: 'absolute',
                 color: "black",
                 bottom: 0,
-                left: '50%',
+                left: '0%',
                 transform: 'translateX(-50%)',
                 width: '40px',
                 height: '40px',
@@ -400,10 +400,10 @@ const ControlButtons = ({handleArrowClick, handleZoom}) => {
         <div style={{
           position: 'absolute',
           top: '50%',
-          left: '15%',
+          left: '1%',
           transform: 'translate(-50%, -50%)',
-          width: '200px',
-          height: '200px',
+          width: '20px',
+          height: '20px',
         }}>
           <button
               onClick={() => handleArrowClick("left")}
@@ -431,10 +431,10 @@ const ControlButtons = ({handleArrowClick, handleZoom}) => {
         <div style={{
           position: 'absolute',
           top: '50%',
-          right: '0%',
+          right: '30%',
           transform: 'translate(-50%, -50%)',
-          width: '200px',
-          height: '200px',
+          width: '20px',
+          height: '20px',
         }}>
           <button
               onClick={() => handleArrowClick("right")}
@@ -462,8 +462,8 @@ const ControlButtons = ({handleArrowClick, handleZoom}) => {
 
         <div style={{
           position: 'absolute',
-          right: '20px',
-          bottom: '10%',
+          right: '31%',
+          bottom: '0%',
           transform: 'translateY(-50%)',
           display: 'flex',
           flexDirection: 'column',
