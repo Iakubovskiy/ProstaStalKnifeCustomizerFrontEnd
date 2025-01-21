@@ -4,8 +4,8 @@ import CustomizationPanelMenu from "./Menu/CustomizationPanelMenu";
 import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizationComponent";
 import HandleCustomizationComponent from "./Components/HandleCustomizationComponent";
 import SheathCustomizationComponent from "./Components/SheathCustomizationComponent";
+import BladeCoatingCustomizationComponent from "./Components/BladeCoatingCustomizationComponent";
 import FasteningCustomizationComponent from "./Components/FasteningCustomizationComponent";
-import Characteristics from "../Characteristics/Characteristics";
 import { useState } from "react";
 import EngravingComponent from "../EngravingComponent/EngravingComponent";
 import BladeShapeService from "@/app/services/BladeShapeService";
@@ -93,8 +93,8 @@ const CustomizationPanel = () => {
     switch (selectedOption) {
       case "bladeShape":
         return <BladeShapeCustomizationComponent />;
-      // case "bladeCoating":
-      //   return <BladeCoatingCustomizationComponent />;
+      case "bladeCoating":
+        return <BladeCoatingCustomizationComponent />;
       case "handleColor":
         return <HandleCustomizationComponent />;
       case "scabbardColor":

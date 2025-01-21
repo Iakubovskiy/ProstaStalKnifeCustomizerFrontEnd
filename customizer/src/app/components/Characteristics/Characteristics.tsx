@@ -5,6 +5,7 @@ import BladeShape from "../../Models/BladeShape";
 import Fastening from "../../Models/Fastening";
 import HandleColor from "../../Models/HandleColor";
 import SheathColor from "../../Models/SheathColor";
+import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 
 interface CharacteristicsProps<T> {
   data: T;
@@ -15,16 +16,15 @@ interface CharacteristicsProps<T> {
     | "SheathColor"
     | "HandleColor"
     | "Fastening"
-    | "BladeCoating";
+    | "BladeCoatingColor";
   onChange: (updatedData: T) => void;
 }
 
 function Characteristics<
-  T extends SheathColor | HandleColor | Fastening | BladeShape
+  T extends SheathColor | HandleColor | Fastening | BladeShape | BladeCoatingColor
 >({
   data,
   isReadOnly1,
-  currentBladeCoatingColor,
   type,
   onChange,
 }: CharacteristicsProps<T>) {
@@ -185,6 +185,39 @@ function Characteristics<
             />
           </>
         );
+
+      case "BladeCoatingColor":
+            return (
+                <>
+                    <Input
+                        label="Тип"
+                        defaultValue={(data as BladeCoatingColor).type}
+                        value={(data as BladeCoatingColor).type}
+                        {...(isReadOnly1 ? { isReadOnly: true } : {})}
+                        onChange={(e) => onChange({ ...data, type: e.target.value })}
+                        className={styles.input}
+                    />
+                    <Input
+                        label="Тип"
+                        defaultValue={(data as BladeCoatingColor).color}
+                        value={(data as BladeCoatingColor).color}
+                        {...(isReadOnly1 ? { isReadOnly: true } : {})}
+                        onChange={(e) => onChange({ ...data, color: e.target.value })}
+                        className={styles.input}
+                    />
+                    <Input
+                        label="Ціна"
+                        type="number"
+                        defaultValue={(data as BladeCoatingColor).price.toString()}
+                        value={(data as BladeCoatingColor).price.toString()}
+                        onChange={(e) =>
+                            onChange({ ...data, price: e.target.value })
+                        }
+                        {...(isReadOnly1 ? { isReadOnly: true } : {})}
+                        className={styles.input}
+                    />
+                </>
+            );
 
       default:
         return <p className={styles.unknown}>Unknown data type</p>;

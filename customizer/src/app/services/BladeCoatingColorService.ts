@@ -56,7 +56,7 @@ class BladeCoatingColorService {
   }
 
   async update(
-    id: number,
+    id: string,
     bladeCoatingColor: BladeCoatingColor,
     colorMap: File | null,
     normalMap: File | null,

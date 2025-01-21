@@ -18,6 +18,15 @@ const DashboardPage = () => {
             <Button
                 as={Link}
                 color="primary"
+                href="/bladeCoating"
+                variant="solid"
+                className="w-80 text-2xl font-semibold"
+            >
+                Покриття клинка
+            </Button>
+            <Button
+                as={Link}
+                color="primary"
                 href="/bladeShapePage"
                 variant="solid"
                 className="w-80 text-2xl font-semibold"
