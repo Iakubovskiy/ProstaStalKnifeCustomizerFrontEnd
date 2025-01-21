@@ -4,6 +4,8 @@ import {OrbitControls, useGLTF, Decal, useTexture, Html} from "@react-three/drei
 import { useSnapshot } from "valtio";
 import { useCanvasState } from "@/app/state/canvasState";
 import * as THREE from "three";
+import { useControls } from "leva";
+import Engraving from "@/app/Models/Engraving";
 
 interface MaterialProps {
   color?: string;
@@ -28,7 +30,34 @@ interface EngravingMesh {
 }
 interface DecalMaterialProps {
   pictureUrl: string;
+  offsetFactor: number;
 }
+
+// const ResizeFix = () => {
+//   const { gl, camera } = useThree(); // Отримуємо камеру і WebGL-контекст
+
+//   useEffect(() => {
+//     const handleResize = () => {
+//       // Оновлюємо розмір WebGL-контексту
+//       gl.setSize(window.innerWidth, window.innerHeight);
+
+//       // Оновлюємо співвідношення сторін камери
+//     };
+
+//     // Додаємо слухач для зміни розміру вікна
+//     window.addEventListener("resize", handleResize);
+
+//     // Викликаємо перший раз для коректного налаштування
+//     handleResize();
+
+//     return () => {
+//       // Очищаємо слухач, щоб уникнути витоків пам'яті
+//       window.removeEventListener("resize", handleResize);
+//     };
+//   }, [gl, camera]);
+
+//   return null;
+// };
 
 const Background: React.FC = () => {
   const { scene, gl } = useThree();
@@ -50,81 +79,115 @@ const Background: React.FC = () => {
   return null;
 };
 
-const DecalMaterial: React.FC<
-  DecalMaterialProps & { offsetFactor?: number }
-> = ({ pictureUrl, offsetFactor = 2 }) => {
+const DecalMaterial: React.FC<DecalMaterialProps> = ({
+  pictureUrl,
+  offsetFactor = 2,
+}) => {
   const texture = useTexture(pictureUrl);
 
+  // Ефект для оновлення текстури
+  useEffect(() => {
+    texture.needsUpdate = true;
+  }, [pictureUrl, texture]);
+
   return (
-    // @ts-ignore
+    //@ts-ignore
     <meshStandardMaterial
       map={texture}
       transparent
       polygonOffset
       polygonOffsetFactor={offsetFactor}
       polygonOffsetUnits={-2}
+      needsUpdate={true}
     />
   );
 };
 // @ts-ignore
-const SingleDecal = ({ meshRef, engraving, controls, offsetFactor }) => {
-  if (!meshRef.current) return null;
+const SingleDecal = ({ meshRef, engraving, offsetFactor }) => {
+  const [decalKey, setDecalKey] = useState(0);
+
+  // Ефект для оновлення ключа при зміні pictureUrl
+  useEffect(() => {
+    setDecalKey((prev) => prev + 1);
+  }, [engraving.pictureUrl]);
+
+  if (!meshRef.current || !engraving?.pictureUrl) return null;
 
   return (
     <Decal
+      key={decalKey} // Додаємо ключ для форсування ререндеру
       mesh={meshRef.current}
-      position={[controls.positionX, controls.positionY, controls.positionZ]}
-      rotation={[controls.rotationX, controls.rotationY, controls.rotationZ]}
-      scale={controls.scale}
+      position={[
+        engraving.locationX || 0,
+        engraving.locationY || 0,
+        engraving.text === null ? 0 : -1,
+      ]}
+      rotation={[
+        0,
+        engraving.side === 2 ? Math.PI : 0,
+        engraving.rotationZ || 0,
+      ]}
+      scale={engraving.scaleX || 20}
     >
       <DecalMaterial
+        key={`material-${decalKey}`} // Також додаємо ключ для матеріалу
         pictureUrl={engraving.pictureUrl}
         offsetFactor={offsetFactor}
       />
     </Decal>
   );
 };
+
 // @ts-ignore
 const DecalWithControls = ({ meshRef, engraving, index }) => {
-  const controls = {
-    positionX: engraving.locationX,
-    positionY: engraving.locationY,
-    positionZ: engraving.text === null ? 0 : -1,
-    rotationX: 0,
-    rotationY: engraving.side === 2 ? Math.PI : 0,
-    rotationZ: engraving.rotationZ,
-    scale: engraving.scaleX,
-  };
+  const state = useCanvasState();
+
+  // Перевіряємо наявність всіх необхідних властивостей
+  if (!engraving) return null;
 
   return (
     <SingleDecal
       meshRef={meshRef}
       engraving={engraving}
-      controls={controls}
+      
+    //@ts-ignore
+      controls={{
+        positionX: engraving.locationX || 0,
+        positionY: engraving.locationY || 0,
+        positionZ: engraving.text === null ? 0 : -1,
+        rotationX: 0,
+        rotationY: engraving.side === 2 ? Math.PI : 0,
+        rotationZ: engraving.rotationZ || 0,
+        scale: engraving.scaleX || 20,
+      }}
       offsetFactor={index * -0.1}
     />
   );
 };
-
-const EngravedMesh = ({
-  //@ts-ignore
+interface EngravedMeshProps {
+  geometry: THREE.BufferGeometry;
+  material: THREE.Material;
+  position: THREE.Vector3 | [number, number, number];
+  rotation: THREE.Euler | [number, number, number];
+  engravings: Engraving[];
+}
+const EngravedMesh : React.FC<EngravedMeshProps> = ({
   geometry,
-  //@ts-ignore
   material,
-  //@ts-ignore
   position,
-  //@ts-ignore
   rotation,
-  //@ts-ignore
   engravings,
 }) => {
-  // @ts-ignore
-  const meshRef = useRef();
+  const meshRef = useRef<THREE.Mesh>(null);
+  const [meshKey, setMeshKey] = useState(0);
+
+  useEffect(() => {
+    setMeshKey((prev) => prev + 1);
+  }, [engravings.length, engravings.map((e) => e.pictureUrl).join(",")]);
 
   return (
-    // @ts-ignore
-    <group>
-      {/*@ts-ignore*/}
+    //@ts-ignore
+    <group key={meshKey}>
       <mesh
         ref={meshRef}
         geometry={geometry}
@@ -133,23 +196,20 @@ const EngravedMesh = ({
         rotation={rotation}
       >
         {engravings?.map(
-          // @ts-ignore
           (eng, index) =>
             "engravingSide" + eng.side === material.name && (
-              <DecalWithControls
-                key={`${eng.id}-${index}`}
+              <SingleDecal
+                key={`${eng.id}-${index}-${meshKey}`}
                 meshRef={meshRef}
                 engraving={eng}
-                index={index}
+                offsetFactor={index * -0.1}
               />
             )
         )}
-        {/*@ts-ignore*/}
       </mesh>
-      {/*@ts-ignore*/}
     </group>
   );
-};
+});
 const ModelPart: React.FC<ModelPartProps> = ({
   url,
   position = [0, 0, 0],

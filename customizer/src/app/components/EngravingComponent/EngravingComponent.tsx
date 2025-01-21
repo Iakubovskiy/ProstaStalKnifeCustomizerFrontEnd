@@ -191,39 +191,6 @@ const EngravingComponent: React.FC = () => {
   }, [customState.engravings]);
   const [items, setItems] = useState<CardItem[]>([]);
 
-  const addCard = () => {
-    setItems((prev) => [
-      ...prev,
-      {
-        id: prev.length,
-        type: "text",
-        selectedSide: 1,
-        font: "Montserrat",
-        text: "",
-      },
-    ]);
-
-    // Створюємо нове гравіювання з правильними початковими значеннями
-    const newEngraving = {
-      id: "",
-      name: "",
-      pictureUrl: emptyImage,
-      side: 1,
-      text: "",
-      font: "Montserrat",
-      locationX: 0, // Явно встановлюємо початкові значення
-      locationY: 0,
-      locationZ: 0,
-      rotationX: 0,
-      rotationY: 0,
-      rotationZ: 0,
-      scaleX: 20, // Початковий масштаб
-      scaleY: 20,
-      scaleZ: 20,
-    };
-
-    customState.engravings = [...(customState.engravings || []), newEngraving];
-  };
   const removeCard = (id: number) => {
     setItems((prev) => {
       customState.engravings.splice(id, 1);
@@ -275,26 +242,7 @@ const EngravingComponent: React.FC = () => {
     const blob = new Blob([svg], { type: "image/svg+xml" });
     return URL.createObjectURL(blob);
   }
-  const handleTextChange = (id: number, value: string) => {
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          const updatedItem = { ...item, text: value };
-          customState.engravings[id].pictureUrl = textToSvgUrl(
-            value,
-            item.font ? item.font : "Montserrat",
-            customState.bladeCoatingColor.engravingColorCode
-              ? customState.bladeCoatingColor.engravingColorCode
-              : "#000000"
-          );
-          customState.engravings[id].text = value;
 
-          return updatedItem;
-        }
-        return item;
-      })
-    );
-  };
   const emptyImage =
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/ihGyysAAAAASUVORK5CYII=";
 
@@ -357,20 +305,113 @@ const EngravingComponent: React.FC = () => {
     );
   };
 
-  // Функція для обробки завантаження файлу
-  const handleFileChange = (id: number, file: File | null) => {
+  const handleTextChange = (id: number, value: string) => {
+    // Створюємо нову копію масиву engravings
+    const updatedEngravings = [...customState.engravings];
+
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const updatedItem = { ...item, selectedFile: file };
-          customState.engravings[id].pictureUrl = file
-            ? URL.createObjectURL(file)
-            : "";
+          const updatedItem = { ...item, text: value };
+
+          // Оновлюємо pictureUrl та text в копії масиву
+          updatedEngravings[id] = {
+            ...updatedEngravings[id],
+            pictureUrl: textToSvgUrl(
+              value,
+              item.font ? item.font : "Montserrat",
+              customState.bladeCoatingColor.engravingColorCode || "#000000"
+            ),
+            text: value,
+            // Додаємо базові значення для нового гравіювання
+            locationX: updatedEngravings[id]?.locationX ?? 0,
+            locationY: updatedEngravings[id]?.locationY ?? 0,
+            locationZ: updatedEngravings[id]?.locationZ ?? 0,
+            rotationX: updatedEngravings[id]?.rotationX ?? 0,
+            rotationY: updatedEngravings[id]?.rotationY ?? 0,
+            rotationZ: updatedEngravings[id]?.rotationZ ?? 0,
+            scaleX: updatedEngravings[id]?.scaleX ?? 20,
+            scaleY: updatedEngravings[id]?.scaleY ?? 20,
+            scaleZ: updatedEngravings[id]?.scaleZ ?? 20,
+          };
+
           return updatedItem;
         }
         return item;
       })
     );
+
+    // Оновлюємо стан одним викликом
+    customState.engravings = updatedEngravings;
+  };
+
+  const handleFileChange = (id: number, file: File | null) => {
+    const updatedEngravings = [...customState.engravings];
+
+    setItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          const updatedItem = { ...item, selectedFile: file };
+
+          updatedEngravings[id] = {
+            ...updatedEngravings[id],
+            pictureUrl: file ? URL.createObjectURL(file) : emptyImage,
+            // Додаємо базові значення для нового гравіювання
+            locationX: updatedEngravings[id]?.locationX ?? 0,
+            locationY: updatedEngravings[id]?.locationY ?? 0,
+            locationZ: updatedEngravings[id]?.locationZ ?? 0,
+            rotationX: updatedEngravings[id]?.rotationX ?? 0,
+            rotationY: updatedEngravings[id]?.rotationY ?? 0,
+            rotationZ: updatedEngravings[id]?.rotationZ ?? 0,
+            scaleX: updatedEngravings[id]?.scaleX ?? 20,
+            scaleY: updatedEngravings[id]?.scaleY ?? 20,
+            scaleZ: updatedEngravings[id]?.scaleZ ?? 20,
+          };
+
+          return updatedItem;
+        }
+        return item;
+      })
+    );
+
+    customState.engravings = updatedEngravings;
+  };
+
+  const addCard = () => {
+    const newId = items.length;
+
+    // Створюємо нове гравіювання з усіма необхідними значеннями
+    const newEngraving = {
+      id: "",
+      name: "",
+      pictureUrl: emptyImage,
+      side: 1,
+      text: "",
+      font: "Montserrat",
+      locationX: 0,
+      locationY: 0,
+      locationZ: 0,
+      rotationX: 0,
+      rotationY: 0,
+      rotationZ: 0,
+      scaleX: 20,
+      scaleY: 20,
+      scaleZ: 20,
+    };
+
+    setItems((prev) => [
+      ...prev,
+      {
+        id: newId,
+        type: "text",
+        selectedSide: 1,
+        font: "Montserrat",
+        text: "",
+      },
+    ]);
+
+    // Оновлюємо стан одним викликом
+    customState.engravings = [...customState.engravings, newEngraving];
   };
 
   return (
