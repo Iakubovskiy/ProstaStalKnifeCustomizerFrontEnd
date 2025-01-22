@@ -33,32 +33,6 @@ interface DecalMaterialProps {
   offsetFactor: number;
 }
 
-// const ResizeFix = () => {
-//   const { gl, camera } = useThree(); // Отримуємо камеру і WebGL-контекст
-
-//   useEffect(() => {
-//     const handleResize = () => {
-//       // Оновлюємо розмір WebGL-контексту
-//       gl.setSize(window.innerWidth, window.innerHeight);
-
-//       // Оновлюємо співвідношення сторін камери
-//     };
-
-//     // Додаємо слухач для зміни розміру вікна
-//     window.addEventListener("resize", handleResize);
-
-//     // Викликаємо перший раз для коректного налаштування
-//     handleResize();
-
-//     return () => {
-//       // Очищаємо слухач, щоб уникнути витоків пам'яті
-//       window.removeEventListener("resize", handleResize);
-//     };
-//   }, [gl, camera]);
-
-//   return null;
-// };
-
 const Background: React.FC = () => {
   const { scene, gl } = useThree();
   const texture = useTexture("/background.jpg");
@@ -188,6 +162,7 @@ const EngravedMesh : React.FC<EngravedMeshProps> = ({
   return (
     //@ts-ignore
     <group key={meshKey}>
+        {/*@ts-ignore*/}
       <mesh
         ref={meshRef}
         geometry={geometry}
@@ -206,10 +181,12 @@ const EngravedMesh : React.FC<EngravedMeshProps> = ({
               />
             )
         )}
+          {/*@ts-ignore*/}
       </mesh>
+        {/*@ts-ignore*/}
     </group>
   );
-});
+};
 const ModelPart: React.FC<ModelPartProps> = ({
   url,
   position = [0, 0, 0],
@@ -382,7 +359,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
           material={mesh.material}
           position={mesh.position}
           rotation={mesh.rotation}
-          engravings={snap.engravings}
+          engravings={snap.engravings as Engraving[]}
         />
       ))}
       {/*@ts-ignore*/}
@@ -576,6 +553,7 @@ const KnifeConfigurator = () => {
   //@ts-ignore
   const controlsRef = useRef();
 
+
   const handleArrowClick = (direction: "up" | "down" | "left" | "right") => {
     if (!controlsRef.current) return;
 
@@ -663,17 +641,28 @@ const KnifeConfigurator = () => {
       </>
   );
 
-  const Controls = () => (
-      <OrbitControls
-          enablePan={true}
-          enableZoom={true}
-          enableRotate={true}
-          minDistance={10}
-          maxDistance={100}
-          //@ts-ignore
-          ref={controlsRef}
-      />
-  );
+    const Controls = () => {
+        useEffect(() => {
+            if (controlsRef.current) {
+                //@ts-ignore
+                controlsRef.current.object.position.setLength(100);
+                //@ts-ignore
+                controlsRef.current.update();
+            }
+        }, []);
+
+        return (
+            <OrbitControls
+                enablePan={true}
+                enableZoom={true}
+                enableRotate={true}
+                minDistance={10}
+                maxDistance={100}
+                // @ts-ignore
+                ref={controlsRef}
+            />
+        );
+    };
 
   if (!validateModelUrl(snap.bladeShape.bladeShapeModelUrl)) {
     return (
@@ -690,7 +679,7 @@ const KnifeConfigurator = () => {
             gl={{
               powerPreference: "high-performance",
               antialias: true,
-              preserveDrawingBuffer: false, // Уникайте збереження буферів для розробки
+              preserveDrawingBuffer: false,
             }}
         >
           <Lighting/>
@@ -708,7 +697,16 @@ const KnifeConfigurator = () => {
               <ModelPart
                   url={snap.bladeShape.sheathModelUrl}
                   {...sheathSettings}
-                  position={[0, -20, 0]}
+                  position={[0, -20, -3]}
+                  rotation={[0, 0, Math.PI / 2]}
+              />
+          )}
+
+          {snap.fastening && validateModelUrl(snap.fastening.modelUrl) && (
+              <ModelPart
+                  url={snap.fastening.modelUrl}
+                  {...sheathSettings}
+                  position={[-5, -20, -2]}
                   rotation={[0, 0, Math.PI / 2]}
               />
           )}

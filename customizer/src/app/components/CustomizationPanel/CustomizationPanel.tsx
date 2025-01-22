@@ -17,7 +17,7 @@ import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import HandleColorService from "@/app/services/HandleColorService";
 import { useCanvasState } from "@/app/state/canvasState";
 import HandleColor from "@/app/Models/HandleColor";
-import { tslFn } from "three/tsl";
+
 const scrollLeft = () => {
   const container = document.getElementById("scrollContainer");
   // @ts-ignore
@@ -100,7 +100,7 @@ const CustomizationPanel = () => {
       case "scabbardColor":
         return <SheathCustomizationComponent />;
       case "attachments":
-        return <div>ше не робить</div>;
+        return <FasteningCustomizationComponent/>;
       case "engraving":
         return <EngravingComponent />;
 
