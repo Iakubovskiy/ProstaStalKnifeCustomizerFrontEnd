@@ -698,7 +698,7 @@ const KnifeConfigurator = () => {
                   url={snap.bladeShape.sheathModelUrl}
                   {...sheathSettings}
                   position={[0, -20, -3]}
-                  rotation={[0, 0, Math.PI / 2]}
+                  rotation={[0, 0, 0]}
               />
           )}
 

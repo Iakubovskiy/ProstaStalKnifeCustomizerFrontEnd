@@ -32,10 +32,8 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
       const newControls = { ...prev, [name]: value };
 
       if (engraving) {
-        // Create a copy of the engraving object
         const updatedEngraving = { ...engraving };
 
-        // Update the specific property based on the control name
         switch (name) {
           case "positionX":
             updatedEngraving.locationX = value;
@@ -44,18 +42,15 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
             updatedEngraving.locationY = value;
             break;
           case "rotationZ":
-            // Convert degrees to radians when updating rotation
             updatedEngraving.rotationZ = (value * Math.PI) / 180;
             break;
           case "scale":
-            // Update all scale properties together
             updatedEngraving.scaleX = value;
             updatedEngraving.scaleY = value;
             updatedEngraving.scaleZ = value;
             break;
         }
 
-        // Update the state immutably
         const newEngravings = [...customState.engravings];
         newEngravings[id] = updatedEngraving;
         customState.engravings = newEngravings;
@@ -141,7 +136,7 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
             <input
               type="range"
               min="0.1"
-              max="50"
+              max="30"
               step="0.1"
               value={controls.scale}
               onChange={(e) =>
@@ -271,9 +266,7 @@ const EngravingComponent: React.FC = () => {
             customState.engravings[id].rotationY = 90;
           } else {
             customState.engravings[id].rotationY = 0;
-            console.log("000");
             console.log(customState.engravings[id].rotationY);
-            console.log("000");
           }
           console.log(customState.engravings[id].rotationY);
           return updatedItem;
@@ -323,7 +316,6 @@ const EngravingComponent: React.FC = () => {
               customState.bladeCoatingColor.engravingColorCode || "#000000"
             ),
             text: value,
-            // Додаємо базові значення для нового гравіювання
             locationX: updatedEngravings[id]?.locationX ?? 0,
             locationY: updatedEngravings[id]?.locationY ?? 0,
             locationZ: updatedEngravings[id]?.locationZ ?? 0,
@@ -341,7 +333,6 @@ const EngravingComponent: React.FC = () => {
       })
     );
 
-    // Оновлюємо стан одним викликом
     customState.engravings = updatedEngravings;
   };
 
@@ -356,7 +347,6 @@ const EngravingComponent: React.FC = () => {
           updatedEngravings[id] = {
             ...updatedEngravings[id],
             pictureUrl: file ? URL.createObjectURL(file) : emptyImage,
-            // Додаємо базові значення для нового гравіювання
             locationX: updatedEngravings[id]?.locationX ?? 0,
             locationY: updatedEngravings[id]?.locationY ?? 0,
             locationZ: updatedEngravings[id]?.locationZ ?? 0,
@@ -380,7 +370,6 @@ const EngravingComponent: React.FC = () => {
   const addCard = () => {
     const newId = items.length;
 
-    // Створюємо нове гравіювання з усіма необхідними значеннями
     const newEngraving = {
       id: "",
       name: "",
@@ -410,7 +399,6 @@ const EngravingComponent: React.FC = () => {
       },
     ]);
 
-    // Оновлюємо стан одним викликом
     customState.engravings = [...customState.engravings, newEngraving];
   };
 
@@ -426,136 +414,135 @@ const EngravingComponent: React.FC = () => {
 
         <div className="mt-6 grid gap-4">
           {items.map((item) => (
-            <>
-              <div
-                key={item.id}
-                className="p-5 rounded-lg bg-gray-700 relative hover:shadow-xl transition flex flex-col gap-4"
-              >
-                <button
-                  className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition"
-                  onClick={() => removeCard(item.id)}
-                >
-                  &#x2716;
-                </button>
-
-                {item.type === "text" ? (
-                  <div className="flex flex-col gap-3">
-                    <label>
-                      <span className="block text-sm font-medium">Текст:</span>
-                      <input
-                        type="text"
-                        className="rounded p-2 w-full bg-gray-600 text-white"
-                        value={item.text || ""}
-                        onChange={(e) =>
-                          handleTextChange(item.id, e.target.value)
-                        }
-                      />
-                    </label>
-                    <label>
-                      <span className="block text-sm font-medium">Шрифт:</span>
-                      <select
-                        className="rounded p-2 w-full bg-gray-600 text-white"
-                        value={item.font || "Montserrat"}
-                        onChange={(e) =>
-                          handleFontChange(item.id, e.target.value)
-                        }
-                      >
-                        <option
-                          style={{ fontFamily: "Montserrat" }}
-                          value="Montserrat"
-                        >
-                          Montserrat
-                        </option>
-                        <option style={{ fontFamily: "Arial" }} value="Arial">
-                          Arial
-                        </option>
-                        <option
-                          style={{ fontFamily: "Open Sans" }}
-                          value="Open Sans"
-                        >
-                          Open Sans
-                        </option>
-                      </select>
-                    </label>
-                    <label>
-                      <span className="block text-sm font-medium">
-                        Сторона:
-                      </span>
-                      <select
-                        className="rounded p-2 w-full bg-gray-600 text-white"
-                        value={item.selectedSide}
-                        onChange={(e) =>
-                          handleSideChange(
-                            item.id,
-                            parseInt(e.target.value) as Side
-                          )
-                        }
-                      >
-                        <option value={Side.Right}>Права</option>
-                        <option value={Side.Left}>Ліва</option>
-                        <option value={Side.Axillary}>Піхви</option>
-                      </select>
-                    </label>
-                  </div>
-                ) : (
-                  <div className="flex flex-col gap-3">
-                    <label>
-                      <span className="block text-sm font-medium">
-                        Завантажити файл:
-                      </span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="rounded p-2 w-full bg-gray-600 text-white"
-                        onChange={(e) =>
-                          handleFileChange(
-                            item.id,
-                            e.target.files ? e.target.files[0] : null
-                          )
-                        }
-                      />
-                    </label>
-                    <label>
-                      <span className="block text-sm font-medium">
-                        Сторона:
-                      </span>
-                      <select
-                        className="rounded p-2 w-full bg-gray-600 text-white"
-                        value={item.selectedSide}
-                        onChange={(e) =>
-                          handleSideChange(
-                            item.id,
-                            parseInt(e.target.value) as Side
-                          )
-                        }
-                      >
-                        <option value={Side.Right}>Права</option>
-                        <option value={Side.Left}>Ліва</option>
-                        <option value={Side.Axillary}>Піхви</option>
-                      </select>
-                    </label>
-                  </div>
-                )}
-
+              <>
                 <label>
                   <span className="block text-sm font-medium">Тип:</span>
                   <select
-                    className="rounded p-2 w-full bg-gray-600 text-white"
-                    value={item.type}
-                    onChange={(e) =>
-                      handleTypeChange(
-                        item.id,
-                        e.target.value as "text" | "file"
-                      )
-                    }
+                      className="rounded p-2 w-full bg-gray-600 text-white"
+                      value={item.type}
+                      onChange={(e) =>
+                          handleTypeChange(
+                              item.id,
+                              e.target.value as "text" | "file"
+                          )
+                      }
                   >
                     <option value="text">Текст</option>
                     <option value="file">Фото</option>
                   </select>
                 </label>
-              </div>
-              <PositioningControls id={item.id} />
-            </>
+                <div
+                    key={item.id}
+                    className="p-5 rounded-lg bg-gray-700 relative hover:shadow-xl transition flex flex-col gap-4"
+                >
+                  <button
+                      className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition"
+                      onClick={() => removeCard(item.id)}
+                  >
+                    &#x2716;
+                  </button>
+
+                  {item.type === "text" ? (
+                      <div className="flex flex-col gap-3">
+                        <label>
+                          <span className="block text-sm font-medium">Текст:</span>
+                          <input
+                              type="text"
+                              className="rounded p-2 w-full bg-gray-600 text-white"
+                              value={item.text || ""}
+                              onChange={(e) =>
+                                  handleTextChange(item.id, e.target.value)
+                              }
+                          />
+                        </label>
+                        <label>
+                          <span className="block text-sm font-medium">Шрифт:</span>
+                          <select
+                              className="rounded p-2 w-full bg-gray-600 text-white"
+                              value={item.font || "Montserrat"}
+                              onChange={(e) =>
+                                  handleFontChange(item.id, e.target.value)
+                              }
+                          >
+                            <option
+                                style={{fontFamily: "Montserrat"}}
+                                value="Montserrat"
+                            >
+                              Montserrat
+                            </option>
+                            <option style={{fontFamily: "Arial"}} value="Arial">
+                              Arial
+                            </option>
+                            <option
+                                style={{fontFamily: "Open Sans"}}
+                                value="Open Sans"
+                            >
+                              Open Sans
+                            </option>
+                          </select>
+                        </label>
+                        <label>
+                      <span className="block text-sm font-medium">
+                        Сторона:
+                      </span>
+                          <select
+                              className="rounded p-2 w-full bg-gray-600 text-white"
+                              value={item.selectedSide}
+                              onChange={(e) =>
+                                  handleSideChange(
+                                      item.id,
+                                      parseInt(e.target.value) as Side
+                                  )
+                              }
+                          >
+                            <option value={Side.Right}>Права</option>
+                            <option value={Side.Left}>Ліва</option>
+                            <option value={Side.Axillary}>Піхви</option>
+                          </select>
+                        </label>
+                      </div>
+                  ) : (
+                      <div className="flex flex-col gap-3">
+                        <label>
+                      <span className="block text-sm font-medium">
+                        Завантажити файл:
+                      </span>
+                          <input
+                              type="file"
+                              accept="image/*"
+                              className="rounded p-2 w-full bg-gray-600 text-white"
+                              onChange={(e) =>
+                                  handleFileChange(
+                                      item.id,
+                                      e.target.files ? e.target.files[0] : null
+                                  )
+                              }
+                          />
+                        </label>
+                        <label>
+                      <span className="block text-sm font-medium">
+                        Сторона:
+                      </span>
+                          <select
+                              className="rounded p-2 w-full bg-gray-600 text-white"
+                              value={item.selectedSide}
+                              onChange={(e) =>
+                                  handleSideChange(
+                                      item.id,
+                                      parseInt(e.target.value) as Side
+                                  )
+                              }
+                          >
+                            <option value={Side.Right}>Права</option>
+                            <option value={Side.Left}>Ліва</option>
+                            <option value={Side.Axillary}>Піхви</option>
+                          </select>
+                        </label>
+                      </div>
+                  )}
+                </div>
+                <PositioningControls id={item.id}/>
+              </>
           ))}
         </div>
       </div>
