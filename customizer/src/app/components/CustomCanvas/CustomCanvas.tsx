@@ -711,7 +711,7 @@ const KnifeConfigurator = () => {
               />
           )}
         </Canvas>
-        <ControlButtons handleArrowClick={handleArrowClick} handleZoom={handleZoom}/>
+        {/*<ControlButtons handleArrowClick={handleArrowClick} handleZoom={handleZoom}/>*/}
       </>
   );
 };
