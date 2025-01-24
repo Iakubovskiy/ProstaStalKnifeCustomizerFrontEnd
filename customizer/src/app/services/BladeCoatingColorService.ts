@@ -17,6 +17,13 @@ class BladeCoatingColorService {
     return response;
   }
 
+  async getAllActive(): Promise<BladeCoatingColor[]> {
+    const response = await this.apiService.getAll<BladeCoatingColor>(
+        `${this.resource}/active`
+    );
+    return response;
+  }
+
   async getById(id: string): Promise<BladeCoatingColor> {
     const response = await this.apiService.getById<BladeCoatingColor>(
       this.resource,

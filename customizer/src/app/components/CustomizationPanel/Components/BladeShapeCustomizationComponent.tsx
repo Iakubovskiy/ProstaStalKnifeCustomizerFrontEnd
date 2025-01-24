@@ -6,9 +6,6 @@ import BladeShapeService from "@/app/services/BladeShapeService";
 import CardComponent from "./CardComponent";
 import BladeShape from "@/app/Models/BladeShape";
 import { useCanvasState } from "@/app/state/canvasState";
-import SheathColor from "@/app/Models/SheathColor";
-import HandleColor from "@/app/Models/HandleColor";
-import Fastening from "@/app/Models/Fastening";
 import Characteristics from "@/app/components/Characteristics/Characteristics";
 import { useSnapshot } from "valtio";
 
@@ -31,7 +28,7 @@ const BladeShapeCustomizationComponent: React.FC = () => {
 
     const fetchBladeShapes = async () => {
       try {
-        const shapes = await bladeShapeService.getAll();
+        const shapes = await bladeShapeService.getAllActive();
         setBladeShapes(shapes);
         if (true) {
           bladeShapeSelection(shapes[0]);

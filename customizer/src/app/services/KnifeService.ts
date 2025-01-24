@@ -13,6 +13,12 @@ class KnifeService {
     const response = await this.apiService.getAll<Knife>(this.resource);
     return response;
   }
+  async getAllActive(): Promise<Knife[]> {
+    const response = await this.apiService.getAll<Knife>(
+        `${this.resource}/active`
+    );
+    return response;
+  }
   async getById(id: string): Promise<Knife> {
     const response = await this.apiService.getById<Knife>(this.resource, id);
     return response;

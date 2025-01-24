@@ -28,7 +28,7 @@ const FasteningCustomizationComponent: React.FC = () => {
 
     const fetchFastenings = async () => {
       try {
-        const fastenings = await fasteningService.getAll();
+        const fastenings = await fasteningService.getAllActive();
         setFastenings(fastenings);
       } catch (error) {
         console.error("Error fetching fastenings:", error);

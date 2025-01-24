@@ -3,7 +3,6 @@ import SheathColorService from "../../../services/SheathColorService";
 import CardComponent from "./CardComponent";
 import SheathColor from "@/app/Models/SheathColor";
 import { useCanvasState } from '@/app/state/canvasState';
-import {color} from "framer-motion";
 import Characteristics from "@/app/components/Characteristics/Characteristics";
 import {useSnapshot} from "valtio";
 
@@ -15,7 +14,7 @@ const SheathCustomizationComponent: React.FC = () => {
     useEffect(() => {
         const fetchSheathColors = async () => {
             const service = new SheathColorService();
-            const colors = await service.getAll();
+            const colors = await service.getAllActive();
             console.log(colors);
             setSheathColors(colors);
         };

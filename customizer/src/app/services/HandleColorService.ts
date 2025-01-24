@@ -15,6 +15,13 @@ class HandleColorService {
     return response;
   }
 
+  async getAllActive(): Promise<HandleColor[]> {
+    const response = await this.apiService.getAll<HandleColor>(
+        `${this.resource}/active`
+    );
+    return response;
+  }
+
   async getById(id: string): Promise<HandleColor> {
     const response = await this.apiService.getById<HandleColor>(
       this.resource,

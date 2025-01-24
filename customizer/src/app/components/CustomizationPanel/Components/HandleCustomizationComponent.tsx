@@ -14,7 +14,7 @@ const HandleCustomizationComponent: React.FC = () => {
     useEffect(() => {
         const fetchHandleColors = async () => {
             const service = new HandleColorService();
-            const colors = await service.getAll();
+            const colors = await service.getAllActive();
             setHandleColors(colors);
         };
 

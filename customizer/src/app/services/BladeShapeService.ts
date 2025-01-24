@@ -15,6 +15,13 @@ class BladeShapeService {
     return response;
   }
 
+  async getAllActive(): Promise<BladeShape[]> {
+    const response = await this.apiService.getAll<BladeShape>(
+        `${this.resource}/active`
+    );
+    return response;
+  }
+
   async getById(id: string): Promise<BladeShape> {
     const response = await this.apiService.getById<BladeShape>(
       this.resource,

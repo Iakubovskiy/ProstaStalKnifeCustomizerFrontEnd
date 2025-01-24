@@ -15,6 +15,13 @@ class FasteningService {
     return response;
   }
 
+  async getAllActive(): Promise<Fastening[]> {
+    const response = await this.apiService.getAll<Fastening>(
+        `${this.resource}/active`
+    );
+    return response;
+  }
+
   async getById(id: string): Promise<Fastening> {
     const response = await this.apiService.getById<Fastening>(
       this.resource,

@@ -15,6 +15,13 @@ class DeliveryTypeService {
     return response;
   }
 
+  async getAllActive(): Promise<DeliveryType[]> {
+    const response = await this.apiService.getAll<DeliveryType>(
+        `${this.resource}/active`
+    );
+    return response;
+  }
+
   async getById(id: string): Promise<DeliveryType> {
     const response = await this.apiService.getById<DeliveryType>(
       this.resource,

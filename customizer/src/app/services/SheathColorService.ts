@@ -15,6 +15,13 @@ class SheathColorService {
     return response;
   }
 
+  async getAllActive(): Promise<SheathColor[]> {
+    const response = await this.apiService.getAll<SheathColor>(
+        `${this.resource}/active`
+    );
+    return response;
+  }
+
   async getById(id: string): Promise<SheathColor> {
     const response = await this.apiService.getById<SheathColor>(
       this.resource,

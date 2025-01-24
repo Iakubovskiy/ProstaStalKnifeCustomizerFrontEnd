@@ -14,7 +14,7 @@ const BladeCoatingCustomizationComponent: React.FC = () => {
     useEffect(() => {
         const fetchBladeCoatingColors = async () => {
             const service = new BladeCoatingColorService();
-            const colors = await service.getAll();
+            const colors = await service.getAllActive();
             setBladeCoatingColors(colors);
         };
 
