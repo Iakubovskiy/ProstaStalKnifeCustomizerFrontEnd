@@ -4,10 +4,20 @@ import { PriceCalculator } from "./PriceCalculator";
 import { OrderButton } from "./OrderButton";
 import EngravingPriceService from "@/app/services/EngravingPriceService";
 import { useSnapshot } from "valtio";
-import Fastening from "@/app/Models/Fastening";
 import Engraving from "@/app/Models/Engraving";
+import Knife from "@/app/Models/Knife";
+import Product from "@/app/Models/Product";
 
-export const KnifePurchaseContainer: React.FC = () => {
+interface Props {
+  productId?: string|null;
+}
+
+interface ProductInOrder{
+  product: Product,
+  quantity: number;
+}
+
+export const KnifePurchaseContainer: React.FC<Props> = ({productId}) => {
   const [quantity, setQuantity] = useState(1);
   const state = useCanvasState();
   const snap = useSnapshot(state);
@@ -19,7 +29,7 @@ export const KnifePurchaseContainer: React.FC = () => {
     if (snap.fastening) {
       price += snap.fastening.price;
     }
-
+    console.log(snap.engravings);
     if (snap.engravings && snap.engravings.length > 0) {
       const engravingService = new EngravingPriceService();
       const prices = await engravingService.getAll();
@@ -42,20 +52,38 @@ export const KnifePurchaseContainer: React.FC = () => {
   };
 
   const handleAddToCart = () => {
-    const knife = {
-      id: 0,
-      shape: snap.bladeShape,
-      bladeCoatingColor: snap.bladeCoatingColor,
-      handleColor: snap.handleColor,
-      sheathColor: snap.sheathColor,
-      fastening: snap.fastening,
-      engravings: snap.engravings,
-      quantity: quantity,
-    };
+
+    let productInOrder: ProductInOrder;
+    if(productId != null) {
+      const product: Product= {
+        id:productId,
+        isActive: true,
+      }
+      productInOrder = {
+        product,
+        quantity
+      }
+
+    }
+    else {
+      const product: Knife = {
+        id: "0",
+        shape: snap.bladeShape,
+        bladeCoatingColor: snap.bladeCoatingColor,
+        handleColor: snap.handleColor,
+        sheathColor: snap.sheathColor,
+        fastening: snap.fastening,
+        engravings: snap.engravings as Engraving[],
+        isActive: false,
+      }
+      productInOrder = {
+        product,
+        quantity
+      }
+    }
 
     const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    console.log("existingCart = ", existingCart);
-    localStorage.setItem("cart", JSON.stringify([...existingCart, knife]));
+    localStorage.setItem("cart", JSON.stringify([...existingCart, productInOrder]));
   };
 
   return (
@@ -67,16 +95,7 @@ export const KnifePurchaseContainer: React.FC = () => {
         onClearCart={handleClearCart}
         onAddToCart={handleAddToCart}
       />
-      {/* <OrderButton
-        currentKnife={{
-          id: "0",
-          shape: snap.bladeShape,
-          bladeCoatingColor: snap.bladeCoatingColor,
-          handleColor: snap.handleColor,
-          sheathColor: snap.sheathColor,
-          engravings: snap.engravings as Engraving[],
-        }} 
-      /> */}
+      <OrderButton/>
     </div>
   );
 };

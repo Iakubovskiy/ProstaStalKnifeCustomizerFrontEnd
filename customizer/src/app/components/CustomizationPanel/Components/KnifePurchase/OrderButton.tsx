@@ -1,12 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
-import Knife from '@/app/Models/Knife';
 
-interface Props {
-    currentKnife: Knife;
-}
-
-export const OrderButton: React.FC<Props> = ({ currentKnife }) => {
+export const OrderButton: React.FC = () => {
     const router = useRouter();
 
     const handleCheckout = () => {

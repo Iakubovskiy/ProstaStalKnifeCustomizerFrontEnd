@@ -12,7 +12,7 @@ const CustomizerPage = () => {
       </div>
       <div className={styles.controlsContainer}>
         <CustomizationPanel />
-        <KnifePurchaseContainer />
+        <KnifePurchaseContainer productId={null}/>
       </div>
     </div>
   );

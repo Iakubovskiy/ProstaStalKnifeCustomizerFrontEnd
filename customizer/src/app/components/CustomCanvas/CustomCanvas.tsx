@@ -169,6 +169,7 @@ const EngravedMesh : React.FC<EngravedMeshProps> = ({
         material={material.clone()}
         position={position}
         rotation={rotation}
+        color={"red"}
       >
         {engravings?.map(
           (eng, index) =>
@@ -293,9 +294,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
           case "engravingSide2":
           case "engravingSide3":
             updateMaterial(child.material, materialName, {
-              color: snap.bladeCoatingColor.engravingColorCode,
-              metalness: 0.6,
-              roughness: 0.4,
+              color: snap.bladeCoatingColor.engravingColorCode
             });
             break;
 
@@ -346,22 +345,26 @@ const ModelPart: React.FC<ModelPartProps> = ({
     });
 
     setEngravingMeshes(foundEngravingMeshes);
+    console.log(foundEngravingMeshes);
   }, [scene]);
   return (
     // @ts-ignore
     <group position={position} rotation={rotation}>
       {/*@ts-ignore*/}
       <primitive ref={modelRef} object={scene} />
-      {engravingMeshes.map((mesh, idx) => (
-        <EngravedMesh
-          key={`${mesh.name}-${idx}`}
-          geometry={mesh.geometry}
-          material={mesh.material}
-          position={mesh.position}
-          rotation={mesh.rotation}
-          engravings={snap.engravings as Engraving[]}
-        />
-      ))}
+      {engravingMeshes.map((mesh, idx) => {
+          console.log(mesh);
+          return (
+              <EngravedMesh
+                  key={`${mesh.name}-${idx}`}
+                  geometry={mesh.geometry}
+                  material={mesh.material}
+                  position={mesh.position}
+                  rotation={mesh.rotation}
+                  engravings={snap.engravings as Engraving[]}
+              />
+          );
+      })}
       {/*@ts-ignore*/}
     </group>
   );
@@ -613,8 +616,6 @@ const KnifeConfigurator = () => {
     materialProps: {
       default: {
         color: snap.bladeCoatingColor.colorCode,
-        metalness: 0.8,
-        roughness: 0.2,
       },
     },
     position: [0, 0, 0] as [number, number, number],
@@ -624,8 +625,6 @@ const KnifeConfigurator = () => {
   const sheathSettings = {
     materialProps: {
       default: {
-        metalness: 0.9,
-        roughness: 0.1,
       },
     },
   };
@@ -656,7 +655,7 @@ const KnifeConfigurator = () => {
                 enablePan={true}
                 enableZoom={true}
                 enableRotate={true}
-                minDistance={10}
+                minDistance={0.2}
                 maxDistance={100}
                 // @ts-ignore
                 ref={controlsRef}
@@ -697,7 +696,7 @@ const KnifeConfigurator = () => {
               <ModelPart
                   url={snap.bladeShape.sheathModelUrl}
                   {...sheathSettings}
-                  position={[0, -20, -3]}
+                  position={[0, -20, 0]}
                   rotation={[0, 0, 0]}
               />
           )}
@@ -706,7 +705,7 @@ const KnifeConfigurator = () => {
               <ModelPart
                   url={snap.fastening.modelUrl}
                   {...sheathSettings}
-                  position={[-5, -20, -2]}
+                  position={[-5, -20, -5.4]}
                   rotation={[0, 0, Math.PI / 2]}
               />
           )}
