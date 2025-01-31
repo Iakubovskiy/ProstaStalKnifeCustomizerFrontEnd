@@ -38,7 +38,7 @@ class OrderService {
         formData.append("Total", Order.total.toString());
         formData.append("Status", Order.status);
         formData.append("DeliveryTypeId", Order.deliveryTypeId);
-        formData.append("ProductIdsJson", JSON.stringify(Order.products.map(product => product.id)));
+        formData.append("ProductIdsJson", JSON.stringify(Order.products));
         formData.append("ProductQuantitiesJson", JSON.stringify(Order.productQuantities));
         formData.append("ClientFullName", Order.clientFullName);
         formData.append("ClientPhoneNumber", Order.clientPhoneNumber);

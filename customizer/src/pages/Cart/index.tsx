@@ -4,7 +4,6 @@ import DeliveryType from "@/app/Models/DeliveryType";
 import OrderService from "@/app/services/OrderService";
 import DeliveryTypeService from "@/app/services/DeliveryTypeService";
 import Engraving from "../../app/Models/Engraving";
-import Order from "../../app/Models/Order";
 import EngravingPrice from "../../app/Models/EngravingPrice";
 import EngravingService from "../../app/services/EngravingService";
 import {
@@ -24,9 +23,85 @@ import "../../styles/globals.css";
 import KnifeService from "@/app/services/KnifeService";
 import EngravingPriceService from "@/app/services/EngravingPriceService";
 import CreateOrderDTO from "@/app/DTO/CreateOrderDTO";
+import Product from "@/app/Models/Product";
+import Fastening from "@/app/Models/Fastening";
+import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
+import BladeShape from "@/app/Models/BladeShape";
+import HandleColor from "@/app/Models/HandleColor";
+import SheathColor from "@/app/Models/SheathColor";
+
+interface ProductInOrder{
+  product: Product,
+  quantity: number;
+}
+
+interface SerializedProduct {
+  id: string;
+  isActive: boolean;
+}
+
+// Розширений інтерфейс для серіалізованого Knife
+interface SerializedKnife extends SerializedProduct {
+  shape: BladeShape;
+  bladeCoatingColor: BladeCoatingColor;
+  handleColor: HandleColor;
+  sheathColor: SheathColor;
+  fastening: SerializedFastening | null;
+  engravings: Engraving[] | null;
+}
+
+// Інтерфейс для серіалізованого Fastening
+interface SerializedFastening extends SerializedProduct {
+  name: string;
+  color: string;
+  colorCode: string;
+  price: number;
+  material: string;
+  modelUrl: string;
+}
+
+const reconstructProduct = (plainObject: SerializedProduct | SerializedKnife | SerializedFastening): Product => {
+  if ('shape' in plainObject && 'bladeCoatingColor' in plainObject) {
+    const knifeObj = plainObject as SerializedKnife;
+    return new Knife(
+        knifeObj.id,
+        knifeObj.shape,
+        knifeObj.handleColor,
+        knifeObj.sheathColor,
+        knifeObj.isActive,
+        knifeObj.bladeCoatingColor,
+        knifeObj.fastening ? new Fastening(
+            knifeObj.fastening.name,
+            knifeObj.fastening.color,
+            knifeObj.fastening.colorCode,
+            knifeObj.fastening.price,
+            knifeObj.fastening.material,
+            knifeObj.fastening.modelUrl,
+            knifeObj.fastening.id,
+            knifeObj.fastening.isActive
+        ) : null,
+        knifeObj.engravings
+    );
+  }
+
+  else if ('name' in plainObject && 'colorCode' in plainObject) {
+    const fasteningObj = plainObject as SerializedFastening;
+    return new Fastening(
+        fasteningObj.name,
+        fasteningObj.color,
+        fasteningObj.colorCode,
+        fasteningObj.price,
+        fasteningObj.material,
+        fasteningObj.modelUrl,
+        fasteningObj.id,
+        fasteningObj.isActive
+    );
+  }
+  return new Product(plainObject.id, plainObject.isActive);
+};
 
 const CartAndOrderPage = () => {
-  const [cartItems, setCartItems] = useState<Knife[]>([]);
+  const [cartItems, setCartItems] = useState<ProductInOrder[]>([]);
   const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);
   const [clientInfo, setClientInfo] = useState({
     fullName: "",
@@ -39,16 +114,8 @@ const CartAndOrderPage = () => {
     string | null
   >(null);
   const [comment, setComment] = useState<string>("");
-  const [engravingPriceService, setengravingPriceService] =
-    useState<EngravingPriceService>(new EngravingPriceService());
-  const [knifeService, setknifeService] = useState<KnifeService>(
-    new KnifeService()
-  );
-
-  const [engravingService, setengravingService] = useState<EngravingService>(
-    new EngravingService()
-  );
-  const [engravingPrice, setengravingPrice] = useState<number>(0);
+  const engravingPriceService = new EngravingPriceService();
+  const [engravingPrice, setEngravingPrice] = useState<number>(0);
   const orderService = new OrderService();
   const deliveryTypeService = new DeliveryTypeService();
 
@@ -97,14 +164,15 @@ const CartAndOrderPage = () => {
 
     try {
       for (const knife of cartItems) {
-        // Спочатку створюємо гравіювання для ножа
         const createdEngravings = await createEngravings(knife);
-
-        // Створюємо копію ножа з новими ID гравіювань
+        if (knife.fastening?.id == ""){
+          knife.fastening = null;
+        }
         const knifeWithNewEngravings = {
           ...knife,
-          engraving: createdEngravings,
+          engravings: createdEngravings,
         };
+        console.log(knifeWithNewEngravings);
 
         const createdKnife = await knifeService.create(knifeWithNewEngravings);
         createdKnives.push(createdKnife);
@@ -118,14 +186,22 @@ const CartAndOrderPage = () => {
   useEffect(() => {
     const handleGet = async () => {
       const savedCart = localStorage.getItem("cart");
-      console.log(savedCart);
-      setCartItems(savedCart ? JSON.parse(savedCart) : []);
-      const engpr: EngravingPrice[] = await engravingPriceService.getAll();
-      if (engpr.length > 0) {
-        setengravingPrice(engpr[0].price);
+      if (savedCart) {
+        const parsedCart = JSON.parse(savedCart);
+        // Reconstruct class instances for each item in cart
+        const reconstructedCart = parsedCart.map((item: ProductInOrder) => ({
+          product: reconstructProduct(item.product),
+          quantity: item.quantity,
+        }));
+        setCartItems(reconstructedCart);
       }
 
-      deliveryTypeService.getAll().then((types) => setDeliveryTypes(types));
+      const engpr: EngravingPrice[] = await engravingPriceService.getAll();
+      if (engpr.length > 0) {
+        setEngravingPrice(engpr[0].price);
+      }
+
+      deliveryTypeService.getAllActive().then((types) => setDeliveryTypes(types));
     };
     handleGet();
   }, []);
@@ -147,7 +223,23 @@ const CartAndOrderPage = () => {
     }
 
     try {
-      const createdKnives = await createKnivesInBackend(cartItems);
+      cartItems.sort((a,b)=>{
+        if(a.product instanceof Knife && !(b.product instanceof Knife))
+          return -1;
+        else if(!(a.product instanceof Knife) && b.product instanceof Knife)
+          return 1;
+        return 0;
+      });
+
+      const knives:Knife[] = [];
+      const lastKnifeIndex = cartItems.findLastIndex(item => item.product instanceof Knife);
+      for(let i = 0; i <= lastKnifeIndex; i++) {
+          knives.push(cartItems[i].product as Knife);
+      }
+      const createdKnives = await createKnivesInBackend(knives);
+      const remainingProducts = cartItems.slice(lastKnifeIndex + 1).map(item => item.product.id);
+      const allProductIds = [...createdKnives.map(knife => knife.id), ...remainingProducts];
+      const quantities = cartItems.map(item=>item.quantity)
 
       const total = createdKnives.reduce((sum, item) => {
         let uniqueSides;
@@ -171,8 +263,8 @@ const CartAndOrderPage = () => {
       const orderData: CreateOrderDTO = {
         number: `ORD-${Date.now()}`,
         total,
-        products: createdKnives,
-        productQuantities: [1],
+        products: allProductIds,
+        productQuantities: quantities,
         deliveryTypeId: selectedDeliveryType,
         clientFullName: clientInfo.fullName,
         clientPhoneNumber: clientInfo.phoneNumber,
@@ -182,8 +274,8 @@ const CartAndOrderPage = () => {
         comment: comment || null,
         status: "Активний",
       };
-
-      const createdOrder = await orderService.create(orderData);
+      console.log(orderData);
+      await orderService.create(orderData);
       alert("Замовлення успішно створено!");
       setCartItems([]);
       localStorage.removeItem("cart");
@@ -193,6 +285,9 @@ const CartAndOrderPage = () => {
     }
   };
   console.log(cartItems);
+  for(const item of cartItems) {
+    console.log(item.product.constructor.name);
+  }
   return (
     <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
@@ -210,30 +305,41 @@ const CartAndOrderPage = () => {
               </TableHeader>
               <TableBody>
                 {cartItems.map((item, index) => (
-                  <TableRow key={item.id}>
-                    <TableCell>{item.shape.name}</TableCell>
+                  <TableRow key={item.product.id}>
+                    <TableCell>{item.product instanceof Knife
+                        ? item.product.shape.name
+                        : item.product instanceof Fastening
+                            ? item.product.name
+                            : "Без назви"}</TableCell>
                     <TableCell>
                       <Input
                         type="number"
-                        value="1"
-                        readOnly
+                        value={item.quantity.toString()}
                         min={1}
                         onChange={(e) => {
-                          // const newQuantity = parseInt(e.target.value) || 1;
-                          // const updatedItems = [...cartItems];
-                          // updatedItems[index].quantity = newQuantity;
-                          // setCartItems(updatedItems);
-                          // localStorage.setItem(
-                          //   "cart",
-                          //   JSON.stringify(updatedItems)
-                          // );
+                          const newQuantity = parseInt(e.target.value) || 1;
+                          const updatedItems = [...cartItems];
+                          updatedItems[index].quantity = newQuantity;
+                          setCartItems(updatedItems);
+                          localStorage.setItem(
+                            "cart",
+                            JSON.stringify(updatedItems)
+                          );
                         }}
                       />
                     </TableCell>
                     <TableCell>
-                      $
-                      {/*{item.quantity **/}
-                      {/*  (item.shape.price + item.bladeCoating.price)}*/}
+                      ₴
+                      {(item.product instanceof Knife?
+                          item.product.shape.price + item.product.bladeCoatingColor.price + item.product.sheathColor.price
+                          + (item.product.fastening?.price ?? 0) +
+                          (item.product.engravings?.length ?
+                              new Set(item.product.engravings.map(engraving => engraving.side)).size * engravingPrice
+                              : 0)
+                          : item.product instanceof Fastening?
+                              item.product.price
+                              :0) * item.quantity
+                      }
                     </TableCell>
                     <TableCell>
                       <Button
