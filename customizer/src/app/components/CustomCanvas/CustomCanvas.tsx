@@ -206,7 +206,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
     materialName: string,
     props: MaterialProps
   ) => {
-    console.log("update material started");
     if (material instanceof THREE.MeshStandardMaterial) {
       if (props.color) {
         material.color.set(props.color);
@@ -266,17 +265,15 @@ const ModelPart: React.FC<ModelPartProps> = ({
 
         switch (materialName) {
           case "bladeCoating":
-            console.log(1);
             updateMaterial(child.material, materialName, {
               color: snap.bladeCoatingColor.colorCode,
-              metalness: 0.0,
-              roughness: 0.0,
+              metalness: 0.2,
+              roughness: 1,
             });
             break;
 
           case "model":
             updateMaterial(child.material, materialName, {
-              color: "#CCCCCC",
               metalness: 1,
               roughness: 0.3,
             });
@@ -285,8 +282,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
           case "handle":
             updateMaterial(child.material, materialName, {
               color: snap.handleColor.colorCode,
-              metalness: 0.1,
-              roughness: 0.8,
             });
             break;
 
@@ -345,7 +340,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
     });
 
     setEngravingMeshes(foundEngravingMeshes);
-    console.log(foundEngravingMeshes);
   }, [scene]);
   return (
     // @ts-ignore
@@ -353,7 +347,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
       {/*@ts-ignore*/}
       <primitive ref={modelRef} object={scene} />
       {engravingMeshes.map((mesh, idx) => {
-          console.log(mesh);
           return (
               <EngravedMesh
                   key={`${mesh.name}-${idx}`}
@@ -632,7 +625,7 @@ const KnifeConfigurator = () => {
   const Lighting = () => (
       <>
         {/*@ts-ignore*/}
-        <ambientLight intensity={0.5}/>
+        <ambientLight intensity={1.5}/>
         {/*@ts-ignore*/}
         <directionalLight position={[10, 10, 5]} intensity={0.8}/>
         {/*@ts-ignore*/}
@@ -655,7 +648,7 @@ const KnifeConfigurator = () => {
                 enablePan={true}
                 enableZoom={true}
                 enableRotate={true}
-                minDistance={0.2}
+                minDistance={0.3}
                 maxDistance={100}
                 // @ts-ignore
                 ref={controlsRef}

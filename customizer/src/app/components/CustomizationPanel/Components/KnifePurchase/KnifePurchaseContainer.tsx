@@ -23,18 +23,24 @@ export const KnifePurchaseContainer: React.FC<Props> = ({productId}) => {
   const snap = useSnapshot(state);
   const [totalPrice, setTotalPrice] = useState(0);
 
+  useEffect(()=>{
+    console.log("Engravings changing");
+  }, [state.engravings]);
+  useEffect(()=>{
+    console.log("Handle changing");
+  }, [snap.handleColor]);
+
   const calculatePrice = async () => {
     let price = snap.bladeShape.price + (snap.sheathColor?.price || 0);
 
     if (snap.fastening) {
       price += snap.fastening.price;
     }
-    console.log(snap.engravings);
-    if (snap.engravings && snap.engravings.length > 0) {
+    if (state.engravings && state.engravings.length > 0) {
       const engravingService = new EngravingPriceService();
       const prices = await engravingService.getAll();
       if (prices.length > 0) {
-        const uniqueSides = new Set(snap.engravings.map((eng) => eng.side))
+        const uniqueSides = new Set(state.engravings.map((eng) => eng.side))
           .size;
         price += uniqueSides * prices[0].price;
       }
@@ -73,7 +79,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({productId}) => {
         handleColor: snap.handleColor,
         sheathColor: snap.sheathColor,
         fastening: snap.fastening,
-        engravings: snap.engravings as Engraving[],
+        engravings: state.engravings as Engraving[],
         isActive: false,
       }
       productInOrder = {

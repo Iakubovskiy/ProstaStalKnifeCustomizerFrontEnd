@@ -147,7 +147,6 @@ const CartAndOrderPage = () => {
       const response = await fetch(blobUrl);
       const blob = await response.blob();
 
-      // Створюємо File об'єкт з Blob
       const file = new File([blob], fileName, { type: blob.type });
 
       return file;

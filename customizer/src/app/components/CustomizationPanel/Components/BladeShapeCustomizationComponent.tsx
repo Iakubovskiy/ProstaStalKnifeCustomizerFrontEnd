@@ -48,8 +48,6 @@ const BladeShapeCustomizationComponent: React.FC = () => {
     }));
   };
   const bladeShapeSelection = (shape: BladeShape) => {
-    console.log(shape);
-    console.log(shape);
     state.bladeShape = {
       ...state.bladeShape,
       id: shape.id,
