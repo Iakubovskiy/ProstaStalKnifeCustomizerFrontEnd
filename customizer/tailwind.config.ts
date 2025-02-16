@@ -12,6 +12,7 @@ export default {
     extend: {
       colors: {
         text: "#ff0000",
+        coffe: "#f0e5d6",
       },
     },
   },

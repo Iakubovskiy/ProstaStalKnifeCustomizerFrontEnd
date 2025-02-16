@@ -8,6 +8,7 @@ import Fastening from "@/app/Models/Fastening";
 import { useCanvasState } from "@/app/state/canvasState";
 import Characteristics from "@/app/components/Characteristics/Characteristics";
 import { useSnapshot } from "valtio";
+import ModalFormButton from "../../ModalButton/ModalButton";
 
 const PreviewGenerator = dynamic(() => import("./PreviewGenerator"), {
   ssr: false,
@@ -46,7 +47,7 @@ const FasteningCustomizationComponent: React.FC = () => {
   };
 
   const fasteningOptionClick = (fastening: Fastening) => {
-    state.fastening= fastening;
+    state.fastening = fastening;
   };
 
   return (
@@ -77,19 +78,20 @@ const FasteningCustomizationComponent: React.FC = () => {
           </React.Fragment>
         ))}
       </div>
-        <div style={{marginTop: "16px"}}>
-            {snap.fastening && (
-                <Characteristics
-                    data={snap.fastening}
-                    isReadOnly1={true}
-                    currentBladeCoatingColor={""}
-                    onChange={() => {
-                    }}
-                    type="Fastening"
-                />
-            )}
-        </div>
-
+      <div style={{ marginTop: "16px" }}>
+        {snap.fastening && (
+          <Characteristics
+            data={snap.fastening}
+            isReadOnly1={true}
+            currentBladeCoatingColor={""}
+            onChange={() => {}}
+            type="Fastening"
+          />
+        )}
+      </div>
+      <div className="p-3">
+        <ModalFormButton component="bladeShape"></ModalFormButton>
+      </div>
     </>
   );
 };

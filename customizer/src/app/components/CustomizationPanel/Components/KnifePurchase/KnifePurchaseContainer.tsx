@@ -9,15 +9,15 @@ import Knife from "@/app/Models/Knife";
 import Product from "@/app/Models/Product";
 
 interface Props {
-  productId?: string|null;
+  productId?: string | null;
 }
 
-interface ProductInOrder{
-  product: Product,
+interface ProductInOrder {
+  product: Product;
   quantity: number;
 }
 
-export const KnifePurchaseContainer: React.FC<Props> = ({productId}) => {
+export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const [quantity, setQuantity] = useState(1);
   const state = useCanvasState();
   const snap = useSnapshot(state);
@@ -58,20 +58,17 @@ export const KnifePurchaseContainer: React.FC<Props> = ({productId}) => {
   };
 
   const handleAddToCart = () => {
-
     let productInOrder: ProductInOrder;
-    if(productId != null) {
-      const product: Product= {
-        id:productId,
+    if (productId != null) {
+      const product: Product = {
+        id: productId,
         isActive: true,
-      }
+      };
       productInOrder = {
         product,
-        quantity
-      }
-
-    }
-    else {
+        quantity,
+      };
+    } else {
       const product: Knife = {
         id: "0",
         shape: snap.bladeShape,
@@ -81,15 +78,18 @@ export const KnifePurchaseContainer: React.FC<Props> = ({productId}) => {
         fastening: snap.fastening,
         engravings: state.engravings as Engraving[],
         isActive: false,
-      }
+      };
       productInOrder = {
         product,
-        quantity
-      }
+        quantity,
+      };
     }
 
     const existingCart = JSON.parse(localStorage.getItem("cart") || "[]");
-    localStorage.setItem("cart", JSON.stringify([...existingCart, productInOrder]));
+    localStorage.setItem(
+      "cart",
+      JSON.stringify([...existingCart, productInOrder])
+    );
   };
 
   return (
@@ -101,7 +101,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({productId}) => {
         onClearCart={handleClearCart}
         onAddToCart={handleAddToCart}
       />
-      <OrderButton/>
+      <OrderButton />
     </div>
   );
 };

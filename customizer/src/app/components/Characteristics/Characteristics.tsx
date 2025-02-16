@@ -21,13 +21,13 @@ interface CharacteristicsProps<T> {
 }
 
 function Characteristics<
-  T extends SheathColor | HandleColor | Fastening | BladeShape | BladeCoatingColor
->({
-  data,
-  isReadOnly1,
-  type,
-  onChange,
-}: CharacteristicsProps<T>) {
+  T extends
+    | SheathColor
+    | HandleColor
+    | Fastening
+    | BladeShape
+    | BladeCoatingColor
+>({ data, isReadOnly1, type, onChange }: CharacteristicsProps<T>) {
   const renderFields = () => {
     switch (type) {
       case "SheathColor":
@@ -38,7 +38,7 @@ function Characteristics<
               defaultValue={(data as SheathColor).color}
               value={(data as SheathColor).color}
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
-              className={styles.input}
+              className="color-coffe"
               onChange={(e) => onChange({ ...data, color: e.target.value })}
             />
             <Input
@@ -47,7 +47,7 @@ function Characteristics<
               value={(data as SheathColor).material}
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
               onChange={(e) => onChange({ ...data, material: e.target.value })}
-              className={styles.input}
+              className="color-coffe"
             />
           </>
         );
@@ -59,7 +59,7 @@ function Characteristics<
               label="Назва кольору"
               defaultValue={(data as HandleColor).colorName}
               value={(data as HandleColor).colorName}
-              className={styles.input}
+              className="color-coffe"
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
               onChange={(e) => onChange({ ...data, colorName: e.target.value })}
             />
@@ -67,7 +67,7 @@ function Characteristics<
               label="Матеріал"
               defaultValue={(data as HandleColor).material}
               value={(data as HandleColor).material}
-              className={styles.input}
+              className="color-coffe"
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
               onChange={(e) => onChange({ ...data, material: e.target.value })}
             />
@@ -82,7 +82,7 @@ function Characteristics<
               defaultValue={(data as Fastening).name}
               value={(data as Fastening).name}
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
-              className={styles.input}
+              className="color-coffe"
               onChange={(e) => onChange({ ...data, name: e.target.value })}
             />
             <Input
@@ -91,7 +91,7 @@ function Characteristics<
               value={(data as Fastening).material}
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
               onChange={(e) => onChange({ ...data, material: e.target.value })}
-              className={styles.input}
+              className="color-coffe"
             />
             <Input
               label="Назва кольору"
@@ -99,7 +99,7 @@ function Characteristics<
               value={(data as Fastening).color}
               onChange={(e) => onChange({ ...data, color: e.target.value })}
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
-              className={styles.input}
+              className="color-coffe"
             />
           </>
         );
@@ -113,7 +113,7 @@ function Characteristics<
               value={(data as BladeShape).name}
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
               onChange={(e) => onChange({ ...data, name: e.target.value })}
-              className={styles.input}
+              className="color-coffe"
             />
             <Input
               label="Довжина загалом"
@@ -124,7 +124,7 @@ function Characteristics<
                 onChange({ ...data, totalLength: e.target.value })
               }
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
-              className={styles.input}
+              className="color-coffe"
             />
             <Input
               label="Довжина клинка"
@@ -135,7 +135,7 @@ function Characteristics<
                 onChange({ ...data, bladeLength: e.target.value })
               }
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
-              className={styles.input}
+              className="color-coffe"
             />
             <Input
               label="Ширина клинка"
@@ -146,7 +146,7 @@ function Characteristics<
                 onChange({ ...data, bladeWidth: e.target.value })
               }
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
-              className={styles.input}
+              className="color-coffe"
             />
             <Input
               label="Вага клинка"
@@ -157,7 +157,7 @@ function Characteristics<
               onChange={(e) =>
                 onChange({ ...data, bladeWeight: e.target.value })
               }
-              className={styles.input}
+              className="color-coffe"
             />
             <Input
               label="Кут заточки"
@@ -168,7 +168,6 @@ function Characteristics<
               onChange={(e) =>
                 onChange({ ...data, sharpeningAngle: e.target.value })
               }
-              className={styles.input}
             />
             <Input
               label="Твердість"
@@ -181,43 +180,41 @@ function Characteristics<
                 onChange({ ...data, rockwellHardnessUnits: e.target.value })
               }
               {...(isReadOnly1 ? { isReadOnly: true } : {})}
-              className={styles.input}
+              className="color-coffe"
             />
           </>
         );
 
       case "BladeCoatingColor":
-            return (
-                <>
-                    <Input
-                        label="Тип"
-                        defaultValue={(data as BladeCoatingColor).type}
-                        value={(data as BladeCoatingColor).type}
-                        {...(isReadOnly1 ? { isReadOnly: true } : {})}
-                        onChange={(e) => onChange({ ...data, type: e.target.value })}
-                        className={styles.input}
-                    />
-                    <Input
-                        label="Тип"
-                        defaultValue={(data as BladeCoatingColor).color}
-                        value={(data as BladeCoatingColor).color}
-                        {...(isReadOnly1 ? { isReadOnly: true } : {})}
-                        onChange={(e) => onChange({ ...data, color: e.target.value })}
-                        className={styles.input}
-                    />
-                    <Input
-                        label="Ціна"
-                        type="number"
-                        defaultValue={(data as BladeCoatingColor).price.toString()}
-                        value={(data as BladeCoatingColor).price.toString()}
-                        onChange={(e) =>
-                            onChange({ ...data, price: e.target.value })
-                        }
-                        {...(isReadOnly1 ? { isReadOnly: true } : {})}
-                        className={styles.input}
-                    />
-                </>
-            );
+        return (
+          <>
+            <Input
+              label="Тип"
+              defaultValue={(data as BladeCoatingColor).type}
+              value={(data as BladeCoatingColor).type}
+              {...(isReadOnly1 ? { isReadOnly: true } : {})}
+              onChange={(e) => onChange({ ...data, type: e.target.value })}
+              className="color-coffe"
+            />
+            <Input
+              label="Тип"
+              defaultValue={(data as BladeCoatingColor).color}
+              value={(data as BladeCoatingColor).color}
+              {...(isReadOnly1 ? { isReadOnly: true } : {})}
+              onChange={(e) => onChange({ ...data, color: e.target.value })}
+              className="color-coffe"
+            />
+            <Input
+              label="Ціна"
+              type="number"
+              defaultValue={(data as BladeCoatingColor).price.toString()}
+              value={(data as BladeCoatingColor).price.toString()}
+              onChange={(e) => onChange({ ...data, price: e.target.value })}
+              {...(isReadOnly1 ? { isReadOnly: true } : {})}
+              className="color-coffe"
+            />
+          </>
+        );
 
       default:
         return <p className={styles.unknown}>Unknown data type</p>;

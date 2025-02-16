@@ -4,17 +4,32 @@ import CustomizationPanel from "@/app/components/CustomizationPanel/Customizatio
 import { KnifePurchaseContainer } from "@/app/components/CustomizationPanel/Components/KnifePurchase/KnifePurchaseContainer";
 import styles from "./customizer.module.css";
 import "../../styles/globals.css";
+import CustomNavbar from "@/app/components/CustomNavbar/CustomNavbar";
+import MobileNavbar from "@/app/components/Nav/MobileNavBar";
+import NavigationMob from "@/app/components/Nav/MobileNavBar";
+import Footer from "@/app/components/Footer/Footer";
 const CustomizerPage = () => {
   return (
-    <div className={styles.customizer}>
-      <div className={styles.canvasContainer}>
-        <CustomCanvas />
+    <>
+      <div className={styles.desk}>
+        <CustomNavbar></CustomNavbar>
       </div>
-      <div className={styles.controlsContainer}>
-        <CustomizationPanel />
-        <KnifePurchaseContainer productId={null}/>
+      <div className={styles.mob}>
+        <NavigationMob></NavigationMob>
       </div>
-    </div>
+      <div className={styles.customizer}>
+        <div className={styles.canvasContainer}>
+          <CustomCanvas />
+        </div>
+        <div className={styles.controlsContainer}>
+          <CustomizationPanel />
+          <KnifePurchaseContainer productId={null} />
+        </div>
+      </div>
+      <div className={styles.footer}>
+        <Footer></Footer>
+      </div>
+    </>
   );
 };
 

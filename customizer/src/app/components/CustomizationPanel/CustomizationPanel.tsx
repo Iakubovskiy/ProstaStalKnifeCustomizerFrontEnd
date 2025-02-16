@@ -17,24 +17,8 @@ import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import HandleColorService from "@/app/services/HandleColorService";
 import { useCanvasState } from "@/app/state/canvasState";
 import HandleColor from "@/app/Models/HandleColor";
+import MenuCard from "./Menu/MenuCard";
 
-const scrollLeft = () => {
-  const container = document.getElementById("scrollContainer");
-  // @ts-ignore
-  container.scrollBy({
-    left: -200, // Прокрутка вліво на 200px
-    behavior: "smooth",
-  });
-};
-
-const scrollRight = () => {
-  const container = document.getElementById("scrollContainer");
-  // @ts-ignore
-  container.scrollBy({
-    left: 200, // Прокрутка вправо на 200px
-    behavior: "smooth",
-  });
-};
 const CustomizationPanel = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const bladeShapeService = new BladeShapeService();
@@ -64,6 +48,23 @@ const CustomizationPanel = () => {
     };
     fetchBladeShapes();
   }, []);
+  const scrollLeft = () => {
+    const container = document.getElementById("scrollContainer");
+    // @ts-ignore
+    container.scrollBy({
+      left: -200, // Прокрутка вліво на 200px
+      behavior: "smooth",
+    });
+  };
+
+  const scrollRight = () => {
+    const container = document.getElementById("scrollContainer");
+    // @ts-ignore
+    container.scrollBy({
+      left: 200, // Прокрутка вправо на 200px
+      behavior: "smooth",
+    });
+  };
   const SelectByDefault = (
     shape: BladeShape,
     coatingcolor: BladeCoatingColor,
@@ -100,46 +101,43 @@ const CustomizationPanel = () => {
       case "scabbardColor":
         return <SheathCustomizationComponent />;
       case "attachments":
-        return <FasteningCustomizationComponent/>;
+        return <FasteningCustomizationComponent />;
       case "engraving":
         return <EngravingComponent />;
 
       default:
-        return <div>Виберіть опцію для кастомізації</div>;
+        return (
+          <div className="text-black">Виберіть опцію для кастомізації</div>
+        );
     }
   };
 
   return (
-    <div className="customization- flex flex-col h-full bg-gray-800">
-      <div className="overflow-x-auto scrollbar-hide"></div>
-
-      <div className="relative">
-        {/* Кнопка вліво */}
-        <button
-          onClick={() => scrollLeft()}
-          className="absolute left-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-2 z-10 rounded-l-md"
-        >
-          ←
-        </button>
-
-        {/* Панель з контентом */}
+    <div className="customization- flex flex-col col-3 row-1 h-full bg-white rounded-md">
+      <div className="relative flex items-center">
+        <div className="invis">
+          <MenuCard
+            icon={"icons/arrowLeft.svg"}
+            tooltipText={""}
+            onClick={() => scrollLeft()}
+          />
+        </div>
         <div
-          className="overflow-x-auto mx-10 scrollbar-hide flex items-center"
+          className="overflow-x-auto mx-4 scrollbar-hide flex items-center"
           id="scrollContainer"
         >
           <CustomizationPanelMenu setSelectedOption={setSelectedOption} />
         </div>
-
-        {/* Кнопка вправо */}
-        <button
-          onClick={() => scrollRight()}
-          className="absolute right-0 top-1/2 transform -translate-y-1/2 bg-gray-800 text-white px-3 py-2 z-10 rounded-r-md"
-        >
-          →
-        </button>
+        <div className="invis">
+          <MenuCard
+            icon={"icons/arrowRight.svg"}
+            tooltipText={""}
+            onClick={() => scrollRight()}
+          />
+        </div>
       </div>
 
-      <div className="customization-content  mt-4 p-4 bg-gray-700 rounded scrollbar-hide flex-1 h-full overflow-auto">
+      <div className="customization-content  mt-4 p-4 bg-white rounded scrollbar-hide flex-1 h-full overflow-auto">
         {renderContent()}
       </div>
     </div>

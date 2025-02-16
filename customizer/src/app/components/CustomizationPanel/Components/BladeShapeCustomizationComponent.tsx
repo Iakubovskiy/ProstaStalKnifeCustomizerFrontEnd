@@ -8,6 +8,7 @@ import BladeShape from "@/app/Models/BladeShape";
 import { useCanvasState } from "@/app/state/canvasState";
 import Characteristics from "@/app/components/Characteristics/Characteristics";
 import { useSnapshot } from "valtio";
+import ModalFormButton from "../../ModalButton/ModalButton";
 
 const PreviewGenerator = dynamic(() => import("./PreviewGenerator"), {
   ssr: false,
@@ -30,9 +31,6 @@ const BladeShapeCustomizationComponent: React.FC = () => {
       try {
         const shapes = await bladeShapeService.getAllActive();
         setBladeShapes(shapes);
-        if (true) {
-          bladeShapeSelection(shapes[0]);
-        }
       } catch (error) {
         console.error("Error fetching blade shapes:", error);
       }
@@ -101,6 +99,9 @@ const BladeShapeCustomizationComponent: React.FC = () => {
           onChange={() => {}}
           type="BladeShape"
         />
+        <div className="p-3">
+          <ModalFormButton component="bladeShape"></ModalFormButton>
+        </div>
       </div>
     </>
   );
