@@ -8,6 +8,7 @@ const NavigationMob = () => {
 
   useEffect(() => {
     const handleClickOutside = (event: { target: any }) => {
+      //@ts-ignore
       if (menuRef.current && !menuRef.current.contains(event.target)) {
         setIsOpen(false);
       }
@@ -30,6 +31,7 @@ const NavigationMob = () => {
   ];
 
   return (
+      // @ts-ignore
     <nav className="w-full shadow-md relative" ref={menuRef}>
       <div className="px-4 py-2 flex justify-between items-center bg-white">
         <div className="flex items-center">
