@@ -48,6 +48,9 @@ const ModelPart: React.FC<ModelPartProps> = ({
         materialName: string,
         props: MaterialProps
     ) => {
+        if(materialName === 'Material__198'){
+            console.log('!!!!');
+        }
         if (material instanceof THREE.MeshStandardMaterial) {
             if (props.color) {
                 material.color.set(props.color);
@@ -90,11 +93,14 @@ const ModelPart: React.FC<ModelPartProps> = ({
                 materialName === "engravingSide2" ||
                 materialName === "engravingSide3"
             ) {
-                material.transparent = false;
+                material.transparent = true;
                 material.opacity = 0;
             }
 
             material.needsUpdate = true;
+        }
+        else{
+            console.log(materialName);
         }
     };
 
@@ -111,13 +117,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
                             color: snap.bladeCoatingColor.colorCode,
                             metalness: 0.2,
                             roughness: 1,
-                        });
-                        break;
-
-                    case "model":
-                        updateMaterial(child.material, materialName, {
-                            metalness: 1,
-                            roughness: 0.3,
                         });
                         break;
 
@@ -138,8 +137,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
                     case "sheath":
                         updateMaterial(child.material, materialName, {
                             color: snap.sheathColor.colorCode,
-                            metalness: 0.1,
-                            roughness: 0.9,
                         });
                         break;
                 }

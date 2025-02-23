@@ -13,7 +13,6 @@ class APIService {
     body?: FormData | any,
     headers: HeadersInit = this.getDefaultHeaders(body instanceof FormData)
   ): Promise<T> {
-    console.log(`${this.baseURL}/${url}`);
     const response = await fetch(`${this.baseURL}/${url}`, {
       method,
       headers,

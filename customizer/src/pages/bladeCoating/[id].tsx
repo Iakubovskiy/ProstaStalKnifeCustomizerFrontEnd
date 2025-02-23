@@ -37,12 +37,15 @@ const BladeCoatingColorPage = () => {
     );
     const bladeCoatingservice = new BladeCoatingColorService();
     const colorMapFileSelected = (selectedFile: File | null) => {
+        console.log(0);
         setColorMapFile(selectedFile);
     };
     const normalMapFileSelected = (selectedFile: File | null) => {
+        console.log(1);
         setNormalMapFile(selectedFile);
     };
     const roughnessrMapFileSelected = (selectedFile: File | null) => {
+        console.log(2);
         setRoughnessMapFile(selectedFile);
     };
     const bladeCoatingObjectChange = (updatedData: BladeCoatingColor) => {
@@ -118,22 +121,28 @@ const BladeCoatingColorPage = () => {
                         Кольори руків&#39;я
                     </h1>
 
+                    <h3 className="text-xl text-black font-bold text-center mb-4">colorMap</h3>
                     <div className="mb-6">
                         <DragNDrop
                             onFileSelected={colorMapFileSelected}
                             validExtensions={[".jpg", "jpeg", ".png"]}
+                            id='0'
                         />
                     </div>
+                    <h3 className="text-xl text-black font-bold text-center mb-4">normalMap</h3>
                     <div className="mb-6">
                         <DragNDrop
                             onFileSelected={normalMapFileSelected}
                             validExtensions={[".jpg", "jpeg", ".png"]}
+                            id='1'
                         />
                     </div>
+                    <h3 className="text-xl text-black font-bold text-center mb-4">roughnessMap</h3>
                     <div className="mb-6">
                         <DragNDrop
                             onFileSelected={roughnessrMapFileSelected}
                             validExtensions={[".jpg", "jpeg", ".png"]}
+                            id='2'
                         />
                     </div>
                     <div className="mb-6">

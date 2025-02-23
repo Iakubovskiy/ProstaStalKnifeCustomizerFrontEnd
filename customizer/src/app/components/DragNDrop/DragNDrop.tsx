@@ -4,12 +4,14 @@ interface FileDragAndDropProps {
   onFileSelected: (file: File | null) => void;
   validExtensions: string[];
   fileUrl?: string;
+  id?: string;
 }
 
 const DragNDrop: React.FC<FileDragAndDropProps> = ({
   onFileSelected,
   validExtensions,
   fileUrl,
+  id
 }) => {
   const [file, setFile] = useState<File | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -97,10 +99,10 @@ const DragNDrop: React.FC<FileDragAndDropProps> = ({
               accept={validExtensions.map((ext) => `*${ext}`).join(",")}
               onChange={handleFileInputChange}
               className="hidden"
-              id="file-upload"
+              id={`file-upload-${id}`}
             />
             <label
-              htmlFor="file-upload"
+              htmlFor={`file-upload-${id}`}
               className="text-blue-500 underline cursor-pointer mt-2"
             >
               Обрати файл

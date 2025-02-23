@@ -33,8 +33,6 @@ const EngravedMesh : React.FC<EngravedMeshProps> = ({
         }
     }, [matrix]);
 
-    console.log("position",position);
-    console.log("rotation",rotation);
     return (
         //@ts-ignore
         <group key={meshKey}>

@@ -23,13 +23,6 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const snap = useSnapshot(state);
   const [totalPrice, setTotalPrice] = useState(0);
 
-  useEffect(()=>{
-    console.log("Engravings changing");
-  }, [state.engravings]);
-  useEffect(()=>{
-    console.log("Handle changing");
-  }, [snap.handleColor]);
-
   const calculatePrice = async () => {
     let price = snap.bladeShape.price + (snap.sheathColor?.price || 0);
 

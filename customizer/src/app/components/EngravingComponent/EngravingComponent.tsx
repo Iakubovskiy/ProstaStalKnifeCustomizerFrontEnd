@@ -1,22 +1,6 @@
-import { useCanvasState } from "@/app/state/canvasState";
-import React, { useEffect, useState } from "react";
-import { ChevronDown, ChevronUp } from "lucide-react";
-import ModalFormButton from "../ModalButton/ModalButton";
+import {useCanvasState} from "@/app/state/canvasState";
+import React, {useEffect, useState} from "react";
 import Engraving from "@/app/Models/Engraving";
-interface CardItem {
-  id: number;
-  type: "text" | "file";
-  selectedSide: number;
-  font?: string;
-  text?: string;
-  selectedFile?: File | null;
-  controls?: {
-    positionX: number;
-    positionY: number;
-    rotationZ: number;
-    scale: number;
-  };
-}
 
 const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
   const customState = useCanvasState();
@@ -74,7 +58,7 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
 
   return (
     <div className="mt-4 grid gap-3">
-      <div className="border-t bg-coffe pt-4">
+      <div className="border-t border-gray-600 pt-4">
         <h3 className="text-sm font-medium mb-3">
           Налаштування позиціонування
         </h3>
@@ -93,7 +77,7 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
               onChange={(e) =>
                 handleControlChange("positionX", parseFloat(e.target.value))
               }
-              className="w-full h-2 bg-white rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
             />
           </div>
 
@@ -110,7 +94,7 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
               onChange={(e) =>
                 handleControlChange("positionY", parseFloat(e.target.value))
               }
-              className="w-full h-2 bg-white rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
             />
           </div>
 
@@ -127,7 +111,7 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
               onChange={(e) =>
                 handleControlChange("rotationZ", parseFloat(e.target.value))
               }
-              className="w-full h-2 bg-white rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
             />
           </div>
 
@@ -144,7 +128,7 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
               onChange={(e) =>
                 handleControlChange("scale", parseFloat(e.target.value))
               }
-              className="w-full h-2 bg-white rounded-lg appearance-none cursor-pointer"
+              className="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer"
             />
           </div>
         </div>
@@ -167,21 +151,20 @@ const EngravingComponent: React.FC = () => {
     font?: string;
     text?: string;
     selectedFile?: File | null;
-    isExpanded?: boolean;
   }
 
   const customState = useCanvasState();
   useEffect(() => {
     if (customState.engravings && customState.engravings.length > 0) {
+      console.log(customState.engravings);
       const initialItems = customState.engravings.map(
         (engraving: Engraving, index: number) => ({
           id: index,
-          type: engraving.text === "" ? ("file" as const) : ("text" as const), // Явно вказуємо літеральний тип
+          type: engraving.text === "" ? "file" : ("text" as "text" | "file"),
           selectedSide: engraving.side,
           font: engraving.font || "Montserrat",
           text: engraving.text || "",
           selectedFile: null,
-          isExpanded: true,
         })
       );
       setItems(initialItems);
@@ -240,29 +223,12 @@ const EngravingComponent: React.FC = () => {
   const emptyImage =
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/ihGyysAAAAASUVORK5CYII=";
 
-  // Функція для оновлення шрифту
-
-  // Функція для оновлення сторони
-  const handleTypeChange = (id: number, value: "text" | "file") => {
+  const handleFontChange = (id: number, value: string) => {
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const updatedItem = {
-            ...item,
-            type: value,
-            isExpanded: item.isExpanded, // Зберігаємо поточний стан
-            text: value === "file" ? "" : item.text,
-            font: value === "file" ? "" : item.font,
-            selectedFile: value === "text" ? null : item.selectedFile,
-          };
-
-          if (value === "file") {
-            customState.engravings[id].text = "";
-            customState.engravings[id].font = "";
-          } else {
-            customState.engravings[id].pictureUrl = emptyImage;
-          }
-
+          const updatedItem = { ...item, font: value };
+          customState.engravings[id].font = value;
           return updatedItem;
         }
         return item;
@@ -274,19 +240,15 @@ const EngravingComponent: React.FC = () => {
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const updatedItem = {
-            ...item,
-            selectedSide: value,
-            isExpanded: item.isExpanded, // Зберігаємо поточний стан
-          };
-
+          const updatedItem = { ...item, selectedSide: value };
           customState.engravings[id].side = value;
           if (value === 2) {
             customState.engravings[id].rotationY = 90;
           } else {
             customState.engravings[id].rotationY = 0;
+            console.log(customState.engravings[id].rotationY);
           }
-
+          console.log(customState.engravings[id].rotationY);
           return updatedItem;
         }
         return item;
@@ -294,16 +256,20 @@ const EngravingComponent: React.FC = () => {
     );
   };
 
-  const handleFontChange = (id: number, value: string) => {
+  const handleTypeChange = (id: number, value: "text" | "file") => {
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const updatedItem = {
-            ...item,
-            font: value,
-            isExpanded: item.isExpanded, // Зберігаємо поточний стан
-          };
-          customState.engravings[id].font = value;
+          const updatedItem = { ...item, type: value };
+          if (value === "file") {
+            updatedItem.text = "";
+            updatedItem.font = "";
+            customState.engravings[id].text = "";
+            customState.engravings[id].font = "";
+          } else {
+            updatedItem.selectedFile = null;
+            customState.engravings[id].pictureUrl = emptyImage;
+          }
           return updatedItem;
         }
         return item;
@@ -312,26 +278,32 @@ const EngravingComponent: React.FC = () => {
   };
 
   const handleTextChange = (id: number, value: string) => {
-    const updatedEngravings = [...customState.engravings];
-
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const updatedItem = {
-            ...item,
-            text: value,
-            isExpanded: item.isExpanded, // Зберігаємо поточний стан
-          };
-
-          updatedEngravings[id] = {
-            ...updatedEngravings[id],
-            pictureUrl: textToSvgUrl(
+          const updatedItem = { ...item, text: value };
+          const newUrl = textToSvgUrl(
               value,
-              item.font || "Montserrat",
+              item.font ?? "Montserrat",
               customState.bladeCoatingColor.engravingColorCode || "#000000"
-            ),
-            text: value,
-          };
+          );
+          const engraving = customState.engravings[id];
+          if (engraving) {
+            engraving.text = value;
+            engraving.pictureUrl = newUrl;
+            engraving.locationX ??= 0;
+            engraving.locationY ??= 0;
+            engraving.locationZ ??= 0;
+            engraving.rotationX ??= 0;
+            engraving.rotationY ??= 0;
+            engraving.rotationZ ??= 0;
+            engraving.scaleX ??= 20;
+            engraving.scaleY ??= 20;
+            engraving.scaleZ ??= 20;
+          }
+
+          customState.engravings[id].text = value;
+          customState.engravings[id].pictureUrl = newUrl;
 
           return updatedItem;
         }
@@ -346,15 +318,20 @@ const EngravingComponent: React.FC = () => {
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const updatedItem = {
-            ...item,
-            selectedFile: file,
-            isExpanded: item.isExpanded, // Зберігаємо поточний стан
-          };
+          const updatedItem = { ...item, selectedFile: file };
 
           updatedEngravings[id] = {
             ...updatedEngravings[id],
             pictureUrl: file ? URL.createObjectURL(file) : emptyImage,
+            locationX: updatedEngravings[id]?.locationX ?? 0,
+            locationY: updatedEngravings[id]?.locationY ?? 0,
+            locationZ: updatedEngravings[id]?.locationZ ?? 0,
+            rotationX: updatedEngravings[id]?.rotationX ?? 0,
+            rotationY: updatedEngravings[id]?.rotationY ?? 0,
+            rotationZ: updatedEngravings[id]?.rotationZ ?? 0,
+            scaleX: updatedEngravings[id]?.scaleX ?? 20,
+            scaleY: updatedEngravings[id]?.scaleY ?? 20,
+            scaleZ: updatedEngravings[id]?.scaleZ ?? 20,
           };
 
           return updatedItem;
@@ -365,13 +342,7 @@ const EngravingComponent: React.FC = () => {
 
     customState.engravings = updatedEngravings;
   };
-  const toggleExpand = (id: number) => {
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, isExpanded: !item.isExpanded } : item
-      )
-    );
-  };
+
   const addCard = () => {
     const newId = items.length;
 
@@ -393,186 +364,138 @@ const EngravingComponent: React.FC = () => {
       scaleZ: 20,
     };
 
-    const newCardState: CardItem = {
-      id: newId,
-      type: "text" as const, // Явно вказуємо літеральний тип
-      selectedSide: 1,
-      font: "Montserrat",
-      text: "",
-      selectedFile: null,
-      isExpanded: true,
-    };
+    setItems((prev) => [
+      ...prev,
+      {
+        id: newId,
+        type: "text",
+        selectedSide: 1,
+        font: "Montserrat",
+        text: "",
+      },
+    ]);
 
-    setItems((prev) => [...prev, newCardState]);
     customState.engravings = [...customState.engravings, newEngraving];
   };
 
   return (
-    <div className="flex bg-white text-black min-h-screen">
-      <div className="p-6 w-full max-w-4xl mx-auto">
-        <div className="mb-3">
-          <ModalFormButton component="bladeShape"></ModalFormButton>
-        </div>
-        <button
-          className="p-3 w-full bg-coffe rounded hover:bg-[#faebd7] transition text-black font-medium mb-6"
-          onClick={addCard}
-        >
-          Додати гравіювання
-        </button>
+      <div className="flex bg-gray-800 text-white min-h-screen">
+        <div className="p-6 w-full max-w-4xl mx-auto">
+          <button
+              className="p-3 w-full bg-blue-900 rounded hover:bg-blue-600 transition text-white font-medium"
+              onClick={addCard}
+          >
+            Додати гравіювання
+          </button>
 
-        <div className="grid gap-4">
-          {items.map((item) => (
-            <div key={item.id} className="bg-coffe rounded-lg">
-              <div className="p-4">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-medium">
-                    Гравіювання {item.id + 1}
-                  </h3>
-                  <button
-                    className="text-red-500 hover:text-red-700 transition p-2"
-                    onClick={() => removeCard(item.id)}
-                  >
-                    &#x2716;
-                  </button>
-                </div>
-
-                {item.isExpanded && (
-                  <>
-                    <label className="block mb-4">
-                      <span className="block text-sm font-medium mb-1">
-                        Тип:
-                      </span>
-                      <select
-                        className="rounded p-2 w-full bg-white text-black"
-                        value={item.type}
+          <div className="mt-6 grid gap-4">
+            {items.map((item) => (
+                <div key={item.id}>
+                  <label>
+                    <span className="block text-sm font-medium">Тип:</span>
+                    <select
+                        className="rounded p-2 w-full bg-gray-600 text-white"
+                        value={item.type || "text"} // Фікс для уникнення undefined
                         onChange={(e) =>
-                          handleTypeChange(
-                            item.id,
-                            e.target.value as "text" | "file"
-                          )
+                            handleTypeChange(item.id, e.target.value as "text" | "file")
                         }
-                      >
-                        <option value="text">Текст</option>
-                        <option value="file">Фото</option>
-                      </select>
-                    </label>
+                    >
+                      <option value="text">Текст</option>
+                      <option value="file">Фото</option>
+                    </select>
+                  </label>
+                  <div className="p-5 rounded-lg bg-gray-700 relative hover:shadow-xl transition flex flex-col gap-4">
+                    <button
+                        className="absolute top-2 right-2 text-red-500 hover:text-red-700 transition"
+                        onClick={() => removeCard(item.id)}
+                    >
+                      &#x2716;
+                    </button>
 
                     {item.type === "text" ? (
-                      <div className="flex flex-col gap-3">
-                        <label>
-                          <span className="block text-sm font-medium">
-                            Текст:
-                          </span>
-                          <input
-                            type="text"
-                            className="rounded p-2 w-full bg-white text-black"
-                            value={item.text || ""}
-                            onChange={(e) =>
-                              handleTextChange(item.id, e.target.value)
-                            }
-                          />
-                        </label>
-                        <label>
-                          <span className="block text-sm font-medium">
-                            Шрифт:
-                          </span>
-                          <select
-                            className="rounded p-2 w-full bg-white text-black"
-                            value={item.font || "Montserrat"}
-                            onChange={(e) =>
-                              handleFontChange(item.id, e.target.value)
-                            }
-                          >
-                            <option value="Montserrat">Montserrat</option>
-                            <option value="Arial">Arial</option>
-                            <option value="Open Sans">Open Sans</option>
-                          </select>
-                        </label>
-                        <label>
-                          <span className="block text-sm font-medium">
-                            Сторона:
-                          </span>
-                          <select
-                            className="rounded p-2 w-full bg-white text-black"
-                            value={item.selectedSide}
-                            onChange={(e) =>
-                              handleSideChange(
-                                item.id,
-                                parseInt(e.target.value) as Side
-                              )
-                            }
-                          >
-                            <option value={Side.Right}>Права</option>
-                            <option value={Side.Left}>Ліва</option>
-                            <option value={Side.Axillary}>Піхви</option>
-                          </select>
-                        </label>
-                      </div>
+                        <div className="flex flex-col gap-3">
+                          <label>
+                            <span className="block text-sm font-medium">Текст:</span>
+                            <input
+                                type="text"
+                                className="rounded p-2 w-full bg-gray-600 text-white"
+                                value={item.text || ""} // Фікс: гарантує, що value завжди є
+                                onChange={(e) =>
+                                    handleTextChange(item.id, e.target.value)
+                                }
+                            />
+                          </label>
+                          <label>
+                            <span className="block text-sm font-medium">Шрифт:</span>
+                            <select
+                                className="rounded p-2 w-full bg-gray-600 text-white"
+                                value={item.font || "Montserrat"} // Фікс
+                                onChange={(e) =>
+                                    handleFontChange(item.id, e.target.value)
+                                }
+                            >
+                              <option style={{ fontFamily: "Montserrat" }} value="Montserrat">
+                                Montserrat
+                              </option>
+                              <option style={{ fontFamily: "Arial" }} value="Arial">
+                                Arial
+                              </option>
+                              <option style={{ fontFamily: "Open Sans" }} value="Open Sans">
+                                Open Sans
+                              </option>
+                            </select>
+                          </label>
+                          <label>
+                            <span className="block text-sm font-medium">Сторона:</span>
+                            <select
+                                className="rounded p-2 w-full bg-gray-600 text-white"
+                                value={item.selectedSide ?? Side.Right} // Фікс
+                                onChange={(e) =>
+                                    handleSideChange(item.id, parseInt(e.target.value) as Side)
+                                }
+                            >
+                              <option value={Side.Right}>Права</option>
+                              <option value={Side.Left}>Ліва</option>
+                              <option value={Side.Axillary}>Піхви</option>
+                            </select>
+                          </label>
+                        </div>
                     ) : (
-                      <div className="flex flex-col gap-3">
-                        <label>
-                          <span className="block text-sm font-medium">
-                            Завантажити файл:
-                          </span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            className="rounded p-2 w-full bg-white text-black"
-                            onChange={(e) =>
-                              handleFileChange(
-                                item.id,
-                                e.target.files ? e.target.files[0] : null
-                              )
-                            }
-                          />
-                        </label>
-                        <label>
-                          <span className="block text-sm font-medium">
-                            Сторона:
-                          </span>
-                          <select
-                            className="rounded p-2 w-full bg-white text-black"
-                            value={item.selectedSide}
-                            onChange={(e) =>
-                              handleSideChange(
-                                item.id,
-                                parseInt(e.target.value) as Side
-                              )
-                            }
-                          >
-                            <option value={Side.Right}>Права</option>
-                            <option value={Side.Left}>Ліва</option>
-                            <option value={Side.Axillary}>Піхви</option>
-                          </select>
-                        </label>
-                      </div>
+                        <div className="flex flex-col gap-3">
+                          <label>
+                            <span className="block text-sm font-medium">Завантажити файл:</span>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                className="rounded p-2 w-full bg-gray-600 text-white"
+                                onChange={(e) =>
+                                    handleFileChange(item.id, e.target.files ? e.target.files[0] : null)
+                                }
+                            />
+                          </label>
+                          <label>
+                            <span className="block text-sm font-medium">Сторона:</span>
+                            <select
+                                className="rounded p-2 w-full bg-gray-600 text-white"
+                                value={item.selectedSide ?? Side.Right} // Фікс
+                                onChange={(e) =>
+                                    handleSideChange(item.id, parseInt(e.target.value) as Side)
+                                }
+                            >
+                              <option value={Side.Right}>Права</option>
+                              <option value={Side.Left}>Ліва</option>
+                              <option value={Side.Axillary}>Піхви</option>
+                            </select>
+                          </label>
+                        </div>
                     )}
-                    <PositioningControls id={item.id} />
-                  </>
-                )}
-              </div>
-
-              <button
-                onClick={() => toggleExpand(item.id)}
-                className="w-full p-3 bg-coffe hover:bg-[#faebd7] transition-colors flex items-center justify-center gap-2 rounded-b-lg"
-              >
-                {item.isExpanded ? (
-                  <>
-                    <ChevronUp className="w-5 h-5" />
-                    <span>Згорнути</span>
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown className="w-5 h-5" />
-                    <span>Розгорнути</span>
-                  </>
-                )}
-              </button>
-            </div>
-          ))}
+                  </div>
+                  <PositioningControls id={item.id} />
+                </div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
   );
 };
 
