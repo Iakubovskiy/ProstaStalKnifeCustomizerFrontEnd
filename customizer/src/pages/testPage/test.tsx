@@ -1,101 +1,96 @@
 "use client";
-import React from "react";
+import React, {useEffect, useRef, useState} from "react";
 import "../../styles/globals.css";
 import CustomCanvas from "../../app/components/CustomCanvas/CustomCanvas";
 import { useCanvasState } from "@/app/state/canvasState";
+import { Trash2 } from "lucide-react";
 
-const FileInput = () => {
+const FileInput = ({ label, accept, stateKey }: { label: string; accept: string; stateKey: string }) => {
   const state = useCanvasState();
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    console.log(0);
-    if (file) {
-      const url = URL.createObjectURL(file);
-      console.log(url);
-      state.bladeShape = { ...state.bladeShape, bladeShapeModelUrl: url };
-    }
-  };
-  console.log("state =  ", state);
-  return <input type="file" accept=".glb" onChange={handleFileChange} />;
-};
+  const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [inputKey, setInputKey] = useState(Date.now()); // Унікальний ключ для перестворення input
 
-const TextureFileInput = () => {
-  const state = useCanvasState();
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    console.log("coating");
-    if (file) {
-      const url = URL.createObjectURL(file);
-      console.log(url);
-      state.bladeCoatingColor = {
-        ...state.bladeCoatingColor,
-        colorCode: "#ffffff",
-      };
-    }
-  };
-  console.log("state =  ", state);
-  return <input type="file" accept=".jpg" onChange={handleFileChange} />;
-};
-
-const EngravingFileInput: React.FC = () => {
-  const state = useCanvasState();
+  useEffect(() => {
+    if (stateKey === "colorMapUrl") setFileUrl(state.bladeCoatingColor.colorMapUrl);
+    if (stateKey === "normalMapUrl") setFileUrl(state.bladeCoatingColor.normalMapUrl);
+    if (stateKey === "roughnessMapUrl") setFileUrl(state.bladeCoatingColor.roughnessMapUrl);
+    if (stateKey === "bladeShapeModelUrl") setFileUrl(state.bladeShape.bladeShapeModelUrl);
+  }, [state.bladeCoatingColor, state.bladeShape, stateKey]);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       const url = URL.createObjectURL(file);
-      const newEngraving = {
-        id: "",
-        name: "",
-        pictureUrl: url,
-        side: 1,
-        text: "0",
-        font: "",
-        locationX: 0,
-        locationY: 0,
-        locationZ: 0,
-        rotationX: 0,
-        rotationY: 0,
-        rotationZ: 0,
-        scaleX: 1,
-        scaleY: 1,
-        scaleZ: 1,
-      };
+      setFileUrl(url);
 
-      state.engravings = [...(state.engravings || []), newEngraving];
+      if (stateKey === "colorMapUrl") {
+        state.bladeCoatingColor.colorMapUrl = url;
+      } else if (stateKey === "normalMapUrl") {
+        state.bladeCoatingColor.normalMapUrl = url;
+      } else if (stateKey === "roughnessMapUrl") {
+        state.bladeCoatingColor.roughnessMapUrl = url;
+      }
+      else if (stateKey === "bladeShapeModelUrl") {
+        state.bladeShape = { ...state.bladeShape, bladeShapeModelUrl: url };
+      }
     }
   };
 
-  return <input type="file" accept="image/*" onChange={handleFileChange} />;
-};
+  const handleRemove = () => {
+    setFileUrl(null);
+    // Генеруємо новий ключ для input, щоб React перестворив елемент
+    setInputKey(Date.now());
 
-const SheathFileInput = () => {
-  const state = useCanvasState();
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    console.log("sheath");
-    if (file) {
-      const url = URL.createObjectURL(file);
-      console.log(url);
-      state.bladeShape = { ...state.bladeShape, sheathModelUrl: url };
-      state.sheathColor = { ...state.sheathColor, colorCode: "#dfd975" };
+    if (stateKey === "colorMapUrl") {
+      state.bladeCoatingColor = { ...state.bladeCoatingColor, colorMapUrl: null };
+    } else if (stateKey === "normalMapUrl") {
+      state.bladeCoatingColor = { ...state.bladeCoatingColor, normalMapUrl: null };
+    } else if (stateKey === "roughnessMapUrl") {
+      state.bladeCoatingColor = { ...state.bladeCoatingColor, roughnessMapUrl: null };
+    } else if (stateKey === "bladeShapeModelUrl") {
+      state.bladeShape = { ...state.bladeShape, bladeShapeModelUrl: "" };
     }
   };
-  console.log("state =  ", state);
-  return <input type="file" accept=".glb" onChange={handleFileChange} />;
+
+  return (
+      <div className="flex items-center justify-between bg-gray-800 p-2 rounded-lg text-white">
+        <label className="w-full cursor-pointer">
+          {label}
+          <input
+              key={inputKey}
+              ref={fileInputRef}
+              type="file"
+              accept={accept}
+              onChange={handleFileChange}
+              className="hidden"
+          />
+        </label>
+        {fileUrl && (
+            <button onClick={handleRemove} className="text-red-400 hover:text-red-600">
+              <Trash2 size={20} />
+            </button>
+        )}
+      </div>
+  );
 };
 
 const TestPage = () => {
   return (
-    <>
-      <div style={{ height: "90vh" }}>
-        <CustomCanvas />
+      <div className="flex h-screen">
+        <div className="flex-1">
+          <div style={{ height: "90vh" }}>
+            <CustomCanvas />
+          </div>
+        </div>
+        <div className="w-72 bg-gray-900 p-4 space-y-2 text-white overflow-y-auto">
+          <h2 className="text-lg font-semibold">Файли</h2>
+          <FileInput label="Blade Shape" accept=".glb" stateKey="bladeShapeModelUrl" />
+          <FileInput label="Color Map" accept="image/*" stateKey="colorMapUrl" />
+          <FileInput label="Normal Map" accept="image/*" stateKey="normalMapUrl" />
+          <FileInput label="Roughness Map" accept="image/*" stateKey="roughnessMapUrl" />
+        </div>
       </div>
-      <FileInput />
-      <TextureFileInput />
-      <EngravingFileInput />
-      <SheathFileInput />
-    </>
   );
 };
 

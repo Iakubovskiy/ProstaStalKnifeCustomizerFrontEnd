@@ -10,7 +10,9 @@ interface MaterialProps {
     color?: string;
     metalness?: number;
     roughness?: number;
-    textureUrl?: string;
+    colorMapUrl?: string | null;
+    roughnessMapUrl?: string | null;
+    normalMapUrl?: string | null;
 }
 
 interface ModelPartProps {
@@ -52,6 +54,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
             console.log('!!!!');
         }
         if (material instanceof THREE.MeshStandardMaterial) {
+            const textureLoader = new THREE.TextureLoader();
             if (props.color) {
                 material.color.set(props.color);
             }
@@ -62,31 +65,36 @@ const ModelPart: React.FC<ModelPartProps> = ({
                 material.roughness = props.roughness;
             }
 
-            /*if (props.textureUrl && !texturesRef.current[props.textureUrl]) {
-              try {
-                const texture = await new Promise<THREE.Texture>(
-                  (resolve, reject) => {
-                    textureLoader.load(props.textureUrl!, resolve, undefined, reject);
-                  }
-                );
-
-                console.log("Loaded texture:", texture);
-
-                texture.wrapS = THREE.RepeatWrapping;
-                texture.wrapT = THREE.RepeatWrapping;
-                texture.repeat.set(1, 1);
-                texture.flipY = false;
-
-                texturesRef.current[props.textureUrl] = texture;
-                material.map = texture;
-                material.transparent = true;
-                material.opacity = 0;
-              } catch (error) {
-                console.error("Error loading texture:", error);
-              }
-            } else if (props.textureUrl) {
-              material.map = texturesRef.current[props.textureUrl];
-            }*/
+            if (props.colorMapUrl) {
+                const map = textureLoader.load(props.colorMapUrl, (texture) => {
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                    texture.repeat.set(1, 1);
+                });
+                material.color.set(0xffffff);
+                material.map = map;
+            } else{
+                material.map = null;
+            }
+            if ( props.normalMapUrl) {
+                const normalMap = textureLoader.load(props.normalMapUrl, (texture) => {
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                    texture.repeat.set(1, 1);
+                });
+                console.log('normalMap', snap);
+                material.normalMap = normalMap;
+                material.needsUpdate = true;
+            } else {
+                material.normalMap = null;
+            }
+            if ( props.roughnessMapUrl) {
+                const roughnessMap = textureLoader.load(props.roughnessMapUrl, (texture) => {
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                    texture.repeat.set(1,1);
+                });
+                material.roughnessMap = roughnessMap;
+            } else {
+                material.roughnessMap = null;
+            }
 
             if (
                 materialName === "engravingSide1" ||
@@ -117,6 +125,9 @@ const ModelPart: React.FC<ModelPartProps> = ({
                             color: snap.bladeCoatingColor.colorCode,
                             metalness: 0.2,
                             roughness: 1,
+                            colorMapUrl: snap.bladeCoatingColor.colorMapUrl,
+                            roughnessMapUrl: snap.bladeCoatingColor.roughnessMapUrl,
+                            normalMapUrl: snap.bladeCoatingColor.normalMapUrl,
                         });
                         break;
 
