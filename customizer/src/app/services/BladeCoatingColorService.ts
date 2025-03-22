@@ -80,9 +80,9 @@ class BladeCoatingColorService {
     formData.append("EngravingColorCode", bladeCoatingColor.engravingColorCode);
     formData.append("Price", bladeCoatingColor.price.toString());
     formData.append("IsActive", bladeCoatingColor.isActive.toString());
-    formData.append("ColorMapUrl", "1");
-    formData.append("NormalMapUrl", "1");
-    formData.append("RoughnessMapUrl", "1");
+    formData.append("ColorMapUrl", bladeCoatingColor.colorMapUrl || '1');
+    formData.append("NormalMapUrl", bladeCoatingColor.normalMapUrl || "1");
+    formData.append("RoughnessMapUrl", bladeCoatingColor.roughnessMapUrl || "1");
     if(colorMap)
       formData.append("colorMap", colorMap);
     if (normalMap)

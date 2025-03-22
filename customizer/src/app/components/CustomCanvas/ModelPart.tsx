@@ -58,12 +58,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
             if (props.color) {
                 material.color.set(props.color);
             }
-            if (typeof props.metalness === "number") {
-                material.metalness = props.metalness;
-            }
-            if (typeof props.roughness === "number") {
-                material.roughness = props.roughness;
-            }
 
             if (props.colorMapUrl) {
                 const map = textureLoader.load(props.colorMapUrl, (texture) => {
