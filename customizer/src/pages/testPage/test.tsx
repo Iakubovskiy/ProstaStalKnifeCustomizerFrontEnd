@@ -9,7 +9,7 @@ const FileInput = ({ label, accept, stateKey }: { label: string; accept: string;
   const state = useCanvasState();
   const [fileUrl, setFileUrl] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [inputKey, setInputKey] = useState(Date.now()); // Унікальний ключ для перестворення input
+  const [inputKey, setInputKey] = useState(Date.now());
 
   useEffect(() => {
     if (stateKey === "colorMapUrl") setFileUrl(state.bladeCoatingColor.colorMapUrl);
@@ -39,7 +39,6 @@ const FileInput = ({ label, accept, stateKey }: { label: string; accept: string;
 
   const handleRemove = () => {
     setFileUrl(null);
-    // Генеруємо новий ключ для input, щоб React перестворив елемент
     setInputKey(Date.now());
 
     if (stateKey === "colorMapUrl") {
@@ -86,6 +85,7 @@ const TestPage = () => {
         <div className="w-72 bg-gray-900 p-4 space-y-2 text-white overflow-y-auto">
           <h2 className="text-lg font-semibold">Файли</h2>
           <FileInput label="Blade Shape" accept=".glb" stateKey="bladeShapeModelUrl" />
+          <FileInput label="Sheath" accept=".glb" stateKey="sheathModel" />
           <FileInput label="Color Map" accept="image/*" stateKey="colorMapUrl" />
           <FileInput label="Normal Map" accept="image/*" stateKey="normalMapUrl" />
           <FileInput label="Roughness Map" accept="image/*" stateKey="roughnessMapUrl" />

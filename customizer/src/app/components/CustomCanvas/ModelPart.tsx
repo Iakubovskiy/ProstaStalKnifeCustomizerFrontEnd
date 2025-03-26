@@ -142,6 +142,9 @@ const ModelPart: React.FC<ModelPartProps> = ({
                     case "sheath":
                         updateMaterial(child.material, materialName, {
                             color: snap.sheathColor.colorCode,
+                            colorMapUrl: snap.sheathColor.colorMapUrl,
+                            roughnessMapUrl: snap.sheathColor.roughnessMapUrl,
+                            normalMapUrl: snap.sheathColor.normalMapUrl,
                         });
                         break;
                 }
