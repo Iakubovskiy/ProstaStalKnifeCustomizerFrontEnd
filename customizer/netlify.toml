@@ -5,6 +5,6 @@
   package = "@netlify/plugin-nextjs"
 [[redirects]]
   from = "/api/proxy/*"
-  to = "https://new-repo-latest-gpe8.onrender.com/api/:splat"
+  to = "https://prostastal-backend-5bd4ca6915d2.herokuapp.com/"
   status = 200
   force = true
