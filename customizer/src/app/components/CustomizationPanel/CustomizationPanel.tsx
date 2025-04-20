@@ -23,24 +23,24 @@ const CustomizationPanel = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const bladeShapeService = new BladeShapeService();
   const bladeCoatingColorService = new BladeCoatingColorService();
-  const handleColors = new HandleColorService();
-  const SheathColorservice = new SheathColorService();
+  const handleColorsService = new HandleColorService();
+  const SheathColorService = new SheathColorService();
 
   const state = useCanvasState();
 
   useEffect(() => {
     const fetchBladeShapes = async () => {
       try {
-        const shapes = await bladeShapeService.getAll();
-        const ColorCoatings = await bladeCoatingColorService.getAll();
-        const handlecolors = await handleColors.getAll();
-        const sheaths = await SheathColorservice.getAll();
+        const shapes = await bladeShapeService.getAllActive();
+        const ColorCoatings = await bladeCoatingColorService.getAllActive();
+        const handleColors = await handleColorsService.getAllActive();
+        const sheaths = await SheathColorService.getAllActive();
 
         SelectByDefault(
           shapes[0],
           ColorCoatings[0],
           sheaths[0],
-          handlecolors[0]
+          handleColors[0]
         );
       } catch (error) {
         console.error("Error fetching blade shapes:", error);

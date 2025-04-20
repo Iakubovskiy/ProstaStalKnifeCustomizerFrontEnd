@@ -53,7 +53,7 @@ class BladeCoatingColorService {
     if (normalMap)
       formData.append("normalMap", normalMap);
     if(roughnessMap)
-      formData.append("roughnesMap", roughnessMap);
+      formData.append("roughnessMap", roughnessMap);
 
     const response = await this.apiService.create<BladeCoatingColor>(
       this.resource,
