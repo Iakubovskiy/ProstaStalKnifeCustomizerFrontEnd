@@ -24,7 +24,7 @@ const CustomizationPanel = () => {
   const bladeShapeService = new BladeShapeService();
   const bladeCoatingColorService = new BladeCoatingColorService();
   const handleColorsService = new HandleColorService();
-  const SheathColorService = new SheathColorService();
+  const sheathColorService = new SheathColorService();
 
   const state = useCanvasState();
 
@@ -34,7 +34,7 @@ const CustomizationPanel = () => {
         const shapes = await bladeShapeService.getAllActive();
         const ColorCoatings = await bladeCoatingColorService.getAllActive();
         const handleColors = await handleColorsService.getAllActive();
-        const sheaths = await SheathColorService.getAllActive();
+        const sheaths = await sheathColorService.getAllActive();
 
         SelectByDefault(
           shapes[0],
