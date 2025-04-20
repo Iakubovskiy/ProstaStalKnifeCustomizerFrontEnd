@@ -1,13 +1,14 @@
 import { proxy } from "valtio";
-import { useEffect } from "react";
 import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import BladeShape from "@/app/Models/BladeShape";
 import Fastening from "@/app/Models/Fastening";
 import SheathColor from "@/app/Models/SheathColor";
 import HandleColor from "@/app/Models/HandleColor";
 import Engraving from "@/app/Models/Engraving";
+import { invalidate } from "@react-three/fiber";
 
 interface State {
+  invalidate:() => void;
   handleColor: HandleColor;
   sheathColor: SheathColor;
   bladeCoatingColor: BladeCoatingColor;
@@ -17,6 +18,7 @@ interface State {
 }
 
 const state = proxy<State>({
+  invalidate : () => invalidate(),
   handleColor: {
     id: "",
     colorName: "",

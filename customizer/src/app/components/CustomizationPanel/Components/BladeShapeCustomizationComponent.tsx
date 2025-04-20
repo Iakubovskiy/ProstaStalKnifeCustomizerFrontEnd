@@ -60,9 +60,9 @@ const BladeShapeCustomizationComponent: React.FC = () => {
       bladeShapeModelUrl: shape.bladeShapeModelUrl,
       sheathModelUrl: shape.sheathModelUrl,
     };
+    state.invalidate();
   };
 
-  //"https://res.cloudinary.com/ddcvocdfe/image/upload/v1735212813/tanto2.glb"
   return (
     <>
       <div

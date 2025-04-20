@@ -25,6 +25,9 @@ const SheathCustomizationComponent: React.FC = () => {
 
   const sheathColorClick = (color: SheathColor) => {
     state.sheathColor = color;
+    requestAnimationFrame(() => {
+        state.invalidate();
+    });
   };
 
   return (

@@ -31,6 +31,18 @@ interface EngravingMesh {
     matrix?: THREE.Matrix4;
 }
 
+export function isUrlResettable(url: string): boolean {
+    if (url.startsWith("/") && !url.startsWith("//")) {
+        return true;
+    }
+
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch {
+        return false;
+    }
+}
 
 const ModelPart: React.FC<ModelPartProps> = ({
                                                  url,
@@ -50,16 +62,12 @@ const ModelPart: React.FC<ModelPartProps> = ({
         materialName: string,
         props: MaterialProps
     ) => {
-        if(materialName === 'Material__198'){
-            console.log('!!!!');
-        }
         if (material instanceof THREE.MeshStandardMaterial) {
             const textureLoader = new THREE.TextureLoader();
             if (props.color) {
                 material.color.set(props.color);
             }
-
-            if (props.colorMapUrl) {
+            if (props.colorMapUrl && isUrlResettable(props.colorMapUrl)) {
                 const map = textureLoader.load(props.colorMapUrl, (texture) => {
                     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                     texture.repeat.set(1, 1);
@@ -69,23 +77,20 @@ const ModelPart: React.FC<ModelPartProps> = ({
             } else{
                 material.map = null;
             }
-            if ( props.normalMapUrl) {
-                const normalMap = textureLoader.load(props.normalMapUrl, (texture) => {
+            if ( props.normalMapUrl && isUrlResettable(props.normalMapUrl)) {
+                material.normalMap = textureLoader.load(props.normalMapUrl, (texture) => {
                     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
                     texture.repeat.set(1, 1);
-                });
-                console.log('normalMap', snap);
-                material.normalMap = normalMap;
+                })
                 material.needsUpdate = true;
             } else {
                 material.normalMap = null;
             }
-            if ( props.roughnessMapUrl) {
-                const roughnessMap = textureLoader.load(props.roughnessMapUrl, (texture) => {
+            if ( props.roughnessMapUrl && isUrlResettable(props.roughnessMapUrl)) {
+                material.roughnessMap = textureLoader.load(props.roughnessMapUrl, (texture) => {
                     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-                    texture.repeat.set(1,1);
+                    texture.repeat.set(1, 1);
                 });
-                material.roughnessMap = roughnessMap;
             } else {
                 material.roughnessMap = null;
             }
@@ -100,9 +105,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
             }
 
             material.needsUpdate = true;
-        }
-        else{
-            console.log(materialName);
         }
     };
 
@@ -188,7 +190,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
                 }
             }
         });
-        console.log("count = ",foundEngravingMeshes.length);
         setEngravingMeshes(foundEngravingMeshes);
     }, [scene]);
     return (

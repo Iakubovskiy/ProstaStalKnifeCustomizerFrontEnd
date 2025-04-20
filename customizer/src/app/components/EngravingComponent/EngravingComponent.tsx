@@ -40,6 +40,7 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
         const newEngravings = [...customState.engravings];
         newEngravings[id] = updatedEngraving;
         customState.engravings = newEngravings;
+        customState.invalidate();
       }
 
       return newControls;
@@ -156,7 +157,6 @@ const EngravingComponent: React.FC = () => {
   const customState = useCanvasState();
   useEffect(() => {
     if (customState.engravings && customState.engravings.length > 0) {
-      console.log(customState.engravings);
       const initialItems = customState.engravings.map(
         (engraving: Engraving, index: number) => ({
           id: index,
@@ -229,6 +229,7 @@ const EngravingComponent: React.FC = () => {
         if (item.id === id) {
           const updatedItem = { ...item, font: value };
           customState.engravings[id].font = value;
+          customState.invalidate();
           return updatedItem;
         }
         return item;
@@ -242,13 +243,14 @@ const EngravingComponent: React.FC = () => {
         if (item.id === id) {
           const updatedItem = { ...item, selectedSide: value };
           customState.engravings[id].side = value;
+          customState.invalidate();
           if (value === 2) {
             customState.engravings[id].rotationY = 90;
+            customState.invalidate();
           } else {
             customState.engravings[id].rotationY = 0;
-            console.log(customState.engravings[id].rotationY);
+            customState.invalidate();
           }
-          console.log(customState.engravings[id].rotationY);
           return updatedItem;
         }
         return item;
@@ -304,6 +306,7 @@ const EngravingComponent: React.FC = () => {
 
           customState.engravings[id].text = value;
           customState.engravings[id].pictureUrl = newUrl;
+          customState.invalidate();
 
           return updatedItem;
         }
@@ -341,6 +344,7 @@ const EngravingComponent: React.FC = () => {
     );
 
     customState.engravings = updatedEngravings;
+    customState.invalidate();
   };
 
   const addCard = () => {
@@ -376,6 +380,7 @@ const EngravingComponent: React.FC = () => {
     ]);
 
     customState.engravings = [...customState.engravings, newEngraving];
+    customState.invalidate();
   };
 
   return (

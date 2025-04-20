@@ -47,10 +47,14 @@ const KnifeConfigurator = () => {
   return (
       <>
           <Canvas
+              frameloop="demand"
               gl={{
                   powerPreference: "high-performance",
                   antialias: true,
                   preserveDrawingBuffer: false,
+              }}
+              onCreated={({ invalidate }) => {
+                  state.invalidate = invalidate;
               }}
           >
               <Lighting/>

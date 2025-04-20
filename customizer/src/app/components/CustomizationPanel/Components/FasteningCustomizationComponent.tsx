@@ -48,6 +48,7 @@ const FasteningCustomizationComponent: React.FC = () => {
 
   const fasteningOptionClick = (fastening: Fastening) => {
     state.fastening = fastening;
+    state.invalidate();
   };
 
   return (

@@ -24,6 +24,9 @@ const HandleCustomizationComponent: React.FC = () => {
 
   const handleColorClick = (color: HandleColor) => {
     state.handleColor = color;
+    requestAnimationFrame(() => {
+        state.invalidate();
+    });
   };
 
   return (
