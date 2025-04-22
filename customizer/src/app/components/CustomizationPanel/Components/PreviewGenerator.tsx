@@ -2,8 +2,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import * as THREE from 'three';
-// @ts-ignore
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
 interface PreviewGeneratorProps {
     modelUrl: string;
@@ -43,7 +42,6 @@ const PreviewGenerator: React.FC<PreviewGeneratorProps> = ({ modelUrl, onPreview
         }
 
         const loader = new GLTFLoader();
-        // @ts-ignore
         loader.load(modelUrl, (gltf) => {
             const model = gltf.scene;
 

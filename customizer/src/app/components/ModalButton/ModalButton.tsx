@@ -16,7 +16,7 @@ const ModalFormButton = (component: any) => {
         onClick={() => setIsOpen(true)}
         className="px-4 w-full py-2 bg-coffe text-black rounded s"
       >
-        Розказати про помилку
+        Повідомити про помилку
       </button>
     );
   }

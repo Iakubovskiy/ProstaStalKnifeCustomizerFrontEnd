@@ -11,7 +11,7 @@ import { useSnapshot } from "valtio";
 import ModalFormButton from "../../ModalButton/ModalButton";
 
 const PreviewGenerator = dynamic(() => import("./PreviewGenerator"), {
-  ssr: false,
+  ssr: true,
   loading: () => (
     <div style={{ width: 150, height: 150, background: "#f0f0f0" }} />
   ),
