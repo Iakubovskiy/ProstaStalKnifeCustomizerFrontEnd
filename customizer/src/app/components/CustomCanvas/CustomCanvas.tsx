@@ -6,6 +6,8 @@ import Lighting from "./Lighting";
 import Controls from "./Controls";
 import Background from "@/app/components/CustomCanvas/Background";
 import ModelPart from "./ModelPart";
+import { Suspense } from "react";
+import CustomLoader from './CustomLoader';
 
 const KnifeConfigurator = () => {
   const state = useCanvasState();
@@ -62,6 +64,7 @@ const KnifeConfigurator = () => {
               <Background/>
               {/*@ts-ignore*/}
               <group position={[0, 0, 0]} rotation={[0, 0, 0]} scale={1}>
+                  <Suspense fallback={<CustomLoader />}>
                   {validateModelUrl(snap.bladeShape.bladeShapeModelUrl) && (
                       <ModelPart
                           url={snap.bladeShape.bladeShapeModelUrl}
@@ -86,6 +89,7 @@ const KnifeConfigurator = () => {
                           rotation={[0, 0, Math.PI / 2]}
                       />
                   )}
+                  </Suspense>
                   {/*@ts-ignore*/}
               </group>
           </Canvas>

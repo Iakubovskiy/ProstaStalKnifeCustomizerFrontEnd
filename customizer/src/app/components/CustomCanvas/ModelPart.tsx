@@ -54,7 +54,6 @@ const ModelPart: React.FC<ModelPartProps> = ({
     const state = useCanvasState();
     const snap = useSnapshot(state);
     const [engravingMeshes, setEngravingMeshes] = useState<EngravingMesh[]>([]);
-
     const texturesRef = useRef<Record<string, THREE.Texture>>({});
 
     const updateMaterial = async (
@@ -162,6 +161,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
             texturesRef.current = {};
         };
     }, []);
+    
     useEffect(() => {
         if (!modelRef.current || !scene) return;
 
@@ -192,6 +192,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
         });
         setEngravingMeshes(foundEngravingMeshes);
     }, [scene]);
+
     return (
         // @ts-ignore
         <group position={position} rotation={rotation}>
