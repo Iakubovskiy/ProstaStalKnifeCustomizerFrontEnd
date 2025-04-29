@@ -59,39 +59,39 @@ const KnifeConfigurator = () => {
                   state.invalidate = invalidate;
               }}
           >
-              <Lighting/>
-              <Controls/>
-              <Background/>
-              {/*@ts-ignore*/}
-              <group position={[0, 0, 0]} rotation={[0, 0, 0]} scale={1}>
-                  <Suspense fallback={<CustomLoader />}>
-                  {validateModelUrl(snap.bladeShape.bladeShapeModelUrl) && (
-                      <ModelPart
-                          url={snap.bladeShape.bladeShapeModelUrl}
-                          {...bladeSettings}
-                      />
-                  )}
-
-                  {validateModelUrl(snap.bladeShape.sheathModelUrl) && (
-                      <ModelPart
-                          url={snap.bladeShape.sheathModelUrl}
-                          {...sheathSettings}
-                          position={[0, -10, 0]}
-                          rotation={[0, 0, 0]}
-                      />
-                  )}
-
-                  {snap.fastening && validateModelUrl(snap.fastening.modelUrl) && (
-                      <ModelPart
-                          url={snap.fastening.modelUrl}
-                          {...sheathSettings}
-                          position={[-1, -10, -1]}
-                          rotation={[0, 0, Math.PI / 2]}
-                      />
-                  )}
-                  </Suspense>
+              <Suspense fallback={<CustomLoader />}>
+                  <Lighting/>
+                  <Controls/>
+                  <Background/>
                   {/*@ts-ignore*/}
-              </group>
+                  <group position={[0, 0, 0]} rotation={[0, 0, 0]} scale={1}>
+                      {validateModelUrl(snap.bladeShape.bladeShapeModelUrl) && (
+                          <ModelPart
+                              url={snap.bladeShape.bladeShapeModelUrl}
+                              {...bladeSettings}
+                          />
+                      )}
+
+                      {validateModelUrl(snap.bladeShape.sheathModelUrl) && (
+                          <ModelPart
+                              url={snap.bladeShape.sheathModelUrl}
+                              {...sheathSettings}
+                              position={[0, -10, 0]}
+                              rotation={[0, 0, 0]}
+                          />
+                      )}
+
+                      {snap.fastening && validateModelUrl(snap.fastening.modelUrl) && (
+                          <ModelPart
+                              url={snap.fastening.modelUrl}
+                              {...sheathSettings}
+                              position={[-1, -10, -1]}
+                              rotation={[0, 0, Math.PI / 2]}
+                          />
+                      )}
+                      {/*@ts-ignore*/}
+                  </group>
+              </Suspense>
           </Canvas>
       </>
 );

@@ -1,5 +1,5 @@
 import React from "react";
-import {TorusKnot, useProgress, Html} from "@react-three/drei";
+import { useProgress, Html} from "@react-three/drei";
 
 const CustomLoader= () => {
     const { progress } = useProgress();
