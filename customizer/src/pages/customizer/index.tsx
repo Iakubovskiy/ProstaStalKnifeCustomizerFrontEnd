@@ -5,7 +5,6 @@ import { KnifePurchaseContainer } from "@/app/components/CustomizationPanel/Comp
 import styles from "./customizer.module.css";
 import "../../styles/globals.css";
 import CustomNavbar from "@/app/components/CustomNavbar/CustomNavbar";
-import MobileNavbar from "@/app/components/Nav/MobileNavBar";
 import NavigationMob from "@/app/components/Nav/MobileNavBar";
 import Footer from "@/app/components/Footer/Footer";
 const CustomizerPage = () => {

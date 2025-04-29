@@ -55,6 +55,10 @@ class APIService {
     return this.request<T[]>(resource);
   }
 
+  get<T>(resource: string): Promise<T> {
+    return this.request<T>(resource);
+  }
+
   getById<T>(resource: string, id: number | string): Promise<T> {
     return this.request<T>(`${resource}/${id}`);
   }

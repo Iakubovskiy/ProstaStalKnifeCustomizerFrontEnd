@@ -6,15 +6,13 @@ const CustomLoader= () => {
     return (
         // @ts-ignore
         <group>
-            {/* Простий контур (наприклад, куб) */}
             <Box args={[1, 1, 1]} position={[0,0,0]}>
                 {/* @ts-ignore */}
                 <meshStandardMaterial wireframe color="grey" opacity={0.5} transparent />
             </Box>
-            {/* Текст з прогресом */}
             {/* @ts-ignore */}
             <Html center>
-                <div style={{ color: 'white', /* інші стилі */ }}>
+                <div style={{ color: 'white' }}>
                     Завантаження: {progress.toFixed(0)}%
                 </div>
             </Html>

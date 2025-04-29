@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
 import BladeShapeService from "@/app/services/BladeShapeService";
 import CardComponent from "./CardComponent";
 import BladeShape from "@/app/Models/BladeShape";
@@ -10,16 +9,9 @@ import Characteristics from "@/app/components/Characteristics/Characteristics";
 import { useSnapshot } from "valtio";
 import ModalFormButton from "../../ModalButton/ModalButton";
 
-const PreviewGenerator = dynamic(() => import("./PreviewGenerator"), {
-  ssr: true,
-  loading: () => (
-    <div style={{ width: 150, height: 150, background: "#f0f0f0" }} />
-  ),
-});
 
 const BladeShapeCustomizationComponent: React.FC = () => {
   const [bladeShapes, setBladeShapes] = useState<BladeShape[]>([]);
-  const [previews, setPreviews] = useState<{ [key: string]: string }>({});
   const bladeShapeService = new BladeShapeService();
   const state = useCanvasState();
   const snap = useSnapshot(state);
@@ -39,12 +31,6 @@ const BladeShapeCustomizationComponent: React.FC = () => {
     fetchBladeShapes();
   }, []);
 
-  const handlePreviewGenerated = (id: string, preview: string) => {
-    setPreviews((prev) => ({
-      ...prev,
-      [id]: preview,
-    }));
-  };
   const bladeShapeSelection = (shape: BladeShape) => {
     state.bladeShape = {
       ...state.bladeShape,
@@ -76,18 +62,10 @@ const BladeShapeCustomizationComponent: React.FC = () => {
         {bladeShapes.map((shape) => (
           <React.Fragment key={shape.id}>
             <CardComponent
-              backgroundPicture={previews[shape.id] || "#ffffff"}
+              backgroundPicture={'/icons/blade-shape.svg'}
               tooltipText={shape.name}
               onClick={() => bladeShapeSelection(shape)}
             />
-            {!previews[shape.id] && (
-              <PreviewGenerator
-                modelUrl={shape.bladeShapeModelUrl}
-                onPreviewGenerated={(preview) =>
-                  handlePreviewGenerated(shape.id, preview)
-                }
-              />
-            )}
           </React.Fragment>
         ))}
       </div>

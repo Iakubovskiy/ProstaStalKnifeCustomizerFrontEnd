@@ -8,39 +8,30 @@ import BladeCoatingCustomizationComponent from "./Components/BladeCoatingCustomi
 import FasteningCustomizationComponent from "./Components/FasteningCustomizationComponent";
 import { useState } from "react";
 import EngravingComponent from "../EngravingComponent/EngravingComponent";
-import BladeShapeService from "@/app/services/BladeShapeService";
-import BladeCoatingColorService from "@/app/services/BladeCoatingColorService";
-import SheathColorService from "@/app/services/SheathColorService";
 import BladeShape from "@/app/Models/BladeShape";
 import SheathColor from "@/app/Models/SheathColor";
 import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
-import HandleColorService from "@/app/services/HandleColorService";
 import { useCanvasState } from "@/app/state/canvasState";
 import HandleColor from "@/app/Models/HandleColor";
 import MenuCard from "./Menu/MenuCard";
+import InitialDataService from "@/app/services/InitialDataService";
 
 const CustomizationPanel = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const bladeShapeService = new BladeShapeService();
-  const bladeCoatingColorService = new BladeCoatingColorService();
-  const handleColorsService = new HandleColorService();
-  const sheathColorService = new SheathColorService();
+  const initialDataService = new InitialDataService();
 
   const state = useCanvasState();
 
   useEffect(() => {
     const fetchBladeShapes = async () => {
       try {
-        const shapes = await bladeShapeService.getAllActive();
-        const ColorCoatings = await bladeCoatingColorService.getAllActive();
-        const handleColors = await handleColorsService.getAllActive();
-        const sheaths = await sheathColorService.getAllActive();
+        const initialData = await initialDataService.getData();
 
         SelectByDefault(
-          shapes[0],
-          ColorCoatings[0],
-          sheaths[0],
-          handleColors[0]
+          initialData.bladeShape,
+          initialData.bladeCoatingColor,
+          initialData.sheathColor,
+          initialData.handleColor,
         );
       } catch (error) {
         console.error("Error fetching blade shapes:", error);
@@ -65,11 +56,12 @@ const CustomizationPanel = () => {
       behavior: "smooth",
     });
   };
+
   const SelectByDefault = (
     shape: BladeShape,
-    coatingcolor: BladeCoatingColor,
+    coatingColor: BladeCoatingColor,
     sheath: SheathColor,
-    hadleColor: HandleColor
+    handleColor: HandleColor
   ) => {
     state.bladeShape = {
       ...state.bladeShape,
@@ -86,10 +78,11 @@ const CustomizationPanel = () => {
       bladeShapeModelUrl: shape.bladeShapeModelUrl,
       sheathModelUrl: shape.sheathModelUrl,
     };
-    state.bladeCoatingColor = coatingcolor;
-    state.handleColor = hadleColor;
+    state.bladeCoatingColor = coatingColor;
+    state.handleColor = handleColor;
     state.sheathColor = sheath;
   };
+
   const renderContent = () => {
     switch (selectedOption) {
       case "bladeShape":
