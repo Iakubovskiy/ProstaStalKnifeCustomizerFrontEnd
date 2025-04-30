@@ -115,28 +115,55 @@ const ModelPart: React.FC<ModelPartProps> = ({
                 const materialName = child.material.name;
 
                 switch (materialName) {
+                    case "handle":
+                        updateMaterial(child.material, materialName, {
+                            color: snap.handleColor.colorCode,
+                        });
+                        break;
+                }
+            }
+        });
+    }, [scene, snap.handleColor]);
+
+    useEffect(() => {
+        if (!modelRef.current || !scene) return;
+
+        scene.traverse((child: any) => {
+            if (child.isMesh) {
+                const materialName = child.material.name;
+
+                switch (materialName) {
                     case "bladeCoating":
                         updateMaterial(child.material, materialName, {
                             color: snap.bladeCoatingColor.colorCode,
-                            metalness: 0.2,
-                            roughness: 1,
                             colorMapUrl: snap.bladeCoatingColor.colorMapUrl,
                             roughnessMapUrl: snap.bladeCoatingColor.roughnessMapUrl,
                             normalMapUrl: snap.bladeCoatingColor.normalMapUrl,
                         });
                         break;
 
-                    case "handle":
-                        updateMaterial(child.material, materialName, {
-                            color: snap.handleColor.colorCode,
-                        });
-                        break;
-
                     case "engravingSide1":
                     case "engravingSide2":
-                    case "engravingSide3":
                         updateMaterial(child.material, materialName, {
                             color: snap.bladeCoatingColor.engravingColorCode
+                        });
+                        break;
+                }
+            }
+        });
+    }, [scene, snap.bladeCoatingColor]);
+
+    useEffect(() => {
+        if (!modelRef.current || !scene) return;
+
+        scene.traverse((child: any) => {
+            if (child.isMesh) {
+                const materialName = child.material.name;
+
+                switch (materialName) {
+                    case "engravingSide3":
+                        updateMaterial(child.material, materialName, {
+                            color: snap.sheathColor.engravingColorCode
                         });
                         break;
 
@@ -151,7 +178,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
                 }
             }
         });
-    }, [scene, snap.handleColor, snap.bladeCoatingColor, snap.sheathColor]);
+    }, [scene, snap.sheathColor]);
 
     useEffect(() => {
         return () => {

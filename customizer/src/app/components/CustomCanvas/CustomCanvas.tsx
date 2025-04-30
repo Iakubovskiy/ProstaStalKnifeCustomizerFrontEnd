@@ -8,6 +8,7 @@ import Background from "@/app/components/CustomCanvas/Background";
 import ModelPart from "./ModelPart";
 import { Suspense } from "react";
 import CustomLoader from './CustomLoader';
+import { Perf } from 'r3f-perf';
 
 const KnifeConfigurator = () => {
   const state = useCanvasState();
@@ -49,17 +50,18 @@ const KnifeConfigurator = () => {
   return (
       <>
           <Canvas
-              frameloop="demand"
+              frameloop="always"
               gl={{
                   powerPreference: "high-performance",
                   antialias: true,
                   preserveDrawingBuffer: false,
               }}
-              onCreated={({ invalidate }) => {
-                  state.invalidate = invalidate;
-              }}
+              // onCreated={({ invalidate }) => {
+              //     state.invalidate = invalidate;
+              // }}
           >
               <Suspense fallback={<CustomLoader />}>
+              <Perf position="top-left" />
                   <Lighting/>
                   <Controls/>
                   <Background/>
