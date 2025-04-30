@@ -66,33 +66,33 @@ const ModelPart: React.FC<ModelPartProps> = ({
             if (props.color) {
                 material.color.set(props.color);
             }
-            if (props.colorMapUrl && isUrlResettable(props.colorMapUrl)) {
-                const map = textureLoader.load(props.colorMapUrl, (texture) => {
-                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-                    texture.repeat.set(1, 1);
-                });
-                material.color.set(0xffffff);
-                material.map = map;
-            } else{
-                material.map = null;
-            }
-            if ( props.normalMapUrl && isUrlResettable(props.normalMapUrl)) {
-                material.normalMap = textureLoader.load(props.normalMapUrl, (texture) => {
-                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-                    texture.repeat.set(1, 1);
-                })
-                material.needsUpdate = true;
-            } else {
-                material.normalMap = null;
-            }
-            if ( props.roughnessMapUrl && isUrlResettable(props.roughnessMapUrl)) {
-                material.roughnessMap = textureLoader.load(props.roughnessMapUrl, (texture) => {
-                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-                    texture.repeat.set(1, 1);
-                });
-            } else {
-                material.roughnessMap = null;
-            }
+            // if (props.colorMapUrl && isUrlResettable(props.colorMapUrl)) {
+            //     const map = textureLoader.load(props.colorMapUrl, (texture) => {
+            //         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            //         texture.repeat.set(1, 1);
+            //     });
+            //     material.color.set(0xffffff);
+            //     material.map = map;
+            // } else{
+            //     material.map = null;
+            // }
+            // if ( props.normalMapUrl && isUrlResettable(props.normalMapUrl)) {
+            //     material.normalMap = textureLoader.load(props.normalMapUrl, (texture) => {
+            //         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            //         texture.repeat.set(1, 1);
+            //     })
+            //     material.needsUpdate = true;
+            // } else {
+            //     material.normalMap = null;
+            // }
+            // if ( props.roughnessMapUrl && isUrlResettable(props.roughnessMapUrl)) {
+            //     material.roughnessMap = textureLoader.load(props.roughnessMapUrl, (texture) => {
+            //         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            //         texture.repeat.set(1, 1);
+            //     });
+            // } else {
+            //     material.roughnessMap = null;
+            // }
 
             if (
                 materialName === "engravingSide1" ||
