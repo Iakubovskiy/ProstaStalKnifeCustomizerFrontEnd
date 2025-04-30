@@ -61,7 +61,6 @@ const KnifeConfigurator = () => {
               // }}
           >
               <Suspense fallback={<CustomLoader />}>
-              <Perf position="top-left" />
                   <Lighting/>
                   <Controls/>
                   <Background/>
