@@ -14,10 +14,6 @@
     z-index: 100;
     width: 100vw;
   }
-  .mob{
-    z-index: 100;
-    width: 85vw;
-  }
   .controlsContainer {
     background-color: white;
     color: white;
