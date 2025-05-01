@@ -21,7 +21,7 @@ export default function CustomNavbar() {
           <p className="font-bold">PROSTAstal</p>
         </NavbarBrand>
       </NavbarContent>
-      <NavbarContent className="hidden md:flex" justify="center">
+      {/* <NavbarContent className="hidden md:flex" justify="center">
         <NavbarItem>
           <Link className="text-black" href="https://prostastal.com/pro-nas/">
             Про нас
@@ -69,7 +69,7 @@ export default function CustomNavbar() {
             Угода користувача
           </Link>
         </NavbarItem>
-      </NavbarContent>
+      </NavbarContent> */}
       <NavbarContent justify="end">
         <NavbarItem>
           {/* <Link className="text-black" href="#">
