@@ -30,8 +30,8 @@ import BladeShape from "@/app/Models/BladeShape";
 import HandleColor from "@/app/Models/HandleColor";
 import SheathColor from "@/app/Models/SheathColor";
 
-interface ProductInOrder{
-  product: Product,
+interface ProductInOrder {
+  product: Product;
   quantity: number;
 }
 
@@ -60,17 +60,20 @@ interface SerializedFastening extends SerializedProduct {
   modelUrl: string;
 }
 
-const reconstructProduct = (plainObject: SerializedProduct | SerializedKnife | SerializedFastening): Product => {
-  if ('shape' in plainObject && 'bladeCoatingColor' in plainObject) {
+const reconstructProduct = (
+  plainObject: SerializedProduct | SerializedKnife | SerializedFastening
+): Product => {
+  if ("shape" in plainObject && "bladeCoatingColor" in plainObject) {
     const knifeObj = plainObject as SerializedKnife;
     return new Knife(
-        knifeObj.id,
-        knifeObj.shape,
-        knifeObj.handleColor,
-        knifeObj.sheathColor,
-        knifeObj.isActive,
-        knifeObj.bladeCoatingColor,
-        knifeObj.fastening ? new Fastening(
+      knifeObj.id,
+      knifeObj.shape,
+      knifeObj.handleColor,
+      knifeObj.sheathColor,
+      knifeObj.isActive,
+      knifeObj.bladeCoatingColor,
+      knifeObj.fastening
+        ? new Fastening(
             knifeObj.fastening.name,
             knifeObj.fastening.color,
             knifeObj.fastening.colorCode,
@@ -79,22 +82,21 @@ const reconstructProduct = (plainObject: SerializedProduct | SerializedKnife | S
             knifeObj.fastening.modelUrl,
             knifeObj.fastening.id,
             knifeObj.fastening.isActive
-        ) : null,
-        knifeObj.engravings
+          )
+        : null,
+      knifeObj.engravings
     );
-  }
-
-  else if ('name' in plainObject && 'colorCode' in plainObject) {
+  } else if ("name" in plainObject && "colorCode" in plainObject) {
     const fasteningObj = plainObject as SerializedFastening;
     return new Fastening(
-        fasteningObj.name,
-        fasteningObj.color,
-        fasteningObj.colorCode,
-        fasteningObj.price,
-        fasteningObj.material,
-        fasteningObj.modelUrl,
-        fasteningObj.id,
-        fasteningObj.isActive
+      fasteningObj.name,
+      fasteningObj.color,
+      fasteningObj.colorCode,
+      fasteningObj.price,
+      fasteningObj.material,
+      fasteningObj.modelUrl,
+      fasteningObj.id,
+      fasteningObj.isActive
     );
   }
   return new Product(plainObject.id, plainObject.isActive);
@@ -130,6 +132,7 @@ const CartAndOrderPage = () => {
         if (engraving.pictureUrl) {
           file = await blobUrlToFile(engraving.pictureUrl);
         }
+        console.log("Файл", file);
 
         const createdEngraving = await engravingService.create(engraving, file);
         createdEngravings.push(createdEngraving);
@@ -164,7 +167,7 @@ const CartAndOrderPage = () => {
     try {
       for (const knife of cartItems) {
         const createdEngravings = await createEngravings(knife);
-        if (knife.fastening?.id == ""){
+        if (knife.fastening?.id == "") {
           knife.fastening = null;
         }
         const knifeWithNewEngravings = {
@@ -174,6 +177,7 @@ const CartAndOrderPage = () => {
         console.log(knifeWithNewEngravings);
 
         const createdKnife = await knifeService.create(knifeWithNewEngravings);
+        console.log("Ніж", createdKnife);
         createdKnives.push(createdKnife);
       }
       return createdKnives;
@@ -200,7 +204,9 @@ const CartAndOrderPage = () => {
         setEngravingPrice(engpr[0].price);
       }
 
-      deliveryTypeService.getAllActive().then((types) => setDeliveryTypes(types));
+      deliveryTypeService
+        .getAllActive()
+        .then((types) => setDeliveryTypes(types));
     };
     handleGet();
   }, []);
@@ -222,23 +228,30 @@ const CartAndOrderPage = () => {
     }
 
     try {
-      cartItems.sort((a,b)=>{
-        if(a.product instanceof Knife && !(b.product instanceof Knife))
+      cartItems.sort((a, b) => {
+        if (a.product instanceof Knife && !(b.product instanceof Knife))
           return -1;
-        else if(!(a.product instanceof Knife) && b.product instanceof Knife)
+        else if (!(a.product instanceof Knife) && b.product instanceof Knife)
           return 1;
         return 0;
       });
 
-      const knives:Knife[] = [];
-      const lastKnifeIndex = cartItems.findLastIndex(item => item.product instanceof Knife);
-      for(let i = 0; i <= lastKnifeIndex; i++) {
-          knives.push(cartItems[i].product as Knife);
+      const knives: Knife[] = [];
+      const lastKnifeIndex = cartItems.findLastIndex(
+        (item) => item.product instanceof Knife
+      );
+      for (let i = 0; i <= lastKnifeIndex; i++) {
+        knives.push(cartItems[i].product as Knife);
       }
       const createdKnives = await createKnivesInBackend(knives);
-      const remainingProducts = cartItems.slice(lastKnifeIndex + 1).map(item => item.product.id);
-      const allProductIds = [...createdKnives.map(knife => knife.id), ...remainingProducts];
-      const quantities = cartItems.map(item=>item.quantity)
+      const remainingProducts = cartItems
+        .slice(lastKnifeIndex + 1)
+        .map((item) => item.product.id);
+      const allProductIds = [
+        ...createdKnives.map((knife) => knife.id),
+        ...remainingProducts,
+      ];
+      const quantities = cartItems.map((item) => item.quantity);
 
       const total = createdKnives.reduce((sum, item) => {
         let uniqueSides;
@@ -252,10 +265,10 @@ const CartAndOrderPage = () => {
         }
         const engraving = engravingPrice * uniqueSides;
         const itemTotal =
-          (item.shape.price +
-            engraving +
-            (item.sheathColor.price || 0) +
-            (item.fastening?.price || 0));
+          item.shape.price +
+          engraving +
+          (item.sheathColor.price || 0) +
+          (item.fastening?.price || 0);
         return sum + itemTotal;
       }, 0);
 
@@ -273,7 +286,7 @@ const CartAndOrderPage = () => {
         comment: comment || null,
         status: "Активний",
       };
-      console.log(orderData);
+      console.log("Замовлення", orderData);
       await orderService.create(orderData);
       alert("Замовлення успішно створено!");
       setCartItems([]);
@@ -284,7 +297,7 @@ const CartAndOrderPage = () => {
     }
   };
   console.log(cartItems);
-  for(const item of cartItems) {
+  for (const item of cartItems) {
     console.log(item.product.constructor.name);
   }
   return (
@@ -305,11 +318,13 @@ const CartAndOrderPage = () => {
               <TableBody>
                 {cartItems.map((item, index) => (
                   <TableRow key={item.product.id}>
-                    <TableCell>{item.product instanceof Knife
+                    <TableCell>
+                      {item.product instanceof Knife
                         ? item.product.shape.name
                         : item.product instanceof Fastening
-                            ? item.product.name
-                            : "Без назви"}</TableCell>
+                        ? item.product.name
+                        : "Без назви"}
+                    </TableCell>
                     <TableCell>
                       <Input
                         type="number"
@@ -329,16 +344,21 @@ const CartAndOrderPage = () => {
                     </TableCell>
                     <TableCell>
                       ₴
-                      {(item.product instanceof Knife?
-                          item.product.shape.price + item.product.bladeCoatingColor.price + item.product.sheathColor.price
-                          + (item.product.fastening?.price ?? 0) +
-                          (item.product.engravings?.length ?
-                              new Set(item.product.engravings.map(engraving => engraving.side)).size * engravingPrice
-                              : 0)
-                          : item.product instanceof Fastening?
-                              item.product.price
-                              :0) * item.quantity
-                      }
+                      {(item.product instanceof Knife
+                        ? item.product.shape.price +
+                          item.product.bladeCoatingColor.price +
+                          item.product.sheathColor.price +
+                          (item.product.fastening?.price ?? 0) +
+                          (item.product.engravings?.length
+                            ? new Set(
+                                item.product.engravings.map(
+                                  (engraving) => engraving.side
+                                )
+                              ).size * engravingPrice
+                            : 0)
+                        : item.product instanceof Fastening
+                        ? item.product.price
+                        : 0) * item.quantity}
                     </TableCell>
                     <TableCell>
                       <Button

@@ -7,6 +7,7 @@ import { useSnapshot } from "valtio";
 import Engraving from "@/app/Models/Engraving";
 import Knife from "@/app/Models/Knife";
 import Product from "@/app/Models/Product";
+import InitialDataService from "@/app/services/InitialDataService";
 
 interface Props {
   productId?: string | null;
@@ -22,6 +23,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const state = useCanvasState();
   const snap = useSnapshot(state);
   const [totalPrice, setTotalPrice] = useState(0);
+  const initialDataService = new InitialDataService();
 
   const calculatePrice = async () => {
     let price = snap.bladeShape.price + (snap.sheathColor?.price || 0);
@@ -50,7 +52,36 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
     localStorage.removeItem("cart");
   };
 
-  const handleAddToCart = () => {
+  const resetToDefaultSettings = async () => {
+    try {
+      const initialData = await initialDataService.getData();
+      // Reset to default settings
+      state.bladeShape = {
+        ...state.bladeShape,
+        id: initialData.bladeShape.id,
+        name: initialData.bladeShape.name,
+        price: initialData.bladeShape.price,
+        totalLength: initialData.bladeShape.totalLength,
+        bladeLength: initialData.bladeShape.bladeLength,
+        bladeWidth: initialData.bladeShape.bladeWidth,
+        bladeWeight: initialData.bladeShape.bladeWeight,
+        sharpeningAngle: initialData.bladeShape.sharpeningAngle,
+        rockwellHardnessUnits: initialData.bladeShape.rockwellHardnessUnits,
+        bladeShapeModelUrl: initialData.bladeShape.bladeShapeModelUrl,
+        sheathModelUrl: initialData.bladeShape.sheathModelUrl,
+      };
+      state.bladeCoatingColor = initialData.bladeCoatingColor;
+      state.handleColor = initialData.handleColor;
+      state.sheathColor = initialData.sheathColor;
+
+      // Clear engravings
+      state.engravings = [];
+    } catch (error) {
+      console.error("Error resetting to default settings:", error);
+    }
+  };
+
+  const handleAddToCart = async () => {
     let productInOrder: ProductInOrder;
     if (productId != null) {
       const product: Product = {
@@ -72,6 +103,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
         engravings: state.engravings as Engraving[],
         isActive: false,
       };
+      console.log("Product in order:", product);
       productInOrder = {
         product,
         quantity,
@@ -83,6 +115,8 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
       "cart",
       JSON.stringify([...existingCart, productInOrder])
     );
+
+    await resetToDefaultSettings();
   };
 
   return (
