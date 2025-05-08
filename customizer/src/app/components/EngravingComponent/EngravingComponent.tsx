@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Engraving from "@/app/Models/Engraving";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import ModalFormButton from "../ModalButton/ModalButton";
+import { DraggablePopup } from "./DraggablePopup";
 
 interface CardItem {
   id: number;
@@ -169,6 +170,7 @@ const EngravingComponent: React.FC = () => {
     text?: string;
     isExpanded?: boolean;
     selectedFile?: File | null;
+    isPositioningOpen?: boolean;
   }
 
   const customState = useCanvasState();
@@ -183,6 +185,7 @@ const EngravingComponent: React.FC = () => {
           text: engraving.text || "",
           isExpanded: true,
           selectedFile: null,
+          isPositioningOpen: false,
         })
       );
       setItems(initialItems);
@@ -263,6 +266,7 @@ const EngravingComponent: React.FC = () => {
             ...item,
             selectedSide: value,
             isExpanded: item.isExpanded,
+            isPositioningOpen: item.isPositioningOpen,
           };
           customState.engravings[id].side = value;
           customState.invalidate();
@@ -306,7 +310,11 @@ const EngravingComponent: React.FC = () => {
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const updatedItem = { ...item, text: value };
+          const updatedItem = {
+            ...item,
+            text: value,
+            isPositioningOpen: item.isPositioningOpen,
+          };
           const newUrl = textToSvgUrl(
             value,
             item.font ?? "Montserrat",
@@ -344,7 +352,11 @@ const EngravingComponent: React.FC = () => {
     setItems((prev) =>
       prev.map((item) => {
         if (item.id === id) {
-          const updatedItem = { ...item, selectedFile: file };
+          const updatedItem = {
+            ...item,
+            selectedFile: file,
+            isPositioningOpen: item.isPositioningOpen,
+          };
 
           updatedEngravings[id] = {
             ...updatedEngravings[id],
@@ -406,6 +418,7 @@ const EngravingComponent: React.FC = () => {
       text: "",
       selectedFile: null,
       isExpanded: true,
+      isPositioningOpen: false,
     };
     setItems((prev) => [...prev, newCardState]);
     customState.engravings = [...customState.engravings, newEngraving];
@@ -552,7 +565,39 @@ const EngravingComponent: React.FC = () => {
                         </label>
                       </div>
                     )}
-                    <PositioningControls id={item.id} />
+                    <button
+                      className="mt-2 text-blue-600 hover:underline text-sm"
+                      onClick={() =>
+                        setItems((prev) =>
+                          prev.map((i) =>
+                            i.id === item.id
+                              ? { ...i, isPositioningOpen: true }
+                              : i
+                          )
+                        )
+                      }
+                    >
+                      🔧 Відкріпити
+                    </button>
+                    {item.isPositioningOpen && (
+                      <DraggablePopup
+                        title={`Позиціонування #${item.id + 1}`}
+                        onClose={() =>
+                          setItems((prev) =>
+                            prev.map((i) =>
+                              i.id === item.id
+                                ? { ...i, isPositioningOpen: false }
+                                : i
+                            )
+                          )
+                        }
+                      >
+                        <PositioningControls id={item.id} />
+                      </DraggablePopup>
+                    )}
+                    {!item.isPositioningOpen && (
+                      <PositioningControls id={item.id} />
+                    )}
                   </>
                 )}
               </div>
