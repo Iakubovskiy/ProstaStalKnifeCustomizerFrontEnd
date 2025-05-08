@@ -15,7 +15,6 @@ export const DraggablePopup = ({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const popupRef = useRef<HTMLDivElement | null>(null);
 
-  // Обробник натиснення миші
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!popupRef.current) return;
     const rect = popupRef.current.getBoundingClientRect();
@@ -27,7 +26,6 @@ export const DraggablePopup = ({
     e.stopPropagation();
   };
 
-  // Обробник руху миші
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isDragging) {
       setPosition({
@@ -45,6 +43,8 @@ export const DraggablePopup = ({
   const handleTouchStart = (e: React.TouchEvent) => {
     if (!popupRef.current || e.touches.length !== 1) return;
 
+    e.stopPropagation();
+
     const touch = e.touches[0];
     const rect = popupRef.current.getBoundingClientRect();
 
@@ -53,18 +53,18 @@ export const DraggablePopup = ({
       x: touch.clientX - rect.left,
       y: touch.clientY - rect.top,
     });
-    e.stopPropagation();
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (isDragging && e.touches.length === 1) {
+      e.preventDefault();
+
       const touch = e.touches[0];
 
       setPosition({
         x: touch.clientX - dragOffset.x,
         y: touch.clientY - dragOffset.y,
       });
-      e.preventDefault();
     }
   };
 
@@ -77,14 +77,23 @@ export const DraggablePopup = ({
       setIsDragging(false);
     };
 
+    const preventScroll = (e: TouchEvent) => {
+      if (isDragging) {
+        e.preventDefault();
+      }
+    };
+
     window.addEventListener("mouseup", cleanup);
     window.addEventListener("touchend", cleanup);
+
+    document.addEventListener("touchmove", preventScroll, { passive: false });
 
     return () => {
       window.removeEventListener("mouseup", cleanup);
       window.removeEventListener("touchend", cleanup);
+      document.removeEventListener("touchmove", preventScroll);
     };
-  }, []);
+  }, [isDragging]);
 
   return isDetached ? (
     <div
