@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 export const DraggablePopup = ({
   title,
@@ -15,6 +15,7 @@ export const DraggablePopup = ({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const popupRef = useRef<HTMLDivElement | null>(null);
 
+  // Обробник натиснення миші
   const handleMouseDown = (e: React.MouseEvent) => {
     if (!popupRef.current) return;
     const rect = popupRef.current.getBoundingClientRect();
@@ -26,6 +27,7 @@ export const DraggablePopup = ({
     e.stopPropagation();
   };
 
+  // Обробник руху миші
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isDragging) {
       setPosition({
@@ -40,6 +42,50 @@ export const DraggablePopup = ({
     setIsDragging(false);
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (!popupRef.current || e.touches.length !== 1) return;
+
+    const touch = e.touches[0];
+    const rect = popupRef.current.getBoundingClientRect();
+
+    setIsDragging(true);
+    setDragOffset({
+      x: touch.clientX - rect.left,
+      y: touch.clientY - rect.top,
+    });
+    e.stopPropagation();
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (isDragging && e.touches.length === 1) {
+      const touch = e.touches[0];
+
+      setPosition({
+        x: touch.clientX - dragOffset.x,
+        y: touch.clientY - dragOffset.y,
+      });
+      e.preventDefault();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    const cleanup = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener("mouseup", cleanup);
+    window.addEventListener("touchend", cleanup);
+
+    return () => {
+      window.removeEventListener("mouseup", cleanup);
+      window.removeEventListener("touchend", cleanup);
+    };
+  }, []);
+
   return isDetached ? (
     <div
       ref={popupRef}
@@ -47,10 +93,13 @@ export const DraggablePopup = ({
       style={{ left: position.x, top: position.y }}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <div
         className="bg-[#f4e7d8] text-gray-900 rounded-t-2xl p-3 flex justify-between items-center cursor-move border-b border-gray-300"
         onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
       >
         <span className="font-semibold">{title}</span>
         <button
