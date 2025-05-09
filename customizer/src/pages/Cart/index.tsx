@@ -40,7 +40,6 @@ interface SerializedProduct {
   isActive: boolean;
 }
 
-// Розширений інтерфейс для серіалізованого Knife
 interface SerializedKnife extends SerializedProduct {
   shape: BladeShape;
   bladeCoatingColor: BladeCoatingColor;
@@ -50,7 +49,6 @@ interface SerializedKnife extends SerializedProduct {
   engravings: Engraving[] | null;
 }
 
-// Інтерфейс для серіалізованого Fastening
 interface SerializedFastening extends SerializedProduct {
   name: string;
   color: string;
@@ -146,7 +144,6 @@ const CartAndOrderPage = () => {
     fileName: string = "image.png"
   ): Promise<File> => {
     try {
-      // Отримуємо Blob з URL
       const response = await fetch(blobUrl);
       const blob = await response.blob();
 
@@ -191,7 +188,6 @@ const CartAndOrderPage = () => {
       const savedCart = localStorage.getItem("cart");
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart);
-        // Reconstruct class instances for each item in cart
         const reconstructedCart = parsedCart.map((item: ProductInOrder) => ({
           product: reconstructProduct(item.product),
           quantity: item.quantity,
@@ -210,12 +206,15 @@ const CartAndOrderPage = () => {
     };
     handleGet();
   }, []);
-  const handleSelectionChange = (key: string | number | undefined) => {
-    if (key) {
-      setSelectedDeliveryType(key.toString());
-      console.log(key);
+
+  const handleSelectionChange = (keys: any) => {
+    if (keys && keys.size > 0) {
+      const selectedKey = Array.from(keys)[0] as string;
+      setSelectedDeliveryType(selectedKey);
+      console.log("selected", selectedKey);
     }
   };
+
   const createOrder = async () => {
     if (
       !clientInfo.fullName ||
@@ -296,10 +295,7 @@ const CartAndOrderPage = () => {
       alert("Помилка при створенні замовлення.");
     }
   };
-  console.log(cartItems);
-  for (const item of cartItems) {
-    console.log(item.product.constructor.name);
-  }
+
   return (
     <div className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-6xl mx-auto">
@@ -436,17 +432,16 @@ const CartAndOrderPage = () => {
             />
             <Select
               label="Тип доставки"
-              required
-              selectedKeys={selectedDeliveryType ? [selectedDeliveryType] : []}
-              onSelectionChange={(selection) => {
-                const selectedId = Array.from(selection)[0];
-                console.log(selectedId);
-                setSelectedDeliveryType(selectedId.toString());
-              }}
+              selectedKeys={
+                selectedDeliveryType
+                  ? new Set([selectedDeliveryType])
+                  : new Set()
+              }
+              onSelectionChange={handleSelectionChange}
             >
               {deliveryTypes.map((type) => (
                 <SelectItem key={type.id} value={type.id}>
-                  {type.name} - ${type.price}
+                  {type.name}
                 </SelectItem>
               ))}
             </Select>

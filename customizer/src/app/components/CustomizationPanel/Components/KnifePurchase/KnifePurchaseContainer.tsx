@@ -8,6 +8,7 @@ import Engraving from "@/app/Models/Engraving";
 import Knife from "@/app/Models/Knife";
 import Product from "@/app/Models/Product";
 import InitialDataService from "@/app/services/InitialDataService";
+import Toast from "../../../Toast/Toast";
 
 interface Props {
   productId?: string | null;
@@ -24,6 +25,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const snap = useSnapshot(state);
   const [totalPrice, setTotalPrice] = useState(0);
   const initialDataService = new InitialDataService();
+  const [showToast, setShowToast] = useState(false);
 
   const calculatePrice = async () => {
     let price = snap.bladeShape.price + (snap.sheathColor?.price || 0);
@@ -50,6 +52,10 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
 
   const handleClearCart = () => {
     localStorage.removeItem("cart");
+  };
+
+  const handleCloseToast = () => {
+    setShowToast(false);
   };
 
   const resetToDefaultSettings = async () => {
@@ -116,6 +122,9 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
       JSON.stringify([...existingCart, productInOrder])
     );
 
+    // Показуємо toast-сповіщення
+    setShowToast(true);
+
     await resetToDefaultSettings();
   };
 
@@ -129,6 +138,13 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
         onAddToCart={handleAddToCart}
       />
       <OrderButton />
+
+      {/* Toast component */}
+      <Toast
+        message="Ніж додано до кошика!"
+        isVisible={showToast}
+        onClose={handleCloseToast}
+      />
     </div>
   );
 };

@@ -98,7 +98,7 @@ export const DraggablePopup = ({
   return isDetached ? (
     <div
       ref={popupRef}
-      className="fixed z-50 w-96 rounded-2xl shadow-2xl border border-gray-300 bg-[#f4e7d8]"
+      className="fixed z-50 w-48 rounded-2xl shadow-2xl border border-gray-300 bg-[#f4e7d8]"
       style={{ left: position.x, top: position.y }}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
