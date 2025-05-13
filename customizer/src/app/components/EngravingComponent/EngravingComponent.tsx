@@ -19,6 +19,7 @@ interface CardItem {
     scale: number;
   };
 }
+
 const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
   const customState = useCanvasState();
   const engraving = customState.engravings[id];
@@ -63,6 +64,7 @@ const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
       return newControls;
     });
   };
+
   useEffect(() => {
     if (engraving) {
       setControls({
@@ -174,8 +176,12 @@ const EngravingComponent: React.FC = () => {
   }
 
   const customState = useCanvasState();
+  const [items, setItems] = useState<CardItem[]>([]);
+
   useEffect(() => {
-    if (customState.engravings && customState.engravings.length > 0) {
+    if (!customState.engravings || customState.engravings.length === 0) {
+      setItems([]);
+    } else {
       const initialItems = customState.engravings.map(
         (engraving: Engraving, index: number) => ({
           id: index,
@@ -191,16 +197,17 @@ const EngravingComponent: React.FC = () => {
       setItems(initialItems);
     }
   }, [customState.engravings]);
-  const [items, setItems] = useState<CardItem[]>([]);
 
   const removeCard = (id: number) => {
     setItems((prev) => {
       customState.engravings.splice(id, 1);
       const updatedItems = prev.filter((item) => item.id !== id);
+      customState.invalidate();
       return updatedItems.map((item, index) => ({ ...item, id: index }));
     });
     console.log(`Removed card with id: ${id}`);
   };
+
   function textToSvgUrl(
     text: string,
     fontFamily: string,
@@ -233,7 +240,7 @@ const EngravingComponent: React.FC = () => {
           fill="${color}"
         >
           ${text}
-        </text>
+        </text>   
       </svg>
     `;
 
@@ -381,6 +388,7 @@ const EngravingComponent: React.FC = () => {
     customState.engravings = updatedEngravings;
     customState.invalidate();
   };
+
   const toggleExpand = (id: number) => {
     setItems((prev) =>
       prev.map((item) =>

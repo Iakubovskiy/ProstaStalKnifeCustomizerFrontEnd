@@ -29,6 +29,7 @@ import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import BladeShape from "@/app/Models/BladeShape";
 import HandleColor from "@/app/Models/HandleColor";
 import SheathColor from "@/app/Models/SheathColor";
+import Toast from "../../app/components/Toast/Toast";
 
 interface ProductInOrder {
   product: Product;
@@ -118,6 +119,14 @@ const CartAndOrderPage = () => {
   const [engravingPrice, setEngravingPrice] = useState<number>(0);
   const orderService = new OrderService();
   const deliveryTypeService = new DeliveryTypeService();
+
+  // Toast state
+  const [toastMessage, setToastMessage] = useState("");
+  const [showToast, setShowToast] = useState(false);
+
+  const handleCloseToast = () => {
+    setShowToast(false);
+  };
 
   const createEngravings = async (knife: Knife): Promise<Engraving[]> => {
     const engravingService = new EngravingService();
@@ -287,7 +296,8 @@ const CartAndOrderPage = () => {
       };
       console.log("Замовлення", orderData);
       await orderService.create(orderData);
-      alert("Замовлення успішно створено!");
+      setToastMessage("Замовлення успішно створено!");
+      setShowToast(true);
       setCartItems([]);
       localStorage.removeItem("cart");
     } catch (error) {
@@ -298,6 +308,13 @@ const CartAndOrderPage = () => {
 
   return (
     <div className="min-h-screen p-8 bg-gray-50">
+      {/* Toast component */}
+      <Toast
+        message={toastMessage}
+        isVisible={showToast}
+        onClose={handleCloseToast}
+      />
+
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-8">Кошик та Замовлення</h1>
 
@@ -368,6 +385,8 @@ const CartAndOrderPage = () => {
                             "cart",
                             JSON.stringify(updatedItems)
                           );
+                          setToastMessage("Товар видалено з кошика");
+                          setShowToast(true);
                         }}
                       >
                         Прибрати

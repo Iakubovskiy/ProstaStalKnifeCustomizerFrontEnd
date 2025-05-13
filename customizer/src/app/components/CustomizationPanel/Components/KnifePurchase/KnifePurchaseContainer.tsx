@@ -122,7 +122,6 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
       JSON.stringify([...existingCart, productInOrder])
     );
 
-    // Показуємо toast-сповіщення
     setShowToast(true);
 
     await resetToDefaultSettings();
@@ -139,7 +138,6 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
       />
       <OrderButton />
 
-      {/* Toast component */}
       <Toast
         message="Ніж додано до кошика!"
         isVisible={showToast}
