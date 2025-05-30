@@ -2,6 +2,7 @@
 import "../../styles/globals.css";
 
 import Card from "@/app/components/Shop/Card/Card";
+import { ProductType, ProductSpecs } from "@/app/components/Shop/Card/Card";
 import FilterPanel from "@/app/components/Shop/Filter/FiltersPanel";
 import AdaptiveGrid from "@/app/components/Shop/Grid/AdaptiveGrid";
 import SearchBar from "@/app/components/Shop/SearchBar.tsx/SearchBar";
@@ -13,45 +14,163 @@ import { useState, useMemo, useEffect } from "react";
 
 // Main Shop Page Component
 const ShopPage: React.FC = () => {
-  // Mock data
-  const mockProducts = Array.from({ length: 50 }, (_, i) => ({
-    id: i + 1,
-    name: `Товар ${i + 1}`,
-    price: Math.floor(Math.random() * 10000) + 100,
-    image_url: `https://picsum.photos/300/300?random=${i}`,
-    category: ["Електроніка", "Одяг", "Дім", "Спорт"][
-      Math.floor(Math.random() * 4)
-    ],
-    brand: ["Apple", "Samsung", "Nike", "Adidas"][
-      Math.floor(Math.random() * 4)
-    ],
-    specs: {
-      Колір: ["Чорний", "Білий", "Сірий"][Math.floor(Math.random() * 3)],
-      Розмір: ["S", "M", "L", "XL"][Math.floor(Math.random() * 4)],
-    },
-  }));
+  const [mockProducts] = useState<ProductType[]>(() => {
+    // Реалістичні назви ножів
+    const knifeNames = [
+      "Складний ніж Buck 110 Hunter",
+      "Мисливський ніж Mora Companion",
+      "Тактичний ніж Benchmade Griptilian",
+      "Кухонний ніж Santoku Damascus",
+      "Ніж виживання Gerber Bear Grylls",
+      "Складний ніж Spyderco Tenacious",
+      "Мисливський ніж Cold Steel SRK",
+      "Тактичний ніж SOG SEAL Pup",
+      "Кухонний ніж шеф-кухаря Wusthof",
+      "Ніж для риболовлі Rapala Fillet",
+      "Складний ніж Opinel Carbon",
+      "Мисливський ніж Condor Bushlore",
+      "Тактичний ніж Ka-Bar USMC",
+      "Кухонний ніж для овочів Victorinox",
+      "Ніж для кемпінгу Esee-4",
+      "Складний ніж Kershaw Leek",
+      "Мисливський ніж Fallkniven F1",
+      "Тактичний ніж Zero Tolerance",
+      "Кухонний ніж для хліба Henckels",
+      "Ніж для полювання Helle Temagami",
+    ];
+
+    // Назви для кріплень
+    const fastenersNames = [
+      "Кобура для ножа Kydex",
+      "Ножні шкіряні premium",
+      "Тактичне кріплення MOLLE",
+      "Кліпса для поясу EDC",
+      "Магнітне кріплення для ножа",
+      "Ножні з твердого пластику",
+      "Підвіска для шиї паракорд",
+      "Кобура універсальна нейлон",
+      "Кріплення на стегно тактичне",
+      "Ножні з карбону custom",
+      "Підсумок для складного ножа",
+      "Кріплення для розвантажувального жилета",
+      "Ножні з натуральної шкіри",
+      "Кліпса титанова deep carry",
+      "Магнітний тримач під стіл",
+    ];
+
+    // Назви для доповнень
+    const attachmentsNames = [
+      "Точильний камінь японський 1000/6000",
+      "Система заточки Work Sharp",
+      "Олія для догляду за лезом",
+      "Паста для полірування ножів",
+      "Електричний точильний верстат",
+      "Кераміковий стержень для заточки",
+      "Алмазна паста для фінішної обробки",
+      "Точильна система Lansky",
+      "Кит для догляду за ножами",
+      "Захисний воск для леза",
+      "Брусок арканзаський натуральний",
+      "Точильний стержень сталевий",
+      "Система заточки Sharpmaker",
+      "Абразивна стрічка для заточки",
+      "Мікрофіброва серветка для ножів",
+    ];
+
+    // Доступні кольори
+    const colors = [
+      "Чорний",
+      "Коричневий",
+      "Сірий",
+      "Сталевий",
+      "Зелений",
+      "Бежевий",
+      "Червоний",
+      "Синій",
+    ];
+
+    return Array.from({ length: 50 }, (_, i) => {
+      const categoryIndex = Math.floor(Math.random() * 3);
+      const categories = ["Ножі", "Кріплення", "Доповнення"];
+      const category = categories[categoryIndex];
+
+      let name: string;
+      let imageUrl: string;
+
+      // Використовуємо локальні зображення для кожної категорії
+      switch (category) {
+        case "Ножі":
+          name = knifeNames[i % knifeNames.length] || `Ніж ${i + 1}`;
+          // Циклічно використовуємо 26 фото ножів
+          const knifeImageNumber = (i % 26) + 1;
+          imageUrl = `/knives/${knifeImageNumber}.jpg`;
+          break;
+        case "Кріплення":
+          name =
+            fastenersNames[i % fastenersNames.length] || `Кріплення ${i + 1}`;
+          // Для кріплень також використовуємо фото ножів (можна створити окрему папку)
+          const holsterImageNumber = (i % 26) + 1;
+          imageUrl = `/knives/${holsterImageNumber}.jpg`;
+          break;
+        case "Доповнення":
+          name =
+            attachmentsNames[i % attachmentsNames.length] ||
+            `Доповнення ${i + 1}`;
+          // Для доповнень також використовуємо фото ножів
+          const toolsImageNumber = (i % 26) + 1;
+          imageUrl = `/knives/${toolsImageNumber}.jpg`;
+          break;
+        default:
+          name = `Товар ${i + 1}`;
+          const defaultImageNumber = (i % 26) + 1;
+          imageUrl = `/knives/${defaultImageNumber}.jpg`;
+      }
+
+      const baseProduct: ProductType = {
+        id: i + 1,
+        name: name,
+        category: category,
+        price: Math.floor(Math.random() * 10000) + 100,
+        image_url: imageUrl,
+        // Додаємо випадковий колір
+        color: colors[Math.floor(Math.random() * colors.length)],
+      };
+
+      // Додаємо специфікації тільки для ножів
+      if (category === "Ножі") {
+        return {
+          ...baseProduct,
+          specs: {
+            bladeLength: parseFloat((Math.random() * 10 + 10).toFixed(1)), // 10–20 см
+            bladeWidth: parseFloat((Math.random() * 2 + 2).toFixed(1)), // 2–4 см
+            bladeWeight: parseFloat((Math.random() * 200 + 100).toFixed(1)), // 100–300 г
+            totalLength: parseFloat((Math.random() * 15 + 20).toFixed(1)), // 20–35 см
+            sharpnessAngle: parseFloat((Math.random() * 10 + 15).toFixed(1)), // 15–25°
+            hardnessRockwell: parseFloat((Math.random() * 5 + 58).toFixed(1)), // 58–63 HRC
+          },
+        };
+      }
+
+      return baseProduct;
+    });
+  });
 
   const tabs = [
     { id: "all", label: "Всі товари", count: mockProducts.length },
     {
-      id: "electronics",
-      label: "Електроніка",
-      count: mockProducts.filter((p) => p.category === "Електроніка").length,
+      id: "knives",
+      label: "Ножі",
+      count: mockProducts.filter((p) => p.category === "Ножі").length,
     },
     {
-      id: "clothing",
-      label: "Одяг",
-      count: mockProducts.filter((p) => p.category === "Одяг").length,
+      id: "fastenings",
+      label: "Кріплення",
+      count: mockProducts.filter((p) => p.category === "Кріплення").length,
     },
     {
-      id: "home",
-      label: "Дім",
-      count: mockProducts.filter((p) => p.category === "Дім").length,
-    },
-    {
-      id: "sport",
-      label: "Спорт",
-      count: mockProducts.filter((p) => p.category === "Спорт").length,
+      id: "attachments",
+      label: "Доповнення",
+      count: mockProducts.filter((p) => p.category === "Доповнення").length,
     },
   ];
 
@@ -63,10 +182,18 @@ const ShopPage: React.FC = () => {
     { value: "newest", label: "Найновіші" },
   ];
 
+  // Фільтри з додаванням кольору
   const mockFilters = [
-    { name: "Категорія", data: ["Електроніка", "Одяг", "Дім", "Спорт"] },
-    { name: "Бренд", data: ["Apple", "Samsung", "Nike", "Adidas"] },
-    { name: "Ціна", min: 100, max: 10000 },
+    { name: "Категорія", data: ["Ножі", "Кріплення", "Доповнення"] },
+    { name: "Ціна", min: 100, max: 10100 },
+    // Фільтр по кольору - отримуємо унікальні кольори з продуктів
+    {
+      name: "Колір",
+      data: Array.from(new Set(mockProducts.map((p) => p.color))).sort(),
+    },
+    // Додаткові фільтри для ножів
+    { name: "Довжина леза", min: 10, max: 20 },
+    { name: "Вага", min: 100, max: 300 },
   ];
 
   // State
@@ -84,13 +211,12 @@ const ShopPage: React.FC = () => {
   const filteredProducts = useMemo(() => {
     let filtered = mockProducts;
 
-    // Filter by tab
+    // Filter by tab - виправлена логіка
     if (activeTab !== "all") {
       const categoryMap: Record<string, string> = {
-        electronics: "Електроніка",
-        clothing: "Одяг",
-        home: "Дім",
-        sport: "Спорт",
+        knives: "Ножі",
+        fastenings: "Кріплення",
+        attachments: "Доповнення",
       };
       filtered = filtered.filter(
         (product) => product.category === categoryMap[activeTab]
@@ -117,14 +243,43 @@ const ShopPage: React.FC = () => {
           (product) =>
             product.price >= filterValue.min && product.price <= filterValue.max
         );
+      } else if (
+        filterName === "Довжина леза" &&
+        filterValue.min !== undefined &&
+        filterValue.max !== undefined
+      ) {
+        filtered = filtered.filter((product) => {
+          if (product.specs && "bladeLength" in product.specs) {
+            const bladeLength = product.specs.bladeLength as number;
+            return (
+              bladeLength >= filterValue.min && bladeLength <= filterValue.max
+            );
+          }
+          return false;
+        });
+      } else if (
+        filterName === "Вага" &&
+        filterValue.min !== undefined &&
+        filterValue.max !== undefined
+      ) {
+        filtered = filtered.filter((product) => {
+          if (product.specs && "bladeWeight" in product.specs) {
+            const bladeWeight = product.specs.bladeWeight as number;
+            return (
+              bladeWeight >= filterValue.min && bladeWeight <= filterValue.max
+            );
+          }
+          return false;
+        });
       } else if (Array.isArray(filterValue) && filterValue.length > 0) {
         if (filterName === "Категорія") {
           filtered = filtered.filter((product) =>
             filterValue.includes(product.category)
           );
-        } else if (filterName === "Бренд") {
+        } else if (filterName === "Колір") {
+          // Додаємо фільтрацію по кольору
           filtered = filtered.filter((product) =>
-            filterValue.includes(product.brand)
+            filterValue.includes(product.color)
           );
         }
       }
@@ -150,7 +305,7 @@ const ShopPage: React.FC = () => {
     }
 
     return filtered;
-  }, [activeTab, searchQuery, activeFilters, sortBy]);
+  }, [mockProducts, activeTab, searchQuery, activeFilters, sortBy]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -187,7 +342,7 @@ const ShopPage: React.FC = () => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-8xl mx-auto px-4 py-6">
         {/* Search and Controls Bar */}
         <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
@@ -380,12 +535,30 @@ const ShopPage: React.FC = () => {
             </div>
           )}
 
+          {/* Products Grid/List */}
           <div className="flex-1">
             <div className="bg-white rounded-lg shadow-sm p-6">
               {paginatedProducts.length > 0 ? (
                 <>
                   {viewMode === "grid" ? (
-                    <AdaptiveGrid products={paginatedProducts} />
+                    <div className="flex justify-center">
+                      <div className="grid gap-[50px] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-fit">
+                        {paginatedProducts.map((product, index) => (
+                          <div key={product.id || index} className="w-full">
+                            <Card
+                              product={product}
+                              viewMode="grid"
+                              onAddToCart={() => {
+                                console.log("Додано до кошика:", product.name);
+                              }}
+                              onBuyNow={() => {
+                                console.log("Купити зараз:", product.name);
+                              }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   ) : (
                     <div className="space-y-4">
                       {paginatedProducts.map((product, index) => (
@@ -393,25 +566,31 @@ const ShopPage: React.FC = () => {
                           key={product.id || index}
                           product={product}
                           viewMode="list"
-                          onAddToCart={() => {}}
-                          onBuyNow={() => {}}
+                          onAddToCart={() => {
+                            console.log("Додано до кошика:", product.name);
+                          }}
+                          onBuyNow={() => {
+                            console.log("Купити зараз:", product.name);
+                          }}
                         />
                       ))}
                     </div>
                   )}
 
                   {/* Pagination */}
-                  <div className="mt-8 flex justify-center">
-                    <Pagination
-                      total={totalPages}
-                      page={currentPage}
-                      onChange={setCurrentPage}
-                      showControls
-                      showShadow
-                      color="warning"
-                      className="custom-pagination"
-                    />
-                  </div>
+                  {totalPages > 1 && (
+                    <div className="mt-8 flex justify-center">
+                      <Pagination
+                        total={totalPages}
+                        page={currentPage}
+                        onChange={setCurrentPage}
+                        showControls
+                        showShadow
+                        color="warning"
+                        className="custom-pagination"
+                      />
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="text-center py-12">
