@@ -1,56 +1,157 @@
- .card {
-  border: 1px solid #eaeaea;
-  border-radius: 12px;
-  padding: 20px;
-  gap: 10px;
+.card {
+  border: 2px solid #b8845f;
+  border-radius: 16px;
+  padding: 24px;
+  gap: 16px;
   width: 100%;
-  background-color: coffe;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transition: box-shadow 0.2s ease-in-out, transform 0.2s ease-in-out;
+  background: linear-gradient(135deg, #f8f4f0 0%, #f0e5d6 100%);
+  box-shadow: 
+    0 8px 24px rgba(139, 114, 88, 0.15),
+    0 4px 12px rgba(139, 114, 88, 0.1);
+  transition: all 0.3s ease-in-out;
+  position: relative;
+  overflow: hidden;
 }
 
-/* 
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #8b7258 0%, #b8845f 50%, #8b7258 100%);
+  border-radius: 16px 16px 0 0;
+}
+
 .card:hover {
-  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
-  transform: translateY(-3px);
+  box-shadow: 
+    0 12px 32px rgba(139, 114, 88, 0.2),
+    0 6px 16px rgba(139, 114, 88, 0.15);
+  transform: translateY(-2px);
+  border-color: #8b7258;
 }
 
 .input {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  color: black;
 }
 
 .input label {
   font-size: 14px;
-  color: #555;
+  color: #2d3748;
   font-weight: 600;
+  letter-spacing: 0.025em;
+  margin-bottom: 4px;
+  position: relative;
 }
 
-.input input {
-  padding: 10px 14px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+.input label::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #8b7258, #b8845f);
+  transition: width 0.3s ease;
+}
+
+.input:focus-within label::after {
+  width: 100%;
+}
+
+.inputField {
+  padding: 14px 16px;
+  border: 2px solid rgba(184, 132, 95, 0.3);
+  border-radius: 12px;
   font-size: 16px;
-  background-color: #fff;
-  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  background: rgba(255, 255, 255, 0.9);
+  color: #2d3748;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  backdrop-filter: blur(4px);
 }
 
-.input input:focus {
-  border-color: #0070f3;
-  box-shadow: 0 0 0 3px rgba(0, 112, 243, 0.2);
+.inputField:focus {
+  border-color: #8b7258;
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 
+    0 0 0 4px rgba(139, 114, 88, 0.1),
+    0 4px 12px rgba(139, 114, 88, 0.15);
   outline: none;
+  transform: translateY(-1px);
 }
 
-.input input:disabled {
-  background-color: #f5f5f5;
-  color: #aaa;
+.inputField:hover:not(:disabled) {
+  border-color: #b8845f;
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.inputField:disabled {
+  background: rgba(240, 229, 214, 0.6);
+  color: rgba(45, 55, 72, 0.6);
+  border-color: rgba(184, 132, 95, 0.2);
+  cursor: not-allowed;
 }
 
 .unknown {
-  color: #ff4d4f;
-  font-weight: bold;
+  color: #e53e3e;
+  font-weight: 700;
   text-align: center;
-} */ 
+  padding: 16px;
+  background: rgba(229, 62, 62, 0.1);
+  border: 2px solid rgba(229, 62, 62, 0.2);
+  border-radius: 12px;
+  font-size: 16px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .card {
+    padding: 20px;
+    margin: 0 8px;
+  }
+  
+  .inputField {
+    padding: 12px 14px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Enhanced focus states for accessibility */
+.inputField:focus-visible {
+  box-shadow: 
+    0 0 0 4px rgba(139, 114, 88, 0.2),
+    0 4px 12px rgba(139, 114, 88, 0.15);
+}
+
+/* Dark mode support (optional) */
+@media (prefers-color-scheme: dark) {
+  .card {
+    background: linear-gradient(135deg, #2d2520 0%, #1a1612 100%);
+    border-color: #8b7258;
+  }
+  
+  .input label {
+    color: #f8f4f0;
+  }
+  
+  .inputField {
+    background: rgba(45, 37, 32, 0.9);
+    color: #f8f4f0;
+    border-color: rgba(139, 114, 88, 0.4);
+  }
+  
+  .inputField:focus {
+    background: rgba(45, 37, 32, 1);
+    border-color: #b8845f;
+  }
+  
+  .inputField:disabled {
+    background: rgba(26, 22, 18, 0.6);
+    color: rgba(248, 244, 240, 0.6);
+  }
+}

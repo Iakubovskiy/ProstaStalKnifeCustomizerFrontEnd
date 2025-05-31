@@ -8,7 +8,7 @@ import { useCanvasState } from "@/app/state/canvasState";
 import Characteristics from "@/app/components/Characteristics/Characteristics";
 import { useSnapshot } from "valtio";
 import ModalFormButton from "../../ModalButton/ModalButton";
-
+import styles from "./BladeShapeCustomization.module.css";
 
 const BladeShapeCustomizationComponent: React.FC = () => {
   const [bladeShapes, setBladeShapes] = useState<BladeShape[]>([]);
@@ -50,38 +50,36 @@ const BladeShapeCustomizationComponent: React.FC = () => {
   };
 
   return (
-    <>
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: "16px",
-          position: "relative",
-        }}
-      >
+    <div className={styles.container}>
+      {/* Header */}
+      <div className={styles.header}>
+        <h2 className={styles.title}>Форма клинка</h2>
+        <ModalFormButton component="bladeShape" />
+      </div>
+
+      {/* Selection Grid */}
+      <div className={styles.selectionGrid}>
         {bladeShapes.map((shape) => (
-          <React.Fragment key={shape.id}>
-            <CardComponent
-              backgroundPicture={'/icons/blade-shape.svg'}
-              tooltipText={shape.name}
-              onClick={() => bladeShapeSelection(shape)}
-            />
-          </React.Fragment>
+          <CardComponent
+            key={shape.id}
+            backgroundPicture="/icons/blade-shape.svg"
+            tooltipText={shape.name}
+            onClick={() => bladeShapeSelection(shape)}
+          />
         ))}
       </div>
-      <div style={{ marginTop: "16px" }}>
+
+      {/* Characteristics */}
+      <div className={styles.characteristicsWrapper}>
         <Characteristics
           data={snap.bladeShape}
           isReadOnly1={true}
-          currentBladeCoatingColor={""}
+          currentBladeCoatingColor=""
           onChange={() => {}}
           type="BladeShape"
         />
-        <div className="p-3">
-          <ModalFormButton component="bladeShape"></ModalFormButton>
-        </div>
       </div>
-    </>
+    </div>
   );
 };
 

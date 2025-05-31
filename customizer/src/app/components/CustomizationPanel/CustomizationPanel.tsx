@@ -1,26 +1,39 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import CustomizationPanelMenu from "./Menu/CustomizationPanelMenu";
 import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizationComponent";
 import HandleCustomizationComponent from "./Components/HandleCustomizationComponent";
 import SheathCustomizationComponent from "./Components/SheathCustomizationComponent";
 import BladeCoatingCustomizationComponent from "./Components/BladeCoatingCustomizationComponent";
 import FasteningCustomizationComponent from "./Components/FasteningCustomizationComponent";
-import { useState } from "react";
 import EngravingComponent from "../EngravingComponent/EngravingComponent";
 import BladeShape from "@/app/Models/BladeShape";
 import SheathColor from "@/app/Models/SheathColor";
 import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import { useCanvasState } from "@/app/state/canvasState";
 import HandleColor from "@/app/Models/HandleColor";
-import MenuCard from "./Menu/MenuCard";
 import InitialDataService from "@/app/services/InitialDataService";
+import ArrowCard from "./Menu/ArrowCard";
 
 const CustomizationPanel = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [screenWidth, setScreenWidth] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
   const initialDataService = new InitialDataService();
 
   const state = useCanvasState();
+
+  // Handle screen resize
+  useEffect(() => {
+    const handleResize = () => {
+      setScreenWidth(window.innerWidth);
+    };
+
+    setScreenWidth(window.innerWidth);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchBladeShapes = async () => {
@@ -31,7 +44,7 @@ const CustomizationPanel = () => {
           initialData.bladeShape,
           initialData.bladeCoatingColor,
           initialData.sheathColor,
-          initialData.handleColor,
+          initialData.handleColor
         );
       } catch (error) {
         console.error("Error fetching blade shapes:", error);
@@ -39,22 +52,32 @@ const CustomizationPanel = () => {
     };
     fetchBladeShapes();
   }, []);
-  const scrollLeft = () => {
-    const container = document.getElementById("scrollContainer");
-    // @ts-ignore
-    container.scrollBy({
-      left: -200, // Прокрутка вліво на 200px
-      behavior: "smooth",
-    });
+
+  // Calculate total pages based on screen width
+  const getCardsPerPage = (width: number): number => {
+    if (width >= 480) return 2;
+    return 1;
   };
 
-  const scrollRight = () => {
-    const container = document.getElementById("scrollContainer");
-    // @ts-ignore
-    container.scrollBy({
-      left: 200, // Прокрутка вправо на 200px
-      behavior: "smooth",
-    });
+  const cardsPerPage = getCardsPerPage(screenWidth);
+  const menuOptionsCount = 6; // Total number of menu options
+
+  useEffect(() => {
+    const newTotalPages = Math.ceil(menuOptionsCount / cardsPerPage);
+    setTotalPages(newTotalPages);
+
+    // Reset to first page if current page is out of bounds
+    if (currentPage >= newTotalPages) {
+      setCurrentPage(0);
+    }
+  }, [cardsPerPage, currentPage, menuOptionsCount]);
+
+  const goToPreviousPage = () => {
+    setCurrentPage((prev) => Math.max(0, prev - 1));
+  };
+
+  const goToNextPage = () => {
+    setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
   };
 
   const SelectByDefault = (
@@ -74,7 +97,6 @@ const CustomizationPanel = () => {
       bladeWeight: shape.bladeWeight,
       sharpeningAngle: shape.sharpeningAngle,
       rockwellHardnessUnits: shape.rockwellHardnessUnits,
-
       bladeShapeModelUrl: shape.bladeShapeModelUrl,
       sheathModelUrl: shape.sheathModelUrl,
     };
@@ -97,40 +119,62 @@ const CustomizationPanel = () => {
         return <FasteningCustomizationComponent />;
       case "engraving":
         return <EngravingComponent />;
-
       default:
         return (
-          <div className="text-black">Виберіть опцію для кастомізації</div>
+          <div className="text-black text-center p-4 text-sm">
+            Виберіть опцію для кастомізації
+          </div>
         );
     }
   };
 
+  // Determine if we should show navigation arrows
+  const showNavigation = totalPages > 1;
+  const isVerySmallScreen = screenWidth > 0 && screenWidth < 320;
+
   return (
-    <div className="customization- flex flex-col col-3 row-1 h-full bg-white rounded-md">
-      <div className="relative flex items-center">
-        <div className="invis">
-          <MenuCard
+    <div className="customization-panel flex flex-col h-full bg-white rounded-md shadow-sm min-w-[250px]">
+      {/* Navigation Header */}
+      <div
+        className={`relative flex items-center border-b border-gray-100 ${
+          isVerySmallScreen ? "p-1" : "p-2"
+        }`}
+      >
+        {showNavigation && (
+          <ArrowCard
             icon={"icons/arrowLeft.svg"}
-            tooltipText={""}
-            onClick={() => scrollLeft()}
+            tooltipText={"Попередня сторінка"}
+            onClick={goToPreviousPage}
+            disabled={currentPage === 0}
+            isSmall={isVerySmallScreen}
           />
-        </div>
+        )}
+
         <div
-          className="overflow-x-auto mx-4 scrollbar-hide flex items-center"
-          id="scrollContainer"
+          className={`flex-1 ${
+            showNavigation ? (isVerySmallScreen ? "mx-1" : "mx-2") : ""
+          }`}
         >
-          <CustomizationPanelMenu setSelectedOption={setSelectedOption} />
-        </div>
-        <div className="invis">
-          <MenuCard
-            icon={"icons/arrowRight.svg"}
-            tooltipText={""}
-            onClick={() => scrollRight()}
+          <CustomizationPanelMenu
+            setSelectedOption={setSelectedOption}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
           />
         </div>
+
+        {showNavigation && (
+          <ArrowCard
+            icon={"icons/arrowRight.svg"}
+            tooltipText={"Наступна сторінка"}
+            onClick={goToNextPage}
+            disabled={currentPage >= totalPages - 1}
+            isSmall={isVerySmallScreen}
+          />
+        )}
       </div>
 
-      <div className="customization-content  mt-4 p-4 bg-white rounded scrollbar-hide flex-1 h-full overflow-auto">
+      {/* Content Area */}
+      <div className="customization-content flex-1 p-2 sm:p-4 bg-white rounded-b-md overflow-auto">
         {renderContent()}
       </div>
     </div>
