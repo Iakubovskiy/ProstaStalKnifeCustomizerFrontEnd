@@ -119,11 +119,7 @@ const DashboardPage = () => {
               Адмін панель
             </h1>
           </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-r from-[#8b7258] to-[#b8845f] flex items-center justify-center text-white font-semibold text-sm">
-              А
-            </div>
-          </div>
+          <div className="flex items-center space-x-3"></div>
         </div>
       </header>
 
@@ -179,9 +175,6 @@ const DashboardPage = () => {
               <h2 className="text-3xl font-bold text-[#2d3748] mb-2">
                 Панель управління
               </h2>
-              <p className="text-[#2d3748]/70">
-                Оберіть розділ для управління вашим магазином
-              </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
