@@ -27,7 +27,7 @@ const BladeCoatingCustomizationComponent: React.FC = () => {
   const bladeCoatingColorClick = (color: BladeCoatingColor) => {
     state.bladeCoatingColor = color;
     requestAnimationFrame(() => {
-        state.invalidate();
+      state.invalidate();
     });
   };
 
