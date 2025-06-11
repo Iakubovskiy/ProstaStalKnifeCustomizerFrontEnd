@@ -12,10 +12,8 @@ import { Pagination } from "@nextui-org/react";
 import { Filter, Grid, List, X } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 
-// Main Shop Page Component
 const ShopPage: React.FC = () => {
   const [mockProducts] = useState<ProductType[]>(() => {
-    // Реалістичні назви ножів
     const knifeNames = [
       "Складний ніж Buck 110 Hunter",
       "Мисливський ніж Mora Companion",
