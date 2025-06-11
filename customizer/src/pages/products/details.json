@@ -1,0 +1,49 @@
+{
+  "products": {
+    "knife-alpha": {
+      "id": "knife-alpha",
+      "name": "Ніж Мисливський 'Альфа'",
+      "description": "Надійний та гострий ніж для справжніх мисливців. Виготовлений з високоякісної сталі, забезпечує відмінний різ та довговічність. Ергономічне руків'я гарантує зручний хват.",
+      "price": 129.99,
+      "image_url": "/knives/8.jpg",
+      "bladeLength": 15,
+      "bladeWidth": 30,
+      "bladeWeight": 180,
+      "totalLength": 28,
+      "sharpnessAngle": 20,
+      "hardnessRockwell": 58,
+      "sheathColor": "Чорний",
+      "bladeCoatingColor": "Матовий сірий",
+      "handleColor": "Дерево (горіх)",
+      "engravingNames": ["Логотип виробника", "Індивідуальний напис"],
+      "bladeCoatingType": "Тефлонове",
+      "category": "Ножі"
+    },
+    "knife-beta": {
+      "id": "knife-beta",
+      "name": "Тактичний Ніж 'Бета'",
+      "description": "Компактний та універсальний тактичний ніж. Ідеально підходить для щоденного використання та екстремальних умов.",
+      "price": 89.5,
+      "image_url": "/knives/8.jpg",
+      "bladeLength": 10,
+      "bladeWidth": 25,
+      "bladeWeight": 120,
+      "totalLength": 22,
+      "sharpnessAngle": 22,
+      "hardnessRockwell": 60,
+      "sheathColor": "Олива",
+      "bladeCoatingColor": "Чорний антивідблиск",
+      "handleColor": "G10 Чорний",
+      "bladeCoatingType": "Порошкове",
+      "category": "Ножі"
+    },
+    "accessory-sharpener": {
+      "id": "accessory-sharpener",
+      "name": "Точилка для ножів 'Профі'",
+      "description": "Професійна точилка для підтримки ідеальної гостроти ваших ножів. Підходить для різних типів лез.",
+      "price": 25.0,
+      "image_url": "/knives/8.jpg",
+      "category": "Аксесуари"
+    }
+  }
+}

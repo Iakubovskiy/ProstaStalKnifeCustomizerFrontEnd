@@ -14,7 +14,7 @@ const SingleDecal = ({ meshRef, engraving, offsetFactor }) => {
 
     return (
         <Decal
-            key={decalKey} // Додаємо ключ для форсування ререндеру
+            key={decalKey}
             mesh={meshRef.current}
             position={[
                 engraving.locationX || 0,
