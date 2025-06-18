@@ -14,6 +14,7 @@ const initialEngravingPriceData: EngravingPrice = {
 const EngravingPricePage = () => {
   const router = useRouter();
   const { id } = router.query;
+  const guid = "019760db-677b-76cc-b918-8ee3fa86fa48";
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const [EngravingPrice, setEngravingPrice] = useState<EngravingPrice>(
@@ -24,10 +25,7 @@ const EngravingPricePage = () => {
     console.log("Saving data:", EngravingPrice);
 
     if (EngravingPrice) {
-      await Engravingservice.update(
-        id as string,
-        EngravingPrice
-      );
+      await Engravingservice.update(id as string, EngravingPrice);
 
       alert("Збережено");
     } else {
@@ -44,24 +42,23 @@ const EngravingPricePage = () => {
   };
   useEffect(() => {
     const fetchEngravingPrice = async () => {
-      if (id) {
+      if (guid) {
         try {
           const fetchedEngravingPrice = await Engravingservice.getById(
-            id as string,
+            guid as string
           );
           setEngravingPrice(fetchedEngravingPrice);
           setLoading(false);
         } catch (error) {
           console.error("Error fetching sheath color:", error);
           alert("Сталася помилка під час отримання даних. Перевірте ID.");
-          router.push("/EngravingPricePage/" + id);
+          router.push("/EngravingPricePage/" + guid);
         }
-
       }
       console.log(EngravingPrice);
     };
     fetchEngravingPrice();
-  }, [id]);
+  }, [guid]);
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center ">

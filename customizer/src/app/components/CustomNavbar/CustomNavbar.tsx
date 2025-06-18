@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import {
   Navbar,
   NavbarBrand,
@@ -8,9 +9,64 @@ import {
   NavbarMenuItem,
   Link,
   Button,
+  Badge,
 } from "@nextui-org/react";
 
 export default function CustomNavbar() {
+  const [cartItemCount, setCartItemCount] = useState(0);
+
+  // Функція для підрахунку товарів в кошику
+  const getCartItemCount = (): number => {
+    try {
+      const cart = localStorage.getItem("cart");
+      if (cart) {
+        const cartItems = JSON.parse(cart);
+        // Якщо cart - це масив товарів
+        if (Array.isArray(cartItems)) {
+          return cartItems.length;
+        }
+        // Якщо cart - це об'єкт з товарами та їх кількістю
+        if (typeof cartItems === "object" && cartItems !== null) {
+          return Object.values(cartItems).reduce(
+            (total: number, quantity: unknown) => {
+              const qty = typeof quantity === "number" ? quantity : 0;
+              return total + qty;
+            },
+            0
+          );
+        }
+      }
+      return 0;
+    } catch (error) {
+      console.error("Помилка при читанні localStorage:", error);
+      return 0;
+    }
+  };
+
+  // Оновлення кількості товарів при завантаженні компонента
+  useEffect(() => {
+    setCartItemCount(getCartItemCount());
+
+    // Слухач для оновлення кількості при змінах в localStorage
+    const handleStorageChange = (): void => {
+      setCartItemCount(getCartItemCount());
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    // Додатковий слухач для змін в межах однієї вкладки
+    const handleCartUpdate = (): void => {
+      setCartItemCount(getCartItemCount());
+    };
+
+    window.addEventListener("cartUpdated", handleCartUpdate);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
+  }, []);
+
   return (
     <Navbar isBordered height="3rem" maxWidth="full" className="">
       <NavbarContent className="sm:hidden" justify="start">
@@ -21,73 +77,28 @@ export default function CustomNavbar() {
           <p className="font-bold">PROSTAstal</p>
         </NavbarBrand>
       </NavbarContent>
-      {/* <NavbarContent className="hidden md:flex" justify="center">
-        <NavbarItem>
-          <Link className="text-black" href="https://prostastal.com/pro-nas/">
-            Про нас
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link
-            className="text-black"
-            href="https://prostastal.com/oplata-i-dostavka/"
-          >
-            Оплата і доставка
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link
-            className="text-black"
-            href="https://prostastal.com/obmin-ta-povernennya/"
-          >
-            Обмін та повернення
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link className="text-black" href="https://prostastal.com/kontakty/">
-            Контакти
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link
-            className="text-black"
-            href="https://prostastal.com/vidhuky-pro-mahazyn/"
-          >
-            Відгуки про магазин
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link className="text-black" href="https://prostastal.com/blog/">
-            Блог
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link
-            className="text-black"
-            href="https://prostastal.com/privacypolicy/"
-          >
-            Угода користувача
-          </Link>
-        </NavbarItem>
-      </NavbarContent> */}
+
       <NavbarContent justify="end">
-        <NavbarItem>
-          {/* <Link className="text-black" href="#">
-            Укр
-          </Link>{" "}
-          |{" "}
-          <Link className="text-black" href="#">
-            Eng
-          </Link> */}
-        </NavbarItem>
+        <NavbarItem></NavbarItem>
         <NavbarItem>
           <Button>Вхід</Button>
         </NavbarItem>
         <NavbarItem>
-          <Button>
-            {" "}
-            <img src="icons/cart.svg" alt="Cart icon" width={25} height={25} />
-          </Button>
+          <Badge
+            content={cartItemCount > 0 ? cartItemCount : ""}
+            color="danger"
+            size="sm"
+            isInvisible={cartItemCount === 0}
+          >
+            <Button isIconOnly>
+              <img
+                src="icons/cart.svg"
+                alt="Cart icon"
+                width={25}
+                height={25}
+              />
+            </Button>
+          </Badge>
         </NavbarItem>
       </NavbarContent>
 
