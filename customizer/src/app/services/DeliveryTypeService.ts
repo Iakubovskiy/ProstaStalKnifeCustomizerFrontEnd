@@ -43,11 +43,13 @@ class DeliveryTypeService {
     id: string,
     deliveryTypeData: DeliveryType
   ): Promise<DeliveryType> {
+    console.log("Updated delivery type:", deliveryTypeData);
     const updatedDto = await this.apiService.update<DeliveryType>(
       this.resource,
       id,
       deliveryTypeData
     );
+
     return updatedDto;
   }
 
@@ -57,22 +59,34 @@ class DeliveryTypeService {
   }
 
   async activate(id: string): Promise<DeliveryType> {
-    // PATCH запит без тіла, як зазначено в Swagger
+    console.log("Activating delivery type with ID:", id);
+    const formData = new FormData();
+
     const updatedDto = await this.apiService.partialUpdate<DeliveryType>(
-      `${this.resource}/activate`,
+      `activate/${this.resource}`,
       id,
-      {}
+      formData
     );
+    if (!updatedDto) {
+      return await this.getById(id);
+    }
+
     return updatedDto;
   }
 
   async deactivate(id: string): Promise<DeliveryType> {
-    // PATCH запит без тіла
+    console.log("Deactivating delivery type with ID:", id);
+    const formData = new FormData();
+
     const updatedDto = await this.apiService.partialUpdate<DeliveryType>(
-      `${this.resource}/deactivate`,
+      `deactivate/${this.resource}`,
       id,
-      {} // Порожнє тіло
+      formData
     );
+    if (!updatedDto) {
+      return await this.getById(id);
+    }
+
     return updatedDto;
   }
 }

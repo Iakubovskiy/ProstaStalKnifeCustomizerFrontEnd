@@ -3,14 +3,20 @@ interface Attachment {
   isActive: boolean;
   image: File;
   name: string;
-  names: LocalizedContent;
-  title: LocalizedContent;
-  description: LocalizedContent;
-  metaTitle: LocalizedContent;
-  metaDescription: LocalizedContent;
+  names?: LocalizedContent;
+  title: string;
+  titles?: LocalizedContent;
+  description: string;
+  descriptions?: LocalizedContent;
+  metaTitle: string;
+  metaTitles?: LocalizedContent;
+  metaDescription: string;
+  metaDescriptions?: LocalizedContent;
   type: AttachmentType;
-  color: LocalizedContent;
+  color: string;
+  colors?: LocalizedContent;
   price: number;
-  material: LocalizedContent;
+  material: string;
+  materials?: LocalizedContent;
   model: File;
 }

@@ -1,4 +1,5 @@
 interface AttachmentType {
   id: string;
-  names: LocalizedContent;
+  name: string;
+  names?: LocalizedContent;
 }

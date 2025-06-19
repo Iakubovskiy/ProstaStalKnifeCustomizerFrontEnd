@@ -3,9 +3,14 @@ interface CompletedSheath {
   isActive: boolean;
   image: File;
   name: string;
+  names?: LocalizedContent;
   title: string;
   description: string;
+  titles?: LocalizedContent;
+  descriptions?: LocalizedContent;
   metaTitle: string;
+  metaTitles?: LocalizedContent;
+  metaDescriptions?: LocalizedContent;
   metaDescription: string;
   sheath: Sheath;
   sheathColor: SheathColor | null;

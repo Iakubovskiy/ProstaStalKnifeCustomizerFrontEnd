@@ -1,15 +1,10 @@
+import { ClientData } from "./../DTOs/ClientData";
 interface Order {
   id: string;
   number: number;
   total: number;
   delivery: DeliveryType;
-  clientFullName: string;
-  clientPhoneNumber: string;
-  countryForDelivery: string;
-  city: string;
-  address: string;
-  zipCode: string | null;
-  email: string;
+  clientData: ClientData;
   comment: string;
   status: string;
   paymentMethod: PaymentMethod;

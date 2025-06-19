@@ -152,6 +152,55 @@ const DeliveryTypeList = () => {
     );
   };
 
+  // Функції для пагінації
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handlePrevPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  // Генерація номерів сторінок для відображення
+  const getPageNumbers = () => {
+    const delta = 2;
+    const range = [];
+    const rangeWithDots = [];
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      rangeWithDots.push(1, "...");
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (currentPage + delta < totalPages - 1) {
+      rangeWithDots.push("...", totalPages);
+    } else {
+      rangeWithDots.push(totalPages);
+    }
+
+    return rangeWithDots;
+  };
+
+  // Скидання сторінки при зміні фільтрів
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-[#f8f4f0] to-[#f0e5d6] flex items-center justify-center">
@@ -192,7 +241,6 @@ const DeliveryTypeList = () => {
           </div>
         </div>
 
-        {/* ... решта JSX для фільтрів, який не потребує змін ... */}
         {/* Фільтри та пошук */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-[#b8845f]/20 shadow-sm">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
@@ -239,119 +287,216 @@ const DeliveryTypeList = () => {
 
         {/* Таблиця */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-[#b8845f]/20 shadow-sm overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              {/* ... Thead не змінився ... */}
-              <thead className="bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white">
-                <tr>
-                  <th
-                    className="text-left p-4 font-semibold cursor-pointer hover:bg-white/10 transition-colors duration-200"
-                    onClick={() => handleSort("names")}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <span>Назва</span>
-                      {getSortIcon("names")}
-                    </div>
-                  </th>
-                  <th
-                    className="text-left p-4 font-semibold cursor-pointer hover:bg-white/10 transition-colors duration-200"
-                    onClick={() => handleSort("price")}
-                  >
-                    <div className="flex items-center space-x-2">
-                      <span>Ціна</span>
-                      {getSortIcon("price")}
-                    </div>
-                  </th>
-                  <th className="text-left p-4 font-semibold">Коментар</th>
-                  <th
-                    className="text-center p-4 font-semibold cursor-pointer hover:bg-white/10 transition-colors duration-200"
-                    onClick={() => handleSort("isActive")}
-                  >
-                    <div className="flex items-center justify-center space-x-2">
-                      <span>Статус</span>
-                      {getSortIcon("isActive")}
-                    </div>
-                  </th>
-                  <th className="text-center p-4 font-semibold">Дії</th>
-                </tr>
-              </thead>
-              <tbody>
-                {paginatedData.map((item, index) => (
-                  <tr
-                    key={item.id}
-                    className={`border-b border-[#b8845f]/10 hover:bg-[#f0e5d6]/30 transition-colors duration-200 ${
-                      index % 2 === 0 ? "bg-white/30" : "bg-white/50"
-                    }`}
-                  >
-                    <td className="p-4 font-medium text-[#2d3748]">
-                      {item.name || "—"}
-                    </td>
-                    <td className="p-4 font-semibold text-[#8b7258]">
-                      {item.price === 0 ? "Безкоштовно" : `₴${item.price}`}
-                    </td>
-                    <td
-                      className="p-4 text-[#2d3748]/70 max-w-xs truncate"
-                      title={item.comment || "—"}
-                    >
-                      {item.comment || "—"}
-                    </td>
-                    <td className="p-4 text-center">
-                      <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
-                          item.isActive
-                            ? "bg-green-100 text-green-800 border border-green-200"
-                            : "bg-red-100 text-red-800 border border-red-200"
+          {filteredAndSortedData.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-[#2d3748]/60 text-lg">
+                Нічого не знайдено за вашими критеріями
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white">
+                    <tr>
+                      <th
+                        className="text-left p-4 font-semibold cursor-pointer hover:bg-white/10 transition-colors duration-200"
+                        onClick={() => handleSort("names")}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <span>Назва</span>
+                          {getSortIcon("names")}
+                        </div>
+                      </th>
+                      <th
+                        className="text-left p-4 font-semibold cursor-pointer hover:bg-white/10 transition-colors duration-200"
+                        onClick={() => handleSort("price")}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <span>Ціна</span>
+                          {getSortIcon("price")}
+                        </div>
+                      </th>
+                      <th className="text-left p-4 font-semibold">Коментар</th>
+                      <th
+                        className="text-center p-4 font-semibold cursor-pointer hover:bg-white/10 transition-colors duration-200"
+                        onClick={() => handleSort("isActive")}
+                      >
+                        <div className="flex items-center justify-center space-x-2">
+                          <span>Статус</span>
+                          {getSortIcon("isActive")}
+                        </div>
+                      </th>
+                      <th className="text-center p-4 font-semibold">Дії</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {paginatedData.map((item, index) => (
+                      <tr
+                        key={item.id}
+                        className={`border-b border-[#b8845f]/10 hover:bg-[#f0e5d6]/30 transition-colors duration-200 ${
+                          index % 2 === 0 ? "bg-white/30" : "bg-white/50"
                         }`}
                       >
-                        {item.isActive ? "Активний" : "Неактивний"}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center justify-center space-x-2">
-                        <button
-                          onClick={() =>
-                            handleToggleActive(item.id, item.isActive)
-                          }
-                          className={`p-2 rounded-lg transition-all duration-200 ${
-                            item.isActive
-                              ? "bg-red-100 text-red-600 hover:bg-red-200"
-                              : "bg-green-100 text-green-600 hover:bg-green-200"
-                          }`}
-                          title={item.isActive ? "Деактивувати" : "Активувати"}
+                        <td className="p-4 font-medium text-[#2d3748]">
+                          {item.name || "—"}
+                        </td>
+                        <td className="p-4 font-semibold text-[#8b7258]">
+                          {item.price === 0 ? "Безкоштовно" : `₴${item.price}`}
+                        </td>
+                        <td
+                          className="p-4 text-[#2d3748]/70 max-w-xs truncate"
+                          title={item.comment || "—"}
                         >
-                          {item.isActive ? (
-                            <EyeOff className="w-4 h-4" />
-                          ) : (
-                            <Eye className="w-4 h-4" />
-                          )}
-                        </button>
-                        <button
-                          onClick={() =>
-                            router.push(`/deliveryTypePage/${item.id}`)
-                          }
-                          className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-all duration-200"
-                          title="Редагувати"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </button>
-                        <button
-                          onClick={() => handleDelete(item.id)}
-                          className="p-2 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-200"
-                          title="Видалити"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          {/* ... Пагінація не змінилась ... */}
-        </div>
+                          {item.comment || "—"}
+                        </td>
+                        <td className="p-4 text-center">
+                          <span
+                            className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${
+                              item.isActive
+                                ? "bg-green-100 text-green-800 border border-green-200"
+                                : "bg-red-100 text-red-800 border border-red-200"
+                            }`}
+                          >
+                            {item.isActive ? "Активний" : "Неактивний"}
+                          </span>
+                        </td>
+                        <td className="p-4">
+                          <div className="flex items-center justify-center space-x-2">
+                            <button
+                              onClick={() =>
+                                handleToggleActive(item.id, item.isActive)
+                              }
+                              className={`p-2 rounded-lg transition-all duration-200 ${
+                                item.isActive
+                                  ? "bg-red-100 text-red-600 hover:bg-red-200"
+                                  : "bg-green-100 text-green-600 hover:bg-green-200"
+                              }`}
+                              title={
+                                item.isActive ? "Деактивувати" : "Активувати"
+                              }
+                            >
+                              {item.isActive ? (
+                                <EyeOff className="w-4 h-4" />
+                              ) : (
+                                <Eye className="w-4 h-4" />
+                              )}
+                            </button>
+                            <button
+                              onClick={() =>
+                                router.push(`/deliveryTypePage/${item.id}`)
+                              }
+                              className="p-2 rounded-lg bg-blue-100 text-blue-600 hover:bg-blue-200 transition-all duration-200"
+                              title="Редагувати"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              className="p-2 rounded-lg bg-gray-200 text-gray-600 hover:bg-gray-300 transition-all duration-200"
+                              title="Видалити"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-        {/* ... Блок "Нічого не знайдено" не змінився ... */}
+              {/* Пагінація */}
+              {totalPages > 1 && (
+                <div className="bg-white/50 border-t border-[#b8845f]/10 px-6 py-4">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                    {/* Інформація про сторінки */}
+                    <div className="text-sm text-[#2d3748]/60">
+                      Показано {(currentPage - 1) * itemsPerPage + 1} -{" "}
+                      {Math.min(
+                        currentPage * itemsPerPage,
+                        filteredAndSortedData.length
+                      )}{" "}
+                      з {filteredAndSortedData.length} результатів
+                    </div>
+
+                    {/* Навігація по сторінках */}
+                    <div className="flex items-center space-x-2">
+                      {/* Попередня сторінка */}
+                      <button
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 1}
+                        className={`p-2 rounded-lg transition-all duration-200 ${
+                          currentPage === 1
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "bg-white text-[#8b7258] hover:bg-[#8b7258] hover:text-white border border-[#b8845f]/20"
+                        }`}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+
+                      {/* Номери сторінок */}
+                      {totalPages <= 7
+                        ? // Показати всі сторінки якщо їх мало
+                          Array.from(
+                            { length: totalPages },
+                            (_, i) => i + 1
+                          ).map((page) => (
+                            <button
+                              key={page}
+                              onClick={() => handlePageChange(page)}
+                              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                currentPage === page
+                                  ? "bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white"
+                                  : "bg-white text-[#8b7258] hover:bg-[#8b7258] hover:text-white border border-[#b8845f]/20"
+                              }`}
+                            >
+                              {page}
+                            </button>
+                          ))
+                        : // Показати скорочену версію з крапками
+                          getPageNumbers().map((page, index) => (
+                            <React.Fragment key={index}>
+                              {page === "..." ? (
+                                <span className="px-3 py-2 text-[#2d3748]/60">
+                                  ...
+                                </span>
+                              ) : (
+                                <button
+                                  onClick={() =>
+                                    handlePageChange(page as number)
+                                  }
+                                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                    currentPage === page
+                                      ? "bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white"
+                                      : "bg-white text-[#8b7258] hover:bg-[#8b7258] hover:text-white border border-[#b8845f]/20"
+                                  }`}
+                                >
+                                  {page}
+                                </button>
+                              )}
+                            </React.Fragment>
+                          ))}
+
+                      {/* Наступна сторінка */}
+                      <button
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                        className={`p-2 rounded-lg transition-all duration-200 ${
+                          currentPage === totalPages
+                            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "bg-white text-[#8b7258] hover:bg-[#8b7258] hover:text-white border border-[#b8845f]/20"
+                        }`}
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
