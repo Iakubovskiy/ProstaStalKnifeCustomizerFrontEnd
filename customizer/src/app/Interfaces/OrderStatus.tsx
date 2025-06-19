@@ -1,0 +1,3 @@
+interface OrderStatus {
+  status: string;
+}

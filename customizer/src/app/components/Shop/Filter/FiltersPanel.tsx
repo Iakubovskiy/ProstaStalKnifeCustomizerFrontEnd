@@ -52,22 +52,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     onFiltersChange(updated);
   };
 
-  // Конвертує значення фільтра діапазону з { min, max } у [min, max]
-  const getRangeDefaultValue = (
-    filterName: string
-  ): [number, number] | undefined => {
-    const filterValue = activeFilters[filterName];
-    if (
-      filterValue &&
-      typeof filterValue === "object" &&
-      "min" in filterValue &&
-      "max" in filterValue
-    ) {
-      return [filterValue.min, filterValue.max];
-    }
-    return undefined;
-  };
-
   return (
     <div className="p-4 border rounded shadow-sm bg-white">
       {filters.map((filter) => {

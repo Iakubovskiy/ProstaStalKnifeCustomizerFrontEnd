@@ -4,7 +4,6 @@ import "../../styles/globals.css";
 import Card from "@/app/components/Shop/Card/Card";
 import { ProductType, ProductSpecs } from "@/app/components/Shop/Card/Card";
 import FilterPanel from "@/app/components/Shop/Filter/FiltersPanel";
-import AdaptiveGrid from "@/app/components/Shop/Grid/AdaptiveGrid";
 import SearchBar from "@/app/components/Shop/SearchBar.tsx/SearchBar";
 import SortDropdown from "@/app/components/Shop/Sort/Sort";
 import ShopTabs from "@/app/components/Shop/Tabs/Tabs";
