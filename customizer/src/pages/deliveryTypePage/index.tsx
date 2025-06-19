@@ -101,28 +101,28 @@ const DeliveryTypeList = () => {
     setSortField(field);
   };
 
-  const handleToggleActive = async (id: string, isActive: boolean) => {
-    if (
-      !window.confirm(
-        `Ви впевнені, що хочете ${
-          isActive ? "деактивувати" : "активувати"
-        } цей елемент?`
-      )
-    )
-      return;
+  const handleToggleActive = async (id: string, currentIsActive: boolean) => {
     try {
-      // Сервіс повертає оновлений об'єкт
-      const updatedItem = isActive
+      const updatedItem = currentIsActive
         ? await deliveryService.deactivate(id)
         : await deliveryService.activate(id);
 
-      // Оновлюємо стан, замінюючи старий елемент на новий
-      setDeliveryTypes((prev) =>
-        prev.map((item) => (item.id === id ? updatedItem : item))
-      );
+      setDeliveryTypes((prev) => {
+        const newState = prev.map((item) =>
+          item.id === id ? updatedItem : item
+        );
+        return newState;
+      });
+
+      if (updatedItem.isActive === currentIsActive) {
+        await fetchDeliveryTypes();
+      }
     } catch (error) {
       console.error("Помилка при зміні статусу:", error);
       alert("Помилка при зміні статусу");
+
+      // У випадку помилки перезавантажуємо дані
+      await fetchDeliveryTypes();
     }
   };
 

@@ -25,7 +25,7 @@ class DeliveryTypeService {
 
   async getById(id: string): Promise<DeliveryType> {
     const res = await this.apiService.getById<DeliveryType>(this.resource, id);
-    console.log("Active delivery types:", res);
+    console.log("Delivery type by id:", res);
     return res;
   }
 
@@ -54,40 +54,58 @@ class DeliveryTypeService {
   }
 
   async delete(id: string): Promise<void> {
-    // API повертає 200 OK без тіла, тому тип повернення - void
     await this.apiService.delete<void>(this.resource, id);
   }
 
   async activate(id: string): Promise<DeliveryType> {
     console.log("Activating delivery type with ID:", id);
-    const formData = new FormData();
 
-    const updatedDto = await this.apiService.partialUpdate<DeliveryType>(
-      `activate/${this.resource}`,
-      id,
-      formData
-    );
-    if (!updatedDto) {
-      return await this.getById(id);
+    try {
+      const updatedDto = await this.apiService.partialUpdate<DeliveryType>(
+        `${this.resource}/activate`,
+        id,
+        {}
+      );
+
+      console.log("Activation response:", updatedDto);
+
+      // Якщо API не повертає оновлений об'єкт, отримуємо його окремо
+      if (!updatedDto) {
+        console.log("No response from activate, fetching updated item...");
+        const refreshedItem = await this.getById(id);
+        console.log("Refreshed item after activation:", refreshedItem);
+        return refreshedItem;
+      }
+
+      return updatedDto;
+    } catch (error) {
+      console.error("Error during activation:", error);
+      // У випадку помилки, спробуємо отримати актуальний стан
+      const refreshedItem = await this.getById(id);
+      return refreshedItem;
     }
-
-    return updatedDto;
   }
 
   async deactivate(id: string): Promise<DeliveryType> {
-    console.log("Deactivating delivery type with ID:", id);
-    const formData = new FormData();
+    try {
+      // Спробуємо використати PATCH запит з порожнім тілом
+      const updatedDto = await this.apiService.partialUpdate<DeliveryType>(
+        `${this.resource}/deactivate`,
+        id,
+        {} // Порожній об'єкт замість FormData
+      );
 
-    const updatedDto = await this.apiService.partialUpdate<DeliveryType>(
-      `deactivate/${this.resource}`,
-      id,
-      formData
-    );
-    if (!updatedDto) {
-      return await this.getById(id);
+      if (!updatedDto) {
+        const refreshedItem = await this.getById(id);
+        return refreshedItem;
+      }
+
+      return updatedDto;
+    } catch (error) {
+      console.error("Error during deactivation:", error);
+      const refreshedItem = await this.getById(id);
+      return refreshedItem;
     }
-
-    return updatedDto;
   }
 }
 

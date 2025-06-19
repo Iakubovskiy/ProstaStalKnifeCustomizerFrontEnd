@@ -24,11 +24,6 @@ class APIService {
           : undefined,
     });
 
-    const headersObject =
-      headers instanceof Headers
-        ? Object.fromEntries(headers.entries())
-        : headers;
-    console.log("Headers:", headersObject);
     if (!response.ok) {
       const errorText = await response.text();
       console.log(response.status);
