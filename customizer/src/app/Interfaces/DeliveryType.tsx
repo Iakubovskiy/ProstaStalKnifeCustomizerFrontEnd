@@ -1,7 +1,9 @@
 interface DeliveryType {
   id: string;
-  names: LocalizedContent;
+  names?: LocalizedContent | null;
+  name: string;
   price: number;
-  comment: LocalizedContent;
+  comment: string;
+  comments?: LocalizedContent | null;
   isActive: boolean;
 }

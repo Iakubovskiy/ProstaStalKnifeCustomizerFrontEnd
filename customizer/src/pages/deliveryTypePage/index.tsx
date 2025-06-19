@@ -3,7 +3,6 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import "../../styles/globals.css";
-
 import {
   Search,
   Plus,
@@ -61,10 +60,8 @@ const DeliveryTypeList = () => {
   const filteredAndSortedData = useMemo(() => {
     let filtered = deliveryTypes.filter((item) => {
       const matchesSearch =
-        item.names[locale].toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.comment[locale] ?? "")
-          .toLowerCase()
-          .includes(searchTerm.toLowerCase());
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (item.comment ?? "").toLowerCase().includes(searchTerm.toLowerCase());
       const matchesStatus =
         statusFilter === "all" ||
         (statusFilter === "active" && item.isActive) ||
@@ -287,16 +284,16 @@ const DeliveryTypeList = () => {
                     }`}
                   >
                     <td className="p-4 font-medium text-[#2d3748]">
-                      {item.names[locale] || "—"}
+                      {item.name || "—"}
                     </td>
                     <td className="p-4 font-semibold text-[#8b7258]">
                       {item.price === 0 ? "Безкоштовно" : `₴${item.price}`}
                     </td>
                     <td
                       className="p-4 text-[#2d3748]/70 max-w-xs truncate"
-                      title={item.comment[locale] || "—"}
+                      title={item.comment || "—"}
                     >
-                      {item.comment[locale] || "—"}
+                      {item.comment || "—"}
                     </td>
                     <td className="p-4 text-center">
                       <span

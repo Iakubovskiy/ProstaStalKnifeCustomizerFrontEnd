@@ -2,7 +2,8 @@ interface Attachment {
   id: string;
   isActive: boolean;
   image: File;
-  name: LocalizedContent;
+  name: string;
+  names: LocalizedContent;
   title: LocalizedContent;
   description: LocalizedContent;
   metaTitle: LocalizedContent;

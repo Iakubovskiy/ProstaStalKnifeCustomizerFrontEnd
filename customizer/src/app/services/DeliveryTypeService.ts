@@ -25,6 +25,7 @@ class DeliveryTypeService {
 
   async getById(id: string): Promise<DeliveryType> {
     const res = await this.apiService.getById<DeliveryType>(this.resource, id);
+    console.log("Active delivery types:", res);
     return res;
   }
 

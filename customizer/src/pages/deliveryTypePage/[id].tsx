@@ -8,9 +8,11 @@ import DeliveryTypeService from "@/app/services/DeliveryTypeService";
 import { getLocaleFromCookies } from "@/app/config";
 
 const initialDeliveryTypeData: Omit<DeliveryType, "id"> = {
+  name: "",
   names: {},
   price: 0,
-  comment: {},
+  comment: "",
+  comments: {},
   isActive: true,
 };
 
@@ -77,7 +79,7 @@ const DeliveryTypePage = () => {
   };
 
   const handleSave = async () => {
-    if (!deliveryType.names[locale]) {
+    if (!deliveryType.name) {
       alert("Назва є обов'язковим полем.");
       return;
     }
