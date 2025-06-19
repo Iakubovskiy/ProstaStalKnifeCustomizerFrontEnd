@@ -1,5 +1,5 @@
 interface Order {
-  id: number;
+  id: string;
   number: number;
   total: number;
   delivery: DeliveryType;
@@ -12,6 +12,6 @@ interface Order {
   email: string;
   comment: string;
   status: string;
-  paymentMethod: string;
+  paymentMethod: PaymentMethod;
   orderItems: OrderItem[];
 }

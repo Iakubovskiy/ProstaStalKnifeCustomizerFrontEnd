@@ -2,14 +2,14 @@ interface Attachment {
   id: string;
   isActive: boolean;
   image: File;
-  name: string;
-  title: string;
-  description: string;
-  metaTitle: string;
-  metaDescription: string;
-  type: string;
-  color: string;
+  name: LocalizedContent;
+  title: LocalizedContent;
+  description: LocalizedContent;
+  metaTitle: LocalizedContent;
+  metaDescription: LocalizedContent;
+  type: AttachmentType;
+  color: LocalizedContent;
   price: number;
-  material: string;
+  material: LocalizedContent;
   model: File;
 }

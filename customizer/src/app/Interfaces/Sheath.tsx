@@ -4,4 +4,5 @@ interface Sheath {
   model: File | null;
   type: BladeShapeType;
   price: number;
+  isActive: boolean;
 }

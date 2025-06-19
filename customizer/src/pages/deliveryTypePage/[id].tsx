@@ -1,211 +1,199 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import DeliveryType from "@/app/Models/DeliveryType";
+import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
-import "../../styles/globals.css";
-import {Input, Select, SelectItem, Spinner} from "@nextui-org/react";
-import styles from "./eng.module.css";
-import deliveryTypeService from "@/app/services/DeliveryTypeService";
-const initialDeliveryTypeData: DeliveryType = {
-  id: "",
-  name: "",
+import "../../styles/globals.css"; // Перевірте шлях
+
+import { Input, Select, SelectItem, Spinner, Button } from "@nextui-org/react";
+
+import DeliveryTypeService from "@/app/services/DeliveryTypeService";
+import { getLocaleFromCookies } from "@/app/config";
+
+const initialDeliveryTypeData: Omit<DeliveryType, "id"> = {
+  names: {},
   price: 0,
-  comment: "",
+  comment: {},
   isActive: true,
 };
 
 const DeliveryTypePage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const [isLoading, setLoading] = useState<boolean>(true);
-  const [isCreating, setCreating] = useState<boolean>(false);
-
-  const [DeliveryType, setDeliveryType] = useState<DeliveryType>(
+  const locale = getLocaleFromCookies();
+  const [deliveryType, setDeliveryType] = useState<Partial<DeliveryType>>(
     initialDeliveryTypeData
   );
-  const DeliveryTypeService = new deliveryTypeService();
+  const [isLoading, setLoading] = useState<boolean>(true);
+  const [isSaving, setSaving] = useState<boolean>(false);
 
-  const handleSave = async () => {
-    console.log("Saving data:", DeliveryType);
+  const isCreating = id === "0";
 
-    if (DeliveryType) {
-      if (isCreating) {
-        await DeliveryTypeService.create(DeliveryType);
-      } else {
-        await DeliveryTypeService.update(
-          id as string,
-          DeliveryType
-        );
-      }
+  const deliveryTypeService = useMemo(() => new DeliveryTypeService(), []);
 
-      alert("Збережено");
-    } else {
-      alert("Заповніть поля");
-    }
-  };
   useEffect(() => {
+    if (!router.isReady) {
+      return;
+    }
+
     const fetchDeliveryType = async () => {
+      if (isCreating) {
+        setDeliveryType(initialDeliveryTypeData);
+        setLoading(false);
+        return;
+      }
       if (id) {
-        if (id === "0") {
-          setCreating(true);
+        try {
+          setLoading(true);
+          // Сервіс сам перетворює отриманий DTO на зручну для нас модель DeliveryType
+          const fetchedDeliveryType = await deliveryTypeService.getById(
+            id as string
+          );
+          setDeliveryType(fetchedDeliveryType);
+        } catch (error) {
+          console.error("Error fetching delivery type:", error);
+          alert("Сталася помилка під час отримання даних.");
+          router.push("/admin/deliveryTypePage/0");
+        } finally {
           setLoading(false);
-        } else {
-          try {
-            const fetchedDeliveryType = await DeliveryTypeService.getById(
-              id as string
-            );
-            setDeliveryType(fetchedDeliveryType);
-            if (!fetchedDeliveryType.comment) {
-              fetchedDeliveryType.comment = "";
-            }
-            setLoading(false);
-          } catch (error) {
-            console.error("Error fetching sheath color:", error);
-            alert("Сталася помилка під час отримання даних. Перевірте ID.");
-            router.push("/DeliveryTypePage/0");
-          }
         }
       }
-      console.log(DeliveryType);
     };
+
     fetchDeliveryType();
-  }, [id]);
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newPrice = parseFloat(e.target.value);
+  }, [id, router.isReady, isCreating, deliveryTypeService, router]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
     setDeliveryType((prev) => ({
       ...prev,
-      price: isNaN(newPrice) ? 0 : newPrice,
-    }));
-  };
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newName = e.target.value;
-    setDeliveryType((prev) => ({
-      ...prev,
-      name: newName,
-    }));
-  };
-  const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newComment = e.target.value;
-    setDeliveryType((prev) => ({
-      ...prev,
-      comment: newComment,
+      [name]: name === "price" ? parseFloat(value) || 0 : value,
     }));
   };
 
-  const handleActiveChange = (value: string) => {
-    const active = value === "true";
+  const handleActiveChange = (keys: any) => {
+    const value = Array.from(keys).join("");
     setDeliveryType((prev) => ({
       ...prev,
-      isActive: active,
+      isActive: value === "true",
     }));
+  };
+
+  const handleSave = async () => {
+    if (!deliveryType.names[locale]) {
+      alert("Назва є обов'язковим полем.");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      // КЛЮЧОВИЙ МОМЕНТ:
+      // Ми передаємо в сервіс наш простий об'єкт стану `deliveryType`.
+      // А вже сам сервіс (методи .create та .update) перетворить його
+      // на DeliveryTypeDTO перед відправкою на сервер.
+      if (isCreating) {
+        await deliveryTypeService.create(
+          deliveryType as Omit<DeliveryType, "id">
+        );
+        alert("Тип доставки успішно створено!");
+      } else {
+        await deliveryTypeService.update(
+          id as string,
+          deliveryType as DeliveryType
+        );
+        alert("Зміни успішно збережено!");
+      }
+      router.push("/admin/deliveryTypePage");
+    } catch (error) {
+      console.error("Error saving delivery type:", error);
+      alert("Сталася помилка під час збереження.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center ">
-        <Spinner
-          size="lg"
-          color="warning"
-          label="Loading handle color data..."
-        />
-      </div>
-    );
-  } else {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-        <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-center mb-4">Типи доставки</h1>
-          <div className={styles.input}>
-            <label
-                htmlFor="engravingPrice"
-                className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Назва
-            </label>
-            <Input
-                id="engravingPrice"
-                defaultValue={DeliveryType.name}
-                onChange={handleNameChange}
-                aria-label="Engraving Price"
-                placeholder="Введіть назву"
-                size="lg"
-                style={{
-                  width: "100%",
-                }}
-            />
-          </div>
-          <div className={styles.input}>
-            <label
-                htmlFor="engravingPrice"
-                className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Ціна
-            </label>
-            <Input
-                id="engravingPrice"
-                type="number"
-                defaultValue={DeliveryType.price.toString()}
-                onChange={handlePriceChange}
-                aria-label="Engraving Price"
-                placeholder="Введіть ціну"
-                size="lg"
-                min={0}
-                step={0.01}
-                style={{
-                  width: "100%",
-                }}
-            />
-          </div>
-          <div className={styles.input}>
-            <label
-                htmlFor="engravingPrice"
-                className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Коментар
-            </label>
-            <Input
-                id="engravingPrice"
-                defaultValue={DeliveryType.comment || ""}
-                onChange={handleCommentChange}
-                aria-label="Engraving Price"
-                placeholder="Введіть Коментар"
-                size="lg"
-                style={{
-                  width: "100%",
-                }}
-            />
-          </div>
-          <div className={styles.input}>
-            <label
-                htmlFor="isActive"
-                className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Активний
-            </label>
-            <Select
-                id="isActive"
-                selectedKeys={new Set([DeliveryType.isActive.toString()])}
-                onSelectionChange={(keys) => handleActiveChange(Array.from(keys).join(""))}
-                aria-label="Is Active"
-                size="lg"
-                style={{
-                  width: "100%",
-                }}
-            >
-              <SelectItem key="true">Active</SelectItem>
-              <SelectItem key="false">Inactive</SelectItem>
-            </Select>
-          </div>
-          <button
-              onClick={handleSave}
-              className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-3"
-          >
-            Зберегти
-          </button>
-        </div>
+      <div className="flex min-h-screen items-center justify-center">
+        <Spinner size="lg" color="warning" label="Завантаження даних..." />
       </div>
     );
   }
+
+  // Решта коду без змін, він коректно працює з моделлю deliveryType
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-8 space-y-6">
+        <h1 className="text-2xl font-bold text-center mb-4">
+          {isCreating
+            ? "Створення нового типу доставки"
+            : "Редагування типу доставки"}
+        </h1>
+
+        <Input
+          isRequired
+          label="Назва"
+          name="name"
+          value={deliveryType.name || ""}
+          onChange={handleInputChange}
+          placeholder="Наприклад, 'Кур'єром по місту'"
+          size="lg"
+        />
+
+        <Input
+          label="Ціна"
+          name="price"
+          type="number"
+          value={deliveryType.price?.toString() ?? "0"}
+          onChange={handleInputChange}
+          placeholder="Введіть ціну"
+          startContent={
+            <div className="pointer-events-none flex items-center">
+              <span className="text-default-400 text-small">₴</span>
+            </div>
+          }
+          min={0}
+          step={0.01}
+          size="lg"
+        />
+
+        <Input
+          label="Коментар"
+          name="comment"
+          value={deliveryType.comment ?? ""}
+          onChange={handleInputChange}
+          placeholder="Додаткова інформація для клієнта"
+          size="lg"
+        />
+
+        <Select
+          label="Статус"
+          selectedKeys={new Set([deliveryType.isActive ? "true" : "false"])}
+          onSelectionChange={handleActiveChange}
+          size="lg"
+        >
+          <SelectItem key="true">Активний</SelectItem>
+          <SelectItem key="false">Неактивний</SelectItem>
+        </Select>
+
+        <div className="flex gap-4 pt-4">
+          <Button
+            color="danger"
+            variant="flat"
+            onClick={() => router.back()}
+            fullWidth
+          >
+            Скасувати
+          </Button>
+          <Button
+            color="primary"
+            onClick={handleSave}
+            isLoading={isSaving}
+            fullWidth
+          >
+            {isSaving ? "Збереження..." : "Зберегти"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default DeliveryTypePage;

@@ -1,93 +1,78 @@
+import { DeliveryTypeDTO } from "../DTOs/DeliveryTypeDTO";
 import APIService from "./ApiService";
-import DeliveryType from "../Models/DeliveryType";
 
 class DeliveryTypeService {
   private apiService: APIService;
-  private resource: string;
+  private resource: string = "delivery-types";
 
   constructor(apiService: APIService = new APIService()) {
     this.apiService = apiService;
-    this.resource = "DeliveryType";
   }
 
   async getAll(): Promise<DeliveryType[]> {
-    const response = await this.apiService.getAll<DeliveryType>(this.resource);
-    return response;
+    const res = await this.apiService.getAll<DeliveryType>(this.resource);
+    console.log("Delivery types:", res);
+    return res;
   }
 
   async getAllActive(): Promise<DeliveryType[]> {
-    const response = await this.apiService.getAll<DeliveryType>(
-        `${this.resource}/active`
+    const res = await this.apiService.getAll<DeliveryType>(
+      `${this.resource}/active`
     );
-    return response;
+    console.log("Active delivery types:", res);
+    return res;
   }
 
   async getById(id: string): Promise<DeliveryType> {
-    const response = await this.apiService.getById<DeliveryType>(
-      this.resource,
-      id
-    );
-    return response;
+    const res = await this.apiService.getById<DeliveryType>(this.resource, id);
+    return res;
   }
 
-  async create(deliveryType: DeliveryType): Promise<DeliveryType> {
-    const formData = new FormData();
-
-    formData.append("Id", deliveryType.name);
-    formData.append("Name", deliveryType.name);
-    formData.append("Price", deliveryType.price.toString());
-    formData.append("Comment", deliveryType.comment ?? "");
-    formData.append("IsActive", deliveryType.isActive.toString());
-
-    const response = await this.apiService.create<DeliveryType>(
+  async create(
+    deliveryTypeData: Omit<DeliveryType, "id">
+  ): Promise<DeliveryType> {
+    const createdDto = await this.apiService.create<DeliveryType>(
       this.resource,
-      formData
+      deliveryTypeData
     );
-    return response;
+    return createdDto;
   }
 
-  async update(id: string, deliveryType: DeliveryType): Promise<DeliveryType> {
-    const formData = new FormData();
-
-    formData.append("Id", deliveryType.name);
-    formData.append("Name", deliveryType.name);
-    formData.append("Price", deliveryType.price.toString());
-    formData.append("Comment", deliveryType.comment ?? "");
-    formData.append("IsActive", deliveryType.isActive.toString());
-    const response = await this.apiService.update<DeliveryType>(
+  async update(
+    id: string,
+    deliveryTypeData: DeliveryType
+  ): Promise<DeliveryType> {
+    const updatedDto = await this.apiService.update<DeliveryType>(
       this.resource,
       id,
-      formData
+      deliveryTypeData
     );
-    return response;
+    return updatedDto;
   }
 
-  async delete(id: string): Promise<boolean> {
-    const response = await this.apiService.delete<{ isDeleted: boolean }>(
-      this.resource,
-      id
-    );
-    return response.isDeleted;
+  async delete(id: string): Promise<void> {
+    // API повертає 200 OK без тіла, тому тип повернення - void
+    await this.apiService.delete<void>(this.resource, id);
   }
 
   async activate(id: string): Promise<DeliveryType> {
-    const formData = new FormData();
-    const response = await this.apiService.partialUpdate<DeliveryType>(
-        `${this.resource}/activate`,
-        id,
-        formData
+    // PATCH запит без тіла, як зазначено в Swagger
+    const updatedDto = await this.apiService.partialUpdate<DeliveryType>(
+      `${this.resource}/activate`,
+      id,
+      {}
     );
-    return response;
+    return updatedDto;
   }
 
   async deactivate(id: string): Promise<DeliveryType> {
-    const formData = new FormData();
-    const response = await this.apiService.partialUpdate<DeliveryType>(
-        `${this.resource}/deactivate`,
-        id,
-        formData
+    // PATCH запит без тіла
+    const updatedDto = await this.apiService.partialUpdate<DeliveryType>(
+      `${this.resource}/deactivate`,
+      id,
+      {} // Порожнє тіло
     );
-    return response;
+    return updatedDto;
   }
 }
 
