@@ -4,12 +4,12 @@ import {AppFile} from "@/app/Interfaces/File";
 
 export interface BladeShape {
   id: string;
-  type: BladeShapeType;
+  shapeType: BladeShapeType;
   name: string;
   names?: LocalizedContent;
   price: number;
-  characteristics: BladeCharacteristics;
-  bladeShapePhoto: AppFile;
+  bladeCharacteristicsModel: BladeCharacteristics;
+  bladeShapeImage: AppFile;
   bladeShapeModel: AppFile;
   isActive: boolean;
   sheath: Sheath | null;

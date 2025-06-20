@@ -1,5 +1,3 @@
-// /pages/handle/[id].tsx
-
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import "../../styles/globals.css";
@@ -15,7 +13,7 @@ import {
 import HandleService from "@/app/services/HandleService";
 import FileUpload from "@/app/components/FileUpload/FileUpload";
 import LocalizedContentEditor from "@/app/components/LocalizedContentEditor/LocalizedContentEditor";
-import ColorPicker from "@/app/components/ColorPicker/ColorPicker"; // <-- 1. Імпортуємо новий компонент
+import ColorPicker from "@/app/components/ColorPicker/ColorPicker";
 
 import TextureService from "@/app/services/TextureService";
 import BladeShapeTypeService from "@/app/services/BladeShapeTypeService";

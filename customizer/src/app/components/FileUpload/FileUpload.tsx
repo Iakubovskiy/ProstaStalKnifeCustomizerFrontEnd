@@ -4,6 +4,7 @@ import React, { useRef, useState } from "react";
 import { Button, Spinner, Image } from "@nextui-org/react";
 import { Upload, X, File as FileIcon } from "lucide-react";
 import FileService from "@/app/services/FileService";
+import {AppFile} from "@/app/Interfaces/File";
 
 interface FileUploadProps {
   label: string;
@@ -88,7 +89,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         ref={inputRef}
         onChange={handleFileSelect}
         className="hidden"
-        accept="image/*,.obj,.fbx"
+        accept="image/*,.glb,.obj,.fbx"
       />
       <Button onPress={triggerFileSelect} startContent={<Upload size={18} />}>
         {currentFile ? "Замінити файл" : "Вибрати файл"}
