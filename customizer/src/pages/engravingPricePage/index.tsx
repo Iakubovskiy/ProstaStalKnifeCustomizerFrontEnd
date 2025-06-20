@@ -13,19 +13,18 @@ const initialEngravingPriceData: EngravingPrice = {
 
 const EngravingPricePage = () => {
   const router = useRouter();
-  const { id } = router.query;
-  const guid = "019760db-677b-76cc-b918-8ee3fa86fa48";
+  const guid = "01978afc-4a56-7ee5-be83-a7cf6950ac94";
   const [isLoading, setLoading] = useState<boolean>(true);
 
   const [EngravingPrice, setEngravingPrice] = useState<EngravingPrice>(
     initialEngravingPriceData
   );
-  const Engravingservice = new EngravingPriceService();
+  const EngravingService = new EngravingPriceService();
   const handleSave = async () => {
     console.log("Saving data:", EngravingPrice);
 
     if (EngravingPrice) {
-      await Engravingservice.update(id as string, EngravingPrice);
+      await EngravingService.update(guid as string, EngravingPrice);
 
       alert("Збережено");
     } else {
@@ -44,9 +43,7 @@ const EngravingPricePage = () => {
     const fetchEngravingPrice = async () => {
       if (guid) {
         try {
-          const fetchedEngravingPrice = await Engravingservice.getById(
-            guid as string
-          );
+          const fetchedEngravingPrice = await EngravingService.get();
           setEngravingPrice(fetchedEngravingPrice);
           setLoading(false);
         } catch (error) {

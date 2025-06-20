@@ -1,4 +1,4 @@
-interface EngravingTag {
+export interface EngravingTag {
   id: string;
   name: string;
   names?: LocalizedContent | null;

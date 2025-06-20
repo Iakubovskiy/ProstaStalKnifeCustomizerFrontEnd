@@ -1,94 +1,67 @@
 import APIService from "./ApiService";
-import Engraving from "../Models/Engraving";
+import type { Engraving } from "@/app/Interfaces/Engraving";
+import type { EngravingDTO } from "@/app/DTOs/EngravingDTO";
 
 class EngravingService {
   private apiService: APIService;
-  private resource: string;
+  private resource: string = "engravings";
 
   constructor(apiService: APIService = new APIService()) {
     this.apiService = apiService;
-    this.resource = "Engraving";
   }
 
   async getAll(): Promise<Engraving[]> {
-    const response = await this.apiService.getAll<Engraving>(this.resource);
-    return response;
+    const res = await this.apiService.getAll<Engraving>(this.resource);
+    return res;
+  }
+
+  async getAllActive(): Promise<Engraving[]> {
+    const res = await this.apiService.getAll<Engraving>(
+        `${this.resource}/active`
+    );
+    return res;
   }
 
   async getById(id: string): Promise<Engraving> {
-    const response = await this.apiService.getById<Engraving>(
-      this.resource,
-      id
-    );
-    return response;
+    const res = await this.apiService.getById<Engraving>(this.resource, id);
+    return res;
   }
 
-  async create(engraving: Engraving, engPic: File | null): Promise<Engraving> {
-    const formData = new FormData();
-
-    formData.append("Name", engraving.name ?? "");
-    formData.append("Side", engraving.side.toString());
-    formData.append("Text", engraving.text ?? "");
-    formData.append("Font", engraving.font?.toString() ?? "");
-    formData.append("pictureUrl", engraving.pictureUrl ?? "");
-    formData.append("rotationX", engraving.rotationX.toString());
-    formData.append("rotationY", engraving.rotationY.toString());
-    formData.append("rotationZ", engraving.rotationZ.toString());
-    formData.append("locationX", engraving.locationX.toString());
-    formData.append("locationY", engraving.locationY.toString());
-    formData.append("locationZ", engraving.locationZ.toString());
-    formData.append("scaleX", engraving.scaleX.toString());
-    formData.append("scaleY", engraving.scaleY.toString());
-    formData.append("scaleZ", engraving.scaleZ.toString());
-    if (engPic) {
-      formData.append("engravingPicrutre", engPic);
-    }
-    const response = await this.apiService.create<Engraving>(
-      this.resource,
-      formData
+  async create(data: EngravingDTO): Promise<Engraving> {
+    const createdDto = await this.apiService.create<Engraving>(
+        this.resource,
+        data
     );
-    return response;
+    return createdDto;
   }
 
-  // Оновити Engraving
-  async update(
-    id: string,
-    engraving: Engraving,
-    engPic: File | null
-  ): Promise<Engraving> {
-    const formData = new FormData();
-    formData.append("Name", engraving.name ?? "");
-    formData.append("Side", engraving.side.toString());
-    formData.append("Text", engraving.text ?? "");
-    formData.append("Font", engraving.font?.toString() ?? "");
-    formData.append("pictureUrl", engraving.pictureUrl ?? "");
-    formData.append("rotationX", engraving.rotationX.toString());
-    formData.append("rotationY", engraving.rotationY.toString());
-    formData.append("rotationZ", engraving.rotationZ.toString());
-    formData.append("locationX", engraving.locationX.toString());
-    formData.append("locationY", engraving.locationY.toString());
-    formData.append("locationZ", engraving.locationZ.toString());
-    formData.append("scaleX", engraving.scaleX.toString());
-    formData.append("scaleY", engraving.scaleY.toString());
-    formData.append("scaleZ", engraving.scaleZ.toString());
-    if (engPic) {
-      formData.append("engravingPicrutre", engPic);
-    }
-
-    const response = await this.apiService.update<Engraving>(
-      this.resource,
-      id,
-      formData
+  async update(id: string, data: EngravingDTO): Promise<Engraving> {
+    const updatedDto = await this.apiService.update<Engraving>(
+        this.resource,
+        id,
+        data
     );
-    return response;
+    return updatedDto;
   }
 
-  async delete(id: string): Promise<boolean> {
-    const response = await this.apiService.delete<{ isDeleted: boolean }>(
-      this.resource,
-      id
+  async delete(id: string): Promise<void> {
+    await this.apiService.delete<void>(this.resource, id);
+  }
+
+  async activate(id: string): Promise<void> {
+    await this.apiService.partialUpdate<void>(
+        `${this.resource}/activate`,
+        id,
+        {}
     );
-    return response.isDeleted;
+  }
+
+  async deactivate(id: string): Promise<void> {
+    await this.apiService.partialUpdate<void>(
+        `${this.resource}/deactivate`,
+        id,
+        {}
+    );
   }
 }
 

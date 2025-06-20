@@ -1,4 +1,4 @@
-interface Attachment {
+export interface Attachment {
   id: string;
   isActive: boolean;
   image: File;

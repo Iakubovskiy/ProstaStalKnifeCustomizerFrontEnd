@@ -1,4 +1,4 @@
-interface BladeCharacteristics {
+export interface BladeCharacteristics {
   totalLength: number;
   bladeLength: number;
   bladeWidth: number;

@@ -37,7 +37,6 @@ const DeliveryTypeList = () => {
   const itemsPerPage = 5;
 
   const router = useRouter();
-  // Мемоізація сервісу, щоб уникнути створення нового екземпляра на кожен рендер
   const deliveryService = useMemo(() => new DeliveryTypeService(), []);
 
   const fetchDeliveryTypes = useCallback(async () => {

@@ -1,4 +1,4 @@
-interface BladeCoatingColor {
+export interface BladeCoatingColor {
   id: string;
   price: number;
   color: string;

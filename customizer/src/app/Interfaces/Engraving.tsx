@@ -1,4 +1,4 @@
-interface Engraving {
+export interface Engraving {
   id: string;
   name: string;
   names?: LocalizedContent | null;

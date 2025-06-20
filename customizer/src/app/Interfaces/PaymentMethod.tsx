@@ -1,4 +1,4 @@
-interface PaymentMethod {
+export interface PaymentMethod {
   id: string;
   name: string;
   names?: LocalizedContent | null;

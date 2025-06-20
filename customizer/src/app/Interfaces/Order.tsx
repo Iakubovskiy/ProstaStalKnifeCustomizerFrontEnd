@@ -1,5 +1,7 @@
 import { ClientData } from "./../DTOs/ClientData";
-interface Order {
+import {DeliveryType} from "@/app/Interfaces/DeliveryType";
+
+export interface Order {
   id: string;
   number: number;
   total: number;

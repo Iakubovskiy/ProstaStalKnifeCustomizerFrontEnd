@@ -1,5 +1,4 @@
 export interface ReviewDTO {
-  id: string;
-  comment?: string | null;
+  comment: string;
   rating: number;
 }

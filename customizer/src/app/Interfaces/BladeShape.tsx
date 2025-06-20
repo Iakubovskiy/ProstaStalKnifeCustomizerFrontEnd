@@ -1,4 +1,7 @@
-interface BladeShape {
+import {BladeCharacteristics} from "@/app/Interfaces/BladeCharacteristics";
+import {Sheath} from "@/app/Interfaces/Sheath";
+
+export interface BladeShape {
   id: string;
   type: BladeShapeType;
   name: string;
