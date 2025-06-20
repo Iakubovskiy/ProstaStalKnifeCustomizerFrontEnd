@@ -1,5 +1,3 @@
-// /services/BladeShapeTypeService.ts
-
 import APIService from "./ApiService";
 
 class BladeShapeTypeService {

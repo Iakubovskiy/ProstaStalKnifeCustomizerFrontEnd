@@ -1,4 +1,4 @@
-interface Handle {
+export interface Handle {
   id: string;
   color: string;
   colors?: LocalizedContent | null;

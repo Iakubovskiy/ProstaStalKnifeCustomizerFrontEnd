@@ -1,4 +1,4 @@
-interface SheathColorPriceByType {
+export interface SheathColorPriceByType {
   BladeshapeTypeid: string;
   price: number;
 }

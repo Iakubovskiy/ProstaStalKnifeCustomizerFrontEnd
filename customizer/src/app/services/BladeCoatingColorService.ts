@@ -1,129 +1,70 @@
 import APIService from "./ApiService";
-import BladeCoatingColor from "../Models/BladeCoatingColor";
+import type { BladeCoatingColor } from "@/app/Interfaces/BladeCoatingColor";
+import type { BladeCoatingDTO } from "@/app/DTOs/BladeCoatingDTO";
 
 class BladeCoatingColorService {
   private apiService: APIService;
-  private resource: string;
+  private resource: string = "blade-coating-colors";
 
   constructor(apiService: APIService = new APIService()) {
     this.apiService = apiService;
-    this.resource = "BladeCoatingColor";
   }
 
   async getAll(): Promise<BladeCoatingColor[]> {
-    const response = await this.apiService.getAll<BladeCoatingColor>(
-      this.resource
-    );
-    return response;
+    const res = await this.apiService.getAll<BladeCoatingColor>(this.resource);
+    return res;
   }
 
   async getAllActive(): Promise<BladeCoatingColor[]> {
-    const response = await this.apiService.getAll<BladeCoatingColor>(
+    const res = await this.apiService.getAll<BladeCoatingColor>(
         `${this.resource}/active`
     );
-    return response;
+    return res;
   }
 
   async getById(id: string): Promise<BladeCoatingColor> {
-    const response = await this.apiService.getById<BladeCoatingColor>(
-      this.resource,
-      id
+    const res = await this.apiService.getById<BladeCoatingColor>(
+        this.resource,
+        id
     );
-    return response;
+    return res;
   }
 
-  async create(
-    bladeCoatingColor: BladeCoatingColor,
-    colorMap: File | null,
-    normalMap: File | null,
-    roughnessMap: File | null
-  ): Promise<BladeCoatingColor> {
-    const formData = new FormData();
-    formData.append("Type", bladeCoatingColor.type);
-    formData.append("Color", bladeCoatingColor.color);
-    formData.append("ColorCode", bladeCoatingColor.colorCode);
-    formData.append("EngravingColorCode", bladeCoatingColor.engravingColorCode);
-    formData.append("Price", bladeCoatingColor.price.toString());
-    formData.append("IsActive", bladeCoatingColor.isActive.toString());
-    formData.append("ColorMapUrl", "1");
-    formData.append("NormalMapUrl", "1");
-    formData.append("RoughnessMapUrl", "1");
-    if(colorMap)
-      formData.append("colorMap", colorMap);
-    if (normalMap)
-      formData.append("normalMap", normalMap);
-    if(roughnessMap)
-      formData.append("roughnessMap", roughnessMap);
-
-    const response = await this.apiService.create<BladeCoatingColor>(
-      this.resource,
-      formData
+  async create(data: BladeCoatingDTO): Promise<BladeCoatingColor> {
+    const createdDto = await this.apiService.create<BladeCoatingColor>(
+        this.resource,
+        data
     );
-    return response;
+    return createdDto;
   }
 
-  async update(
-    id: string,
-    bladeCoatingColor: BladeCoatingColor,
-    colorMap: File | null,
-    normalMap: File | null,
-    roughnessMap: File | null
-  ): Promise<BladeCoatingColor> {
-    const formData = new FormData();
-
-    formData.append("Color", bladeCoatingColor.color);
-    formData.append("ColorCode", bladeCoatingColor.colorCode);
-    formData.append("EngravingColorCode", bladeCoatingColor.engravingColorCode);
-    formData.append("Type", bladeCoatingColor.type);
-    formData.append("Color", bladeCoatingColor.color);
-    formData.append("ColorCode", bladeCoatingColor.colorCode);
-    formData.append("EngravingColorCode", bladeCoatingColor.engravingColorCode);
-    formData.append("Price", bladeCoatingColor.price.toString());
-    formData.append("IsActive", bladeCoatingColor.isActive.toString());
-    formData.append("ColorMapUrl", bladeCoatingColor.colorMapUrl || '1');
-    formData.append("NormalMapUrl", bladeCoatingColor.normalMapUrl || "1");
-    formData.append("RoughnessMapUrl", bladeCoatingColor.roughnessMapUrl || "1");
-    if(colorMap)
-      formData.append("colorMap", colorMap);
-    if (normalMap)
-      formData.append("normalMap", normalMap);
-    if(roughnessMap)
-      formData.append("roughnesMap", roughnessMap);
-
-    const response = await this.apiService.update<BladeCoatingColor>(
-      this.resource,
-      id,
-      formData
+  async update(id: string, data: BladeCoatingDTO): Promise<BladeCoatingColor> {
+    const updatedDto = await this.apiService.update<BladeCoatingColor>(
+        this.resource,
+        id,
+        data
     );
-    return response;
+    return updatedDto;
   }
 
-  async delete(id: string): Promise<boolean> {
-    const response = await this.apiService.delete<{ isDeleted: boolean }>(
-      this.resource,
-      id
-    );
-    return response.isDeleted;
+  async delete(id: string): Promise<void> {
+    await this.apiService.delete<void>(this.resource, id);
   }
 
-  async activate(id: string): Promise<BladeCoatingColor> {
-    const formData = new FormData();
-    const response = await this.apiService.partialUpdate<BladeCoatingColor>(
+  async activate(id: string): Promise<void> {
+    await this.apiService.partialUpdate<void>(
         `${this.resource}/activate`,
         id,
-        formData
+        {}
     );
-    return response;
   }
 
-  async deactivate(id: string): Promise<BladeCoatingColor> {
-    const formData = new FormData();
-    const response = await this.apiService.partialUpdate<BladeCoatingColor>(
+  async deactivate(id: string): Promise<void> {
+    await this.apiService.partialUpdate<void>(
         `${this.resource}/deactivate`,
         id,
-        formData
+        {}
     );
-    return response;
   }
 }
 

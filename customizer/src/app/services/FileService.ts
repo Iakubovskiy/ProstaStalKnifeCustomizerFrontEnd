@@ -1,6 +1,6 @@
-// /services/FileService.ts
-
 import APIService from "./ApiService";
+import type { AppFile } from "@/app/Interfaces/File";
+
 class FileService {
   private apiService: APIService;
   private resource: string = "files";
@@ -16,6 +16,11 @@ class FileService {
 
     return this.apiService.create<AppFile>(this.resource, formData);
   }
+
+    async getById(id: string): Promise<AppFile> {
+        const res = await this.apiService.getById<AppFile>(this.resource, id);
+        return res;
+    }
 }
 
 export default FileService;

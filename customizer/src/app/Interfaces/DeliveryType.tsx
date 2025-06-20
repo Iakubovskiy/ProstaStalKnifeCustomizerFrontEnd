@@ -1,4 +1,4 @@
-interface DeliveryType {
+export interface DeliveryType {
   id: string;
   names?: LocalizedContent | null;
   name: string;

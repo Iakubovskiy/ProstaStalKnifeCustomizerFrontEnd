@@ -49,7 +49,7 @@ const DashboardPage = () => {
     },
     {
       title: "Вартість гравіювання",
-      href: "/engravingPricePage/1",
+      href: "/engravingPricePage/",
       icon: <DollarSign className="w-6 h-6" />,
       color: "accent",
       description: "Управління цінами",

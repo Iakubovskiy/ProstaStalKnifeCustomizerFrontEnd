@@ -1,4 +1,10 @@
-interface CompletedSheath {
+import {Sheath} from "@/app/Interfaces/Sheath";
+import SheathColor from "@/app/Models/SheathColor";
+import Engraving from "@/app/Models/Engraving";
+import {DataType} from "csstype";
+import Attachment = DataType.Attachment;
+
+export interface CompletedSheath {
   id: string;
   isActive: boolean;
   image: AppFile;

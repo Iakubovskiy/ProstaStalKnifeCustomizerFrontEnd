@@ -7,12 +7,19 @@ class EngravingPriceService {
 
   constructor(apiService: APIService = new APIService()) {
     this.apiService = apiService;
-    this.resource = "EngravingPrice";
+    this.resource = "engraving-prices";
   }
 
   async getAll(): Promise<EngravingPrice[]> {
     const response = await this.apiService.getAll<EngravingPrice>(
       this.resource
+    );
+    return response;
+  }
+
+  async get(): Promise<EngravingPrice> {
+    const response = await this.apiService.get<EngravingPrice>(
+        this.resource
     );
     return response;
   }
@@ -38,15 +45,13 @@ class EngravingPriceService {
 
   async update(
     id: string,
-    engravingPrice: EngravingPrice
+    engravingPrice: Omit<EngravingPrice, "id">
   ): Promise<EngravingPrice> {
-    const formData = new FormData();
-    formData.append("Price", engravingPrice.price.toString());
 
     const response = await this.apiService.update<EngravingPrice>(
       this.resource,
       id,
-      formData
+      engravingPrice
     );
     return response;
   }
