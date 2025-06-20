@@ -1,4 +1,4 @@
-interface File {
+interface AppFile {
   id: string;
   fileUrl: string;
 }

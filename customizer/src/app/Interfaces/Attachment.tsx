@@ -1,7 +1,7 @@
 interface Attachment {
   id: string;
   isActive: boolean;
-  image: File;
+  image: AppFile;
   name: string;
   names?: LocalizedContent;
   title: string;
@@ -18,5 +18,5 @@ interface Attachment {
   price: number;
   material: string;
   materials?: LocalizedContent;
-  model: File;
+  model: AppFile;
 }

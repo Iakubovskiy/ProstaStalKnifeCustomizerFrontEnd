@@ -5,7 +5,7 @@ interface Engraving {
   side: number;
   text: string | null;
   font: string | null;
-  picture: File | null;
+  picture: AppFile | null;
   position: EngravingPosition;
   rotation: EngravingRotation;
   scale: EngravingScale;

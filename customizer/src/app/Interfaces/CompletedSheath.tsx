@@ -1,7 +1,7 @@
 interface CompletedSheath {
   id: string;
   isActive: boolean;
-  image: File;
+  image: AppFile;
   name: string;
   names?: LocalizedContent;
   title: string;
