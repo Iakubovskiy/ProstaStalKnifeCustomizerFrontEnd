@@ -90,6 +90,13 @@ const DashboardPage = () => {
       description: "Управління типами додатків",
     },
     {
+      title: "Теги продуктів",
+      href: "/product-tag",
+      icon: <Palette className="w-6 h-6" />,
+      color: "secondary",
+      description: "Управління тегами продуктів",
+    },
+    {
       title: "Статуси замовлення",
       href: "/orderStatusesPage",
       icon: <CheckCircle className="w-6 h-6" />,
