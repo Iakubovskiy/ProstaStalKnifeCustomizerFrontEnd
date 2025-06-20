@@ -1,33 +1,55 @@
 // /services/AttachmentService.ts
 
 import APIService from "./ApiService";
-import { Attachment } from "@/app/Interfaces/Attachment";
 import { AttachmentDTO } from "@/app/DTOs/AttachmentDTO";
+import ProductTagService from "./ProductTagService";
+import { Attachment } from "../Interfaces/Attachment";
 
 class AttachmentService {
   private apiService: APIService;
+  private productTagService: ProductTagService; // Додаємо екземпляр
   private resource: string = "attachments";
 
   constructor(apiService: APIService = new APIService()) {
     this.apiService = apiService;
+    this.productTagService = new ProductTagService(apiService); // Ініціалізуємо
   }
 
-  // Методи GET повертають зручну для UI модель Attachment
+  // --- 2. Приватний метод для зворотного мапінгу (API -> UI) ---
+  private async mapApiToModel(dto: any): Promise<Attachment> {
+    // API повертає `tagsIds`, а нам потрібні повні об'єкти `ProductTag`.
+    // Ми отримуємо всі доступні теги і фільтруємо їх за ID.
+    const allTags = await this.productTagService.getAll();
+    const selectedTags = allTags.filter((tag) => dto.tagsIds?.includes(tag.id));
+
+    // Повертаємо об'єкт, що відповідає інтерфейсу Attachment
+    return {
+      ...dto,
+      tags: selectedTags,
+    };
+  }
+
+  // --- 3. Оновлюємо методи GET, щоб вони використовували мапінг ---
   async getAll(): Promise<Attachment[]> {
-    return this.apiService.getAll<Attachment>(this.resource);
+    const dtoList = await this.apiService.getAll<any>(this.resource);
+    // Використовуємо Promise.all, щоб виконати всі асинхронні мапінги паралельно
+    return Promise.all(dtoList.map((dto) => this.mapApiToModel(dto)));
   }
 
   async getAllActive(): Promise<Attachment[]> {
-    return this.apiService.getAll<Attachment>(`${this.resource}/active`);
+    const dtoList = await this.apiService.getAll<any>(
+      `${this.resource}/active`
+    );
+    return Promise.all(dtoList.map((dto) => this.mapApiToModel(dto)));
   }
 
   async getById(id: string): Promise<Attachment> {
-    return this.apiService.getById<Attachment>(this.resource, id);
+    const dto = await this.apiService.getById<any>(this.resource, id);
+    return this.mapApiToModel(dto);
   }
 
-  // Приватний метод для перетворення моделі в DTO
+  // --- 4. Метод mapModelToDto залишається таким, як ми його зробили раніше ---
   private mapModelToDto(data: Partial<Attachment>): AttachmentDTO {
-    // Валідація обов'язкових полів перед відправкою
     if (!data.image?.id) throw new Error("Зображення є обов'язковим.");
     if (!data.model?.id) throw new Error("3D модель є обов'язковою.");
     if (!data.type?.id) throw new Error("Тип додатку є обов'язковим.");
@@ -40,55 +62,59 @@ class AttachmentService {
       modelFileId: data.model.id,
       typeId: data.type.id,
       price: data.price ?? 0,
-      name: data.names,
-      title: data.titles,
-      description: data.descriptions,
-      metaTitle: data.metaTitles,
-      metaDescription: data.metaDescriptions,
-      color: data.colors,
-      material: data.materials,
-      // tagsIds відсутнє в моделі Attachment, якщо потрібно - додайте
-      tagsIds: [],
+      names: data.names,
+      titles: data.titles,
+      descriptions: data.descriptions,
+      metaTitles: data.metaTitles,
+      metaDescriptions: data.metaDescriptions,
+      colors: data.colors,
+      materials: data.materials,
+      tagsIds: data.tags?.map((tags) => tags.id) || [],
     };
   }
 
-  /**
-   * Створює новий додаток
-   * @param attachmentData - Дані у форматі моделі Attachment
-   */
   async create(attachmentData: Omit<Attachment, "id">): Promise<Attachment> {
     const dtoToSend = this.mapModelToDto(attachmentData);
-    return this.apiService.create<Attachment>(this.resource, dtoToSend);
+    const createdDto = await this.apiService.create<any>(
+      this.resource,
+      dtoToSend
+    );
+    // Мапимо відповідь назад до моделі UI
+    return this.mapApiToModel(createdDto);
   }
 
-  /**
-   * Оновлює існуючий додаток
-   * @param id - ID додатку
-   * @param attachmentData - Нові дані у форматі моделі Attachment
-   */
   async update(id: string, attachmentData: Attachment): Promise<Attachment> {
     const dtoToSend = this.mapModelToDto(attachmentData);
-    return this.apiService.update<Attachment>(this.resource, id, dtoToSend);
+    const updatedDto = await this.apiService.update<any>(
+      this.resource,
+      id,
+      dtoToSend
+    );
+    // Мапимо відповідь назад до моделі UI
+    return this.mapApiToModel(updatedDto);
   }
 
+  // --- Методи delete, activate, deactivate не потребують змін, але activate/deactivate мають повертати Promise<Attachment> ---
   async delete(id: string): Promise<void> {
     await this.apiService.delete<void>(this.resource, id);
   }
 
   async activate(id: string): Promise<Attachment> {
-    return this.apiService.partialUpdate<Attachment>(
+    const dto = await this.apiService.partialUpdate<any>(
       `${this.resource}/activate`,
       id,
       {}
     );
+    return this.mapApiToModel(dto);
   }
 
   async deactivate(id: string): Promise<Attachment> {
-    return this.apiService.partialUpdate<Attachment>(
+    const dto = await this.apiService.partialUpdate<any>(
       `${this.resource}/deactivate`,
       id,
       {}
     );
+    return this.mapApiToModel(dto);
   }
 }
 

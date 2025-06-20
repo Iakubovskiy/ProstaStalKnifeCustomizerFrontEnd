@@ -1,4 +1,4 @@
-import {AppFile} from "@/app/Interfaces/File";
+import { AppFile } from "@/app/Interfaces/File";
 
 export interface Attachment {
   id: string;
@@ -15,6 +15,7 @@ export interface Attachment {
   metaDescription: string;
   metaDescriptions?: LocalizedContent;
   type: AttachmentType;
+  tags: ProductTag[];
   color: string;
   colors?: LocalizedContent;
   price: number;

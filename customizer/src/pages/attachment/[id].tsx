@@ -17,8 +17,8 @@ import {
 import AttachmentService from "@/app/services/AttachmentService";
 import FileUpload from "@/app/components/FileUpload/FileUpload";
 import LocalizedContentEditor from "@/app/components/LocalizedContentEditor/LocalizedContentEditor";
-
 import AttachmentTypeService from "@/app/services/AttachmentTypeService";
+import ProductTagService from "@/app/services/ProductTagService"; // <-- 1. Імпортуємо сервіс тегів
 import { Attachment } from "@/app/Interfaces/Attachment";
 
 const initialData: Partial<Attachment> = {
@@ -34,6 +34,7 @@ const initialData: Partial<Attachment> = {
   image: undefined,
   model: undefined,
   type: undefined,
+  tags: [],
 };
 
 const AttachmentPage = () => {
@@ -43,20 +44,33 @@ const AttachmentPage = () => {
   const [attachment, setAttachment] =
     useState<Partial<Attachment>>(initialData);
   const [attachmentTypes, setAttachmentTypes] = useState<AttachmentType[]>([]);
+  const [productTags, setProductTags] = useState<ProductTag[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [isSaving, setSaving] = useState(false);
 
   const isCreating = id === "0";
   const attachmentService = useMemo(() => new AttachmentService(), []);
   const attachmentTypeService = useMemo(() => new AttachmentTypeService(), []);
+  const productTagService = useMemo(() => new ProductTagService(), []);
 
   useEffect(() => {
     if (!router.isReady) return;
 
-    attachmentTypeService
-      .getAll()
-      .then(setAttachmentTypes)
-      .catch((e) => alert("Не вдалося завантажити типи додатків"));
+    // --- 3. Завантажуємо всі дані для форми одночасно ---
+    const fetchFormData = async () => {
+      try {
+        const [types, tags] = await Promise.all([
+          attachmentTypeService.getAll(),
+          productTagService.getAll(),
+        ]);
+        setAttachmentTypes(types);
+        setProductTags(tags);
+      } catch (e) {
+        alert("Не вдалося завантажити допоміжні дані (типи, теги).");
+      }
+    };
+
+    fetchFormData();
 
     if (isCreating) {
       setAttachment(initialData);
@@ -78,6 +92,13 @@ const AttachmentPage = () => {
     value: Attachment[K]
   ) => {
     setAttachment((prev) => ({ ...prev, [field]: value }));
+  };
+
+  // --- 4. Обробник для мульти-селекту тегів ---
+  const handleTagsChange = (keys: any) => {
+    const selectedIds = new Set(Array.from(keys));
+    const selectedTags = productTags.filter((tag) => selectedIds.has(tag.id));
+    handleFieldChange("tags", selectedTags);
   };
 
   const handleSave = async () => {
@@ -149,6 +170,21 @@ const AttachmentPage = () => {
             ))}
           </Select>
 
+          {/* --- 5. Додаємо поле для вибору тегів --- */}
+          <Select
+            label="Теги"
+            placeholder="Виберіть теги"
+            selectionMode="multiple"
+            selectedKeys={attachment.tags?.map((tag) => tag.id) || []}
+            onSelectionChange={handleTagsChange}
+          >
+            {productTags.map((tag) => (
+              <SelectItem key={tag.id}>
+                {tag.names?.["ua"] || tag.name}
+              </SelectItem>
+            ))}
+          </Select>
+
           <Input
             label="Ціна"
             type="number"
@@ -169,6 +205,7 @@ const AttachmentPage = () => {
         </div>
 
         <Accordion selectionMode="multiple" defaultExpandedKeys={["names"]}>
+          {/* ... Решта полів в акордеоні без змін ... */}
           <AccordionItem key="names" aria-label="Назви" title="Назви">
             <LocalizedContentEditor
               label=""

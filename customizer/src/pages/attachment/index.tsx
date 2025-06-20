@@ -16,6 +16,7 @@ import {
   ChevronRight,
   Eye,
   EyeOff,
+  Filter,
 } from "lucide-react";
 import AttachmentService from "@/app/services/AttachmentService";
 import APIService from "@/app/services/ApiService";
@@ -49,6 +50,7 @@ const AttachmentListPage = () => {
       setAttachments(data);
     } catch (error) {
       console.error("Помилка:", error);
+      alert("Помилка завантаження даних");
     } finally {
       setLoading(false);
     }
@@ -57,6 +59,10 @@ const AttachmentListPage = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter]);
 
   const filteredAndSortedData = useMemo(() => {
     let filtered = attachments.filter((item) => {
@@ -82,6 +88,9 @@ const AttachmentListPage = () => {
       if (sortField === "name") bValue = b.names?.[locale] || b.name;
       if (sortField === "type") aValue = a.type?.name;
       if (sortField === "type") bValue = b.type?.name;
+
+      if (aValue === null || aValue === undefined) return 1;
+      if (bValue === null || bValue === undefined) return -1;
 
       if (typeof aValue === "string" && typeof bValue === "string") {
         return (
@@ -159,7 +168,67 @@ const AttachmentListPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f8f4f0] to-[#f0e5d6] p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header and Filters as in previous examples... */}
+        {/* Хедер */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-[#b8845f]/20 shadow-sm">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex items-center space-x-4">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="p-2 rounded-xl bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white hover:shadow-lg transition-all"
+              >
+                <ArrowLeft />
+              </button>
+              <div>
+                <h1 className="text-2xl font-bold text-[#2d3748]">Додатки</h1>
+                <p className="text-[#2d3748]/60">
+                  Управління додатками до виробів
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => router.push("/attachment/0")}
+              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white rounded-xl hover:shadow-lg transition-all font-medium"
+            >
+              <Plus />
+              <span>Створити новий</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Фільтри та пошук */}
+        <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 mb-6 border border-[#b8845f]/20 shadow-sm">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[#2d3748]/40 w-5 h-5" />
+              <input
+                type="text"
+                placeholder="Пошук по назві або типу..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#b8845f]/20 bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[#8b7258]/50"
+              />
+            </div>
+            <div className="relative">
+              <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-[#2d3748]/40 w-5 h-5" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as any)}
+                className="w-full pl-10 pr-4 py-3 rounded-xl border border-[#b8845f]/20 bg-white/50 backdrop-blur-sm focus:outline-none focus:ring-2 focus:ring-[#8b7258]/50 appearance-none"
+              >
+                <option value="all">Всі статуси</option>
+                <option value="active">Активні</option>
+                <option value="inactive">Неактивні</option>
+              </select>
+            </div>
+            <div className="flex items-center justify-center lg:justify-end space-x-4 text-sm text-[#2d3748]/60">
+              <span>Всього: {filteredAndSortedData.length}</span>
+              <span>
+                Активних:{" "}
+                {filteredAndSortedData.filter((item) => item.isActive).length}
+              </span>
+            </div>
+          </div>
+        </div>
 
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl border border-[#b8845f]/20 shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
@@ -171,25 +240,33 @@ const AttachmentListPage = () => {
                     className="p-4 text-left cursor-pointer"
                     onClick={() => handleSort("name")}
                   >
-                    Назва {getSortIcon("name")}
+                    <div className="flex items-center gap-2">
+                      Назва {getSortIcon("name")}
+                    </div>
                   </th>
                   <th
                     className="p-4 text-left cursor-pointer"
                     onClick={() => handleSort("type")}
                   >
-                    Тип {getSortIcon("type")}
+                    <div className="flex items-center gap-2">
+                      Тип {getSortIcon("type")}
+                    </div>
                   </th>
                   <th
                     className="p-4 text-left cursor-pointer"
                     onClick={() => handleSort("price")}
                   >
-                    Ціна {getSortIcon("price")}
+                    <div className="flex items-center gap-2">
+                      Ціна {getSortIcon("price")}
+                    </div>
                   </th>
                   <th
                     className="p-4 text-center cursor-pointer"
                     onClick={() => handleSort("isActive")}
                   >
-                    Статус {getSortIcon("isActive")}
+                    <div className="flex items-center justify-center gap-2">
+                      Статус {getSortIcon("isActive")}
+                    </div>
                   </th>
                   <th className="p-4 text-center">Дії</th>
                 </tr>
@@ -212,7 +289,7 @@ const AttachmentListPage = () => {
                     <td className="p-4 font-medium">
                       {item.names?.[locale] || item.name}
                     </td>
-                    <td className="p-4">{item.type?.name}</td>
+                    <td className="p-4">{item.type?.name || "N/A"}</td>
                     <td className="p-4 font-semibold">₴{item.price}</td>
                     <td className="p-4 text-center">
                       <Chip
@@ -256,11 +333,11 @@ const AttachmentListPage = () => {
               </tbody>
             </table>
           </div>
-          {/* Pagination */}
+
           {totalPages > 1 && (
             <div className="p-4 border-t border-[#b8845f]/10 bg-white/30">
               <div className="flex items-center justify-between">
-                <div className="text-sm">
+                <div className="text-sm text-[#2d3748]/60">
                   Показано {(currentPage - 1) * itemsPerPage + 1}-
                   {Math.min(
                     currentPage * itemsPerPage,
@@ -276,9 +353,22 @@ const AttachmentListPage = () => {
                   >
                     <ChevronLeft size={16} />
                   </button>
-                  <span>
-                    {currentPage} / {totalPages}
-                  </span>
+                  {/* Логіка відображення кнопок пагінації як у прикладі */}
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                    (page) => (
+                      <button
+                        key={page}
+                        onClick={() => setCurrentPage(page)}
+                        className={`px-3 py-1 rounded-lg ${
+                          currentPage === page
+                            ? "bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white"
+                            : "bg-white/50 border border-[#b8845f]/20 text-[#2d3748] hover:bg-[#f0e5d6]/50"
+                        }`}
+                      >
+                        {page}
+                      </button>
+                    )
+                  )}
                   <button
                     onClick={() => setCurrentPage((c) => c + 1)}
                     disabled={currentPage === totalPages}
@@ -291,6 +381,20 @@ const AttachmentListPage = () => {
             </div>
           )}
         </div>
+
+        {paginatedData.length === 0 && !loading && (
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 text-center border border-[#b8845f]/20 shadow-sm mt-6">
+            <div className="text-[#2d3748]/40 mb-4">
+              <Search className="w-16 h-16 mx-auto" />
+            </div>
+            <h3 className="text-xl font-medium text-[#2d3748] mb-2">
+              Нічого не знайдено
+            </h3>
+            <p className="text-[#2d3748]/60">
+              Спробуйте змінити параметри пошуку або фільтрації.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
