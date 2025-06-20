@@ -178,7 +178,7 @@ const BladeShapePage = () => {
   }
 
   return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#f8f4f0] to-[#f0e5d6] p-4">
         <div className="w-full max-w-4xl bg-white shadow-md rounded-lg p-8 space-y-6">
           <h1 className="text-2xl font-bold text-center mb-4">
             {isCreating ? "Створення форми леза" : "Редагування форми леза"}
@@ -326,13 +326,13 @@ const BladeShapePage = () => {
             <FileUpload
                 label="Фото форми леза"
                 currentFile={bladeShape.bladeShapeImage as AppFile}
-                onFileChange={(f) => handleFieldChange("bladeShapeImage", f)}
+                onFileChange={(f) => handleFieldChange("bladeShapeImage", f!)}
                 isRequired
             />
             <FileUpload
                 label="3D модель форми леза"
                 currentFile={bladeShape.bladeShapeModel as AppFile}
-                onFileChange={(f) => handleFieldChange("bladeShapeModel", f)}
+                onFileChange={(f) => handleFieldChange("bladeShapeModel", f!)}
                 isRequired
             />
           </div>

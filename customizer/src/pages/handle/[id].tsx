@@ -47,7 +47,6 @@ const HandlePage = () => {
   const bladeShapeTypeService = useMemo(() => new BladeShapeTypeService(), []);
 
   useEffect(() => {
-    // ... (код завантаження даних залишається без змін) ...
     if (!router.isReady) return;
 
     const fetchDropdownData = async () => {
@@ -91,7 +90,6 @@ const HandlePage = () => {
   };
 
   const handleSave = async () => {
-    // ... (код збереження залишається без змін) ...
     if (!selectedBladeShapeTypeId) {
       alert("Будь ласка, виберіть тип форми леза.");
       return;
@@ -119,7 +117,7 @@ const HandlePage = () => {
     return <div className="flex min-h-screen items-center justify-center"><Spinner size="lg" /></div>;
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-[#f8f4f0] to-[#f0e5d6] p-4">
       <div className="w-full max-w-3xl bg-white shadow-md rounded-lg p-8 space-y-6">
         <h1 className="text-2xl font-bold text-center mb-4">
           {isCreating ? "Створення нового руків'я" : "Редагування руків'я"}

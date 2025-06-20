@@ -5,6 +5,9 @@ export interface BladeCoatingColor {
   id: string;
   price: number;
   color: string;
+  colors: LocalizedContent;
+  type: string;
+  types: LocalizedContent;
   colorCode: string | null;
   engravingColorCode: string;
   isActive: boolean;

@@ -28,7 +28,7 @@ const DashboardPage = () => {
     },
     {
       title: "Покриття клинка",
-      href: "/bladeCoating",
+      href: "/blade-coating-color",
       icon: <Shield className="w-6 h-6" />,
       color: "secondary",
       description: "Налаштування покриття",
