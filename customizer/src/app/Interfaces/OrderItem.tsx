@@ -3,9 +3,9 @@ import {DataType} from "csstype";
 import Attachment = DataType.Attachment;
 import {CompletedSheath} from "@/app/Interfaces/CompletedSheath";
 
-interface OrderItem {
+export interface OrderItem {
   productId: string;
-  orderId: number;
+  orderId: string;
   quantity: number;
   product: Knife | Attachment | CompletedSheath;
 }

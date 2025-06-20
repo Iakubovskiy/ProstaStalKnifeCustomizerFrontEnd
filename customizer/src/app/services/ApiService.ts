@@ -155,6 +155,110 @@ class APIService {
   delete<T>(resource: string, id: number | string): Promise<T> {
     return this.request<T>(`${resource}/${id}`, "DELETE");
   }
+
+  public async NotStandardPartialUpdate<T>(
+      url: string,
+      body?: FormData | any,
+      headers: HeadersInit = this.getDefaultHeaders(body instanceof FormData)
+  ): Promise<T> {
+    const method = "PATCH";
+    const response = await fetch(`${this.baseURL}/${url}`, {
+      method,
+      headers,
+      body:
+          body instanceof FormData
+              ? body
+              : body
+                  ? JSON.stringify(body)
+                  : undefined,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log(response.status);
+      throw new Error(
+          `HTTP Error! Status: ${response.status}, Message: ${errorText}`
+      );
+    }
+
+    // Перевіряємо чи є контент для парсингу
+    const contentType = response.headers.get("content-type");
+    const contentLength = response.headers.get("content-length");
+
+    // Якщо немає контенту або це не JSON, повертаємо null або порожній об'єкт
+    if (
+        response.status === 204 || // No Content
+        contentLength === "0" ||
+        !contentType?.includes("application/json")
+    ) {
+      return null as T;
+    }
+
+    // Спробуємо отримати текст відповіді
+    const responseText = await response.text();
+
+    // Якщо текст порожній, повертаємо null
+    if (!responseText.trim()) {
+      return null as T;
+    }
+
+    // Спробуємо розпарсити JSON
+    try {
+      return JSON.parse(responseText);
+    } catch (error) {
+      console.error("Failed to parse JSON:", responseText);
+      throw new Error(`Invalid JSON response: ${responseText}`);
+    }
+  }
+
+  public async NotStandardDelete<T>(
+      url: string,
+      body?: FormData | any,
+      headers: HeadersInit = this.getDefaultHeaders(body instanceof FormData)
+  ): Promise<T> {
+    const method = "DELETE";
+    const response = await fetch(`${this.baseURL}/${url}`, {
+      method,
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.log(response.status);
+      throw new Error(
+          `HTTP Error! Status: ${response.status}, Message: ${errorText}`
+      );
+    }
+
+    // Перевіряємо чи є контент для парсингу
+    const contentType = response.headers.get("content-type");
+    const contentLength = response.headers.get("content-length");
+
+    // Якщо немає контенту або це не JSON, повертаємо null або порожній об'єкт
+    if (
+        response.status === 204 || // No Content
+        contentLength === "0" ||
+        !contentType?.includes("application/json")
+    ) {
+      return null as T;
+    }
+
+    // Спробуємо отримати текст відповіді
+    const responseText = await response.text();
+
+    // Якщо текст порожній, повертаємо null
+    if (!responseText.trim()) {
+      return null as T;
+    }
+
+    // Спробуємо розпарсити JSON
+    try {
+      return JSON.parse(responseText);
+    } catch (error) {
+      console.error("Failed to parse JSON:", responseText);
+      throw new Error(`Invalid JSON response: ${responseText}`);
+    }
+  }
 }
 
 export default APIService;
