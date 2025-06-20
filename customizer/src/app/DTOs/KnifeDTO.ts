@@ -1,23 +1,23 @@
-import { AttachmentDTO } from "./AttachmentDTO";
-import { EngravingDTO } from "./EngravingDTO";
+import type { AttachmentDTO } from "./AttachmentDTO";
+import type { EngravingDTO } from "./EngravingDTO";
 
 export interface KnifeDTO {
   id?: string;
   isActive: boolean;
   imageFileId: string;
-  name?: LocalizedContent | null;
-  title?: LocalizedContent | null;
-  description?: LocalizedContent | null;
-  metaTitle?: LocalizedContent | null;
-  metaDescription?: LocalizedContent | null;
-  tagsIds?: string[] | null;
+  names: Record<string, string>;
+  titles: Record<string, string>;
+  descriptions: Record<string, string>;
+  metaTitles: Record<string, string>;
+  metaDescriptions: Record<string, string>;
+  tagsIds: string[];
   shapeId: string;
   bladeCoatingColorId: string;
   handleId?: string | null;
   sheathId?: string | null;
   sheathColorId?: string | null;
-  existingEngravingIds?: string[] | null;
-  newEngravings?: EngravingDTO[] | null;
-  existingAttachmentIds?: string[] | null;
-  newAttachments?: AttachmentDTO[] | null;
+  existingEngravingIds: string[];
+  newEngravings: EngravingDTO[];
+  existingAttachmentIds: string[];
+  newAttachments: AttachmentDTO[];
 }

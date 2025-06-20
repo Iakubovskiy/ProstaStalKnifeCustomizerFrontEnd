@@ -1,4 +1,4 @@
-import { AppFile } from "./File";
+import { AppFile } from "@/app/Interfaces/File";
 
 export interface Texture {
   id: string;

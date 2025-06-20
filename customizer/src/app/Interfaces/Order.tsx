@@ -1,5 +1,6 @@
 import { ClientData } from "./../DTOs/ClientData";
 import {DeliveryType} from "@/app/Interfaces/DeliveryType";
+import {PaymentMethod} from "@/app/Interfaces/PaymentMethod";
 
 export interface Order {
   id: string;
