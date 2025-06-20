@@ -34,6 +34,7 @@ class BladeCoatingColorService {
       // Створюємо новий об'єкт, що відповідає інтерфейсу BladeCoatingColorForCanvas
       const canvasObject: BladeCoatingColorForCanvas = {
         id: item.id,
+        price: item.price || 0,
         colorCode: item.colorCode || "#1810f3",
         engravingColorCode: item.engravingColorCode,
         colorMap: item.colorMap || null,

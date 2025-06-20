@@ -30,6 +30,7 @@ class SheathColorService {
     const canvasObjects = fullObjects.map((item) => {
       const canvasObject: SheathColorForCanvas = {
         id: item.id,
+        prices: item.prices || [],
         colorCode: item.colorCode || "#808080",
         engravingColorCode: item.engravingColorCode || "#FFFFFF",
         colorMap: item.colorMap,

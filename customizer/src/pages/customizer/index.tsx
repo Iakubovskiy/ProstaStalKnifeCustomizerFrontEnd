@@ -1,7 +1,7 @@
 import React from "react";
 import CustomCanvas from "@/app/components/CustomCanvas/CustomCanvas";
 import CustomizationPanel from "@/app/components/CustomizationPanel/CustomizationPanel";
-import { KnifePurchaseContainer } from "@/app/components/CustomizationPanel/Components/KnifePurchase/KnifePurchaseContainer";
+// import { KnifePurchaseContainer } from "@/app/components/CustomizationPanel/Components/KnifePurchase/KnifePurchaseContainer";
 import styles from "./customizer.module.css";
 import "../../styles/globals.css";
 import CustomNavbar from "@/app/components/CustomNavbar/CustomNavbar";
@@ -22,7 +22,7 @@ const CustomizerPage = () => {
         </div>
         <div className={styles.controlsContainer}>
           <CustomizationPanel />
-          <KnifePurchaseContainer productId={null} />
+          {/* <KnifePurchaseContainer productId={null} /> */}
         </div>
       </div>
       <div className={styles.footer}>

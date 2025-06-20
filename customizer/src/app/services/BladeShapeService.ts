@@ -32,6 +32,9 @@ class BladeShapeService {
     const canvasObjects = fullObjects.map((item) => {
       const canvasObject: BladeShapeForCanvas = {
         id: item.id,
+        shapeType: item.shapeType,
+        price: item.price || 0,
+        bladeShapeImage: item.bladeShapeImage || null,
         name: item.names?.[locale] || item.name || "",
         bladeShapeModel: item.bladeShapeModel,
         sheathModel: item.sheath?.model || null,

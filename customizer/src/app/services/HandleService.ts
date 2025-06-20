@@ -29,6 +29,7 @@ class HandleService {
     const canvasObjects = fullObjects.map((item) => {
       const canvasObject: HandleColorForCanvas = {
         id: item.id,
+        price: item.price || 0,
         colorCode: item.colorCode || "#FFFFFF",
         modelUrl: (item as any).handleModelUrl || null,
         colorMap: item.colorMap,
