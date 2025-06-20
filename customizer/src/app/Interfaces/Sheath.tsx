@@ -1,3 +1,5 @@
+import {AppFile} from "@/app/Interfaces/File";
+
 export interface Sheath {
   id: string;
   name: string;

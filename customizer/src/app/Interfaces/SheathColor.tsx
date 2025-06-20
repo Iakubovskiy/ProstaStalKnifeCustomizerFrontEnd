@@ -1,5 +1,6 @@
 import {Texture} from "./Texture";
 import {SheathColorPriceByType} from "@/app/Interfaces/SheathColorPriceByType";
+import {AppFile} from "@/app/Interfaces/File";
 
 export interface SheathColor {
   id: string;

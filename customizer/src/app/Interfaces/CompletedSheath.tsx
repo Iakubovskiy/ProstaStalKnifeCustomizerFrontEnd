@@ -3,6 +3,7 @@ import SheathColor from "@/app/Models/SheathColor";
 import Engraving from "@/app/Models/Engraving";
 import {DataType} from "csstype";
 import Attachment = DataType.Attachment;
+import {AppFile} from "@/app/Interfaces/File";
 
 export interface CompletedSheath {
   id: string;

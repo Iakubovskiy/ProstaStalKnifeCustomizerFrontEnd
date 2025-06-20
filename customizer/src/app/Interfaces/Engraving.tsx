@@ -1,3 +1,6 @@
+import {AppFile} from "@/app/Interfaces/File";
+import {EngravingTag} from "@/app/Interfaces/EngravingTag";
+
 export interface Engraving {
   id: string;
   name: string;

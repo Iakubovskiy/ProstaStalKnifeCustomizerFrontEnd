@@ -1,3 +1,6 @@
+import {AppFile} from "@/app/Interfaces/File";
+import {Texture} from "@/app/Interfaces/Texture";
+
 export interface Handle {
   id: string;
   color: string;
