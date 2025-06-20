@@ -1,6 +1,6 @@
 export interface BladeShapeDTO {
   typeId: string;
-  name?: LocalizedContent | null;
+  names?: LocalizedContent | null;
   price: number;
   totalLength: number;
   bladeLength: number;

@@ -35,7 +35,7 @@ const DashboardPage = () => {
     },
     {
       title: "Форми клинка",
-      href: "/bladeShapePage",
+      href: "/blade-shape",
       icon: <Scissors className="w-6 h-6" />,
       color: "accent",
       description: "Управління формами",
@@ -104,11 +104,11 @@ const DashboardPage = () => {
       description: "Управління статусами",
     },
     {
-      title: "Додатки",
-      href: "/attachment",
-      icon: <CheckCircle className="w-6 h-6" />,
+      title: "Теги гравіювань",
+      href: "/engraving-tag",
+      icon: <Palette className="w-6 h-6" />,
       color: "secondary",
-      description: "Управління додатками",
+      description: "Управління тегами гравіювань",
     },
   ];
 
