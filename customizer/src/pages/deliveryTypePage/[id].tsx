@@ -1,25 +1,24 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
-import "../../styles/globals.css"; // Перевірте шлях
+import "../../styles/globals.css";
 
 import { Input, Select, SelectItem, Spinner, Button } from "@nextui-org/react";
 
 import DeliveryTypeService from "@/app/services/DeliveryTypeService";
-import { getLocaleFromCookies } from "@/app/config";
+import LocalizedContentEditor from "@/app/components/LocalizedContentEditor/LocalizedContentEditor";
 
-const initialDeliveryTypeData: Omit<DeliveryType, "id"> = {
-  name: "",
+const initialDeliveryTypeData: Omit<DeliveryType, "id" | "name" | "comment"> = {
   names: {},
-  price: 0,
-  comment: "",
   comments: {},
+  price: 0,
   isActive: true,
 };
 
 const DeliveryTypePage = () => {
   const router = useRouter();
   const { id } = router.query;
-  const locale = getLocaleFromCookies();
+
+  // Стан тепер відповідає структурі для API
   const [deliveryType, setDeliveryType] = useState<Partial<DeliveryType>>(
     initialDeliveryTypeData
   );
@@ -27,13 +26,10 @@ const DeliveryTypePage = () => {
   const [isSaving, setSaving] = useState<boolean>(false);
 
   const isCreating = id === "0";
-
   const deliveryTypeService = useMemo(() => new DeliveryTypeService(), []);
 
   useEffect(() => {
-    if (!router.isReady) {
-      return;
-    }
+    if (!router.isReady) return;
 
     const fetchDeliveryType = async () => {
       if (isCreating) {
@@ -44,10 +40,10 @@ const DeliveryTypePage = () => {
       if (id) {
         try {
           setLoading(true);
-          // Сервіс сам перетворює отриманий DTO на зручну для нас модель DeliveryType
           const fetchedDeliveryType = await deliveryTypeService.getById(
             id as string
           );
+          // Заповнюємо стан отриманими даними
           setDeliveryType(fetchedDeliveryType);
         } catch (error) {
           console.error("Error fetching delivery type:", error);
@@ -62,43 +58,50 @@ const DeliveryTypePage = () => {
     fetchDeliveryType();
   }, [id, router.isReady, isCreating, deliveryTypeService, router]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Обробник для простих полів (ціна)
+  const handleSimpleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setDeliveryType((prev) => ({
       ...prev,
-      [name]: name === "price" ? parseFloat(value) || 0 : value,
+      [name]: parseFloat(value) || 0,
     }));
+  };
+
+  // Функції-обробники для оновлення локалізованих полів
+  const handleNamesChange = (newNames: LocalizedContent) => {
+    setDeliveryType((prev) => ({ ...prev, names: newNames }));
+  };
+
+  const handleCommentsChange = (newComments: LocalizedContent) => {
+    setDeliveryType((prev) => ({ ...prev, comments: newComments }));
   };
 
   const handleActiveChange = (keys: any) => {
-    const value = Array.from(keys).join("");
-    setDeliveryType((prev) => ({
-      ...prev,
-      isActive: value === "true",
-    }));
+    const value = Array.from(keys).join("") === "true";
+    setDeliveryType((prev) => ({ ...prev, isActive: value }));
   };
 
   const handleSave = async () => {
-    if (!deliveryType.name) {
-      alert("Назва є обов'язковим полем.");
+    // Перевіряємо, чи є хоча б одне ім'я
+    if (!deliveryType.names || Object.keys(deliveryType.names).length === 0) {
+      alert("Додайте хоча б одну назву.");
       return;
     }
 
     setSaving(true);
+    // Видаляємо застарілі поля 'name' та 'comment' перед відправкою
+    const { name, comment, ...dataToSend } = deliveryType;
+
     try {
-      // КЛЮЧОВИЙ МОМЕНТ:
-      // Ми передаємо в сервіс наш простий об'єкт стану `deliveryType`.
-      // А вже сам сервіс (методи .create та .update) перетворить його
-      // на DeliveryTypeDTO перед відправкою на сервер.
       if (isCreating) {
         await deliveryTypeService.create(
-          deliveryType as Omit<DeliveryType, "id">
+          dataToSend as Omit<DeliveryType, "id">
         );
         alert("Тип доставки успішно створено!");
       } else {
         await deliveryTypeService.update(
           id as string,
-          deliveryType as DeliveryType
+          dataToSend as DeliveryType
         );
         alert("Зміни успішно збережено!");
       }
@@ -114,66 +117,61 @@ const DeliveryTypePage = () => {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Spinner size="lg" color="warning" label="Завантаження даних..." />
+        <Spinner size="lg" />
       </div>
     );
   }
 
-  // Решта коду без змін, він коректно працює з моделлю deliveryType
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-xl bg-white shadow-md rounded-lg p-8 space-y-6">
+      <div className="w-full max-w-3xl bg-white shadow-md rounded-lg p-8 space-y-6">
         <h1 className="text-2xl font-bold text-center mb-4">
-          {isCreating
-            ? "Створення нового типу доставки"
-            : "Редагування типу доставки"}
+          {isCreating ? "Створення типу доставки" : "Редагування типу доставки"}
         </h1>
 
-        <Input
-          isRequired
-          label="Назва"
-          name="name"
-          value={deliveryType.name || ""}
-          onChange={handleInputChange}
-          placeholder="Наприклад, 'Кур'єром по місту'"
-          size="lg"
+        {/* Використовуємо наш новий компонент для назв */}
+        <LocalizedContentEditor
+          label="Назви"
+          content={deliveryType.names}
+          onContentChange={handleNamesChange}
         />
 
-        <Input
-          label="Ціна"
-          name="price"
-          type="number"
-          value={deliveryType.price?.toString() ?? "0"}
-          onChange={handleInputChange}
-          placeholder="Введіть ціну"
-          startContent={
-            <div className="pointer-events-none flex items-center">
-              <span className="text-default-400 text-small">₴</span>
-            </div>
-          }
-          min={0}
-          step={0.01}
-          size="lg"
+        {/* Використовуємо наш новий компонент для коментарів */}
+        <LocalizedContentEditor
+          label="Коментарі"
+          content={deliveryType.comments}
+          onContentChange={handleCommentsChange}
         />
 
-        <Input
-          label="Коментар"
-          name="comment"
-          value={deliveryType.comment ?? ""}
-          onChange={handleInputChange}
-          placeholder="Додаткова інформація для клієнта"
-          size="lg"
-        />
+        {/* Решта полів */}
+        <div className="pt-6 border-t space-y-6">
+          <Input
+            label="Ціна"
+            name="price"
+            type="number"
+            value={deliveryType.price?.toString() ?? "0"}
+            onChange={handleSimpleInputChange}
+            placeholder="Введіть ціну"
+            startContent={
+              <div className="pointer-events-none flex items-center">
+                <span className="text-default-400 text-small">₴</span>
+              </div>
+            }
+            min={0}
+            step={0.01}
+            size="lg"
+          />
 
-        <Select
-          label="Статус"
-          selectedKeys={new Set([deliveryType.isActive ? "true" : "false"])}
-          onSelectionChange={handleActiveChange}
-          size="lg"
-        >
-          <SelectItem key="true">Активний</SelectItem>
-          <SelectItem key="false">Неактивний</SelectItem>
-        </Select>
+          <Select
+            label="Статус"
+            selectedKeys={new Set([deliveryType.isActive ? "true" : "false"])}
+            onSelectionChange={handleActiveChange}
+            size="lg"
+          >
+            <SelectItem key="true">Активний</SelectItem>
+            <SelectItem key="false">Неактивний</SelectItem>
+          </Select>
+        </div>
 
         <div className="flex gap-4 pt-4">
           <Button
