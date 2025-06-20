@@ -1,10 +1,11 @@
-import {AppFile} from "@/app/Interfaces/File";
+import { AppFile } from "@/app/Interfaces/File";
 
 export interface HandleColorForCanvas {
-    id: string;
-    colorCode: string;
-    modelUrl: string | null;
-    colorMap: AppFile | null;
-    normalMap: AppFile | null;
-    roughnessMap: AppFile | null;
+  id: string;
+  colorCode: string;
+  price: number;
+  modelUrl: string | null;
+  colorMap: AppFile | null;
+  normalMap: AppFile | null;
+  roughnessMap: AppFile | null;
 }

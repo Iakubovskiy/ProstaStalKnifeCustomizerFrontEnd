@@ -3,6 +3,7 @@
 import APIService from "./ApiService";
 import { Handle } from "@/app/Interfaces/Handle";
 import { HandleColorDTO } from "@/app/DTOs/HandleColorDTO";
+import { HandleColorForCanvas } from "../Interfaces/Knife/HandleColorForCanvas";
 
 class HandleService {
   private apiService: APIService;
@@ -21,7 +22,24 @@ class HandleService {
   async getAllActive(): Promise<Handle[]> {
     return this.apiService.getAll<Handle>(`${this.resource}/active`);
   }
+  async getAllActiveForCanvas(): Promise<HandleColorForCanvas[]> {
+    const fullObjects = await this.apiService.getAll<Handle>(
+      `${this.resource}/active`
+    );
+    const canvasObjects = fullObjects.map((item) => {
+      const canvasObject: HandleColorForCanvas = {
+        id: item.id,
+        colorCode: item.colorCode || "#FFFFFF",
+        modelUrl: (item as any).handleModelUrl || null,
+        colorMap: item.colorMap,
+        normalMap: item.texture?.normalMap || null,
+        roughnessMap: item.texture?.roughnessMap || null,
+      };
+      return canvasObject;
+    });
 
+    return canvasObjects;
+  }
   async getById(id: string): Promise<Handle> {
     return this.apiService.getById<Handle>(this.resource, id);
   }

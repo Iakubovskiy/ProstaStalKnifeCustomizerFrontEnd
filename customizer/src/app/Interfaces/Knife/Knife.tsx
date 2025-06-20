@@ -1,6 +1,6 @@
-import {Review} from "@/app/Interfaces/Review";
-import {KnifeForCanvas} from "@/app/Interfaces/Knife/KnifeForCanvas";
-
+import { Review } from "@/app/Interfaces/Review";
+import { KnifeForCanvas } from "@/app/Interfaces/Knife/KnifeForCanvas";
+import { AppFile } from "../File";
 
 export interface Knife {
   id: string;
@@ -16,7 +16,7 @@ export interface Knife {
   description: string;
   descriptions?: Record<string, string>;
   price: number;
-  imageUrl: File;
+  imageUrl: AppFile;
 
   totalLength: number;
   bladeLength: number;

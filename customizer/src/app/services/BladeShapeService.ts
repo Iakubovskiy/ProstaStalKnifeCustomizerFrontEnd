@@ -1,6 +1,7 @@
 import APIService from "./ApiService";
 import type { BladeShape } from "@/app/Interfaces/BladeShape";
 import type { BladeShapeDTO } from "@/app/DTOs/BladeShapeDTO";
+import { BladeShapeForCanvas } from "../Interfaces/Knife/BladeShapeForCanvas";
 
 class BladeShapeService {
   private apiService: APIService;
@@ -17,9 +18,28 @@ class BladeShapeService {
 
   async getAllActive(): Promise<BladeShape[]> {
     const res = await this.apiService.getAll<BladeShape>(
-        `${this.resource}/active`
+      `${this.resource}/active`
     );
     return res;
+  }
+  async getAllActiveForCanvas(): Promise<BladeShapeForCanvas[]> {
+    // 1. Отримуємо повні об'єкти з API
+    const fullObjects = await this.apiService.getAll<BladeShape>(
+      `${this.resource}/active`
+    );
+
+    const locale = new APIService().getCurrentLocale();
+    const canvasObjects = fullObjects.map((item) => {
+      const canvasObject: BladeShapeForCanvas = {
+        id: item.id,
+        name: item.names?.[locale] || item.name || "",
+        bladeShapeModel: item.bladeShapeModel,
+        sheathModel: item.sheath?.model || null,
+      };
+      return canvasObject;
+    });
+
+    return canvasObjects;
   }
 
   async getById(id: string): Promise<BladeShape> {
@@ -29,17 +49,17 @@ class BladeShapeService {
 
   async create(data: BladeShapeDTO): Promise<BladeShape> {
     const createdDto = await this.apiService.create<BladeShape>(
-        this.resource,
-        data
+      this.resource,
+      data
     );
     return createdDto;
   }
 
   async update(id: string, data: BladeShapeDTO): Promise<BladeShape> {
     const updatedDto = await this.apiService.update<BladeShape>(
-        this.resource,
-        id,
-        data
+      this.resource,
+      id,
+      data
     );
     return updatedDto;
   }
@@ -50,17 +70,17 @@ class BladeShapeService {
 
   async activate(id: string): Promise<void> {
     await this.apiService.partialUpdate<void>(
-        `${this.resource}/activate`,
-        id,
-        {}
+      `${this.resource}/activate`,
+      id,
+      {}
     );
   }
 
   async deactivate(id: string): Promise<void> {
     await this.apiService.partialUpdate<void>(
-        `${this.resource}/deactivate`,
-        id,
-        {}
+      `${this.resource}/deactivate`,
+      id,
+      {}
     );
   }
 }

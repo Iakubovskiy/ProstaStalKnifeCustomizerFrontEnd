@@ -1,83 +1,61 @@
 import { proxy } from "valtio";
-import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
-import BladeShape from "@/app/Models/BladeShape";
-import Fastening from "@/app/Models/Fastening";
-import SheathColor from "@/app/Models/SheathColor";
-import HandleColor from "@/app/Models/HandleColor";
-import Engraving from "@/app/Models/Engraving";
+
 import { invalidate } from "@react-three/fiber";
+import { HandleColorForCanvas } from "../Interfaces/Knife/HandleColorForCanvas";
+import { SheathColorForCanvas } from "../Interfaces/Knife/SheathColorForCanvas";
+import { BladeCoatingColorForCanvas } from "../Interfaces/Knife/BladeCoatingColorForCanvas";
+import { BladeShapeForCanvas } from "../Interfaces/Knife/BladeShapeForCanvas";
+import { EngravingForCanvas } from "../Interfaces/Knife/EngravingForCanvas";
+import { AttachmentForCanvas } from "../Interfaces/Knife/AttachmentForCanvas";
+import { AppFile } from "../Interfaces/File";
 
 interface State {
-  invalidate:() => void;
-  handleColor: HandleColor;
-  sheathColor: SheathColor;
-  bladeCoatingColor: BladeCoatingColor;
-  bladeShape: BladeShape;
-  engravings: Engraving[];
-  fastening: Fastening | null;
+  invalidate: () => void;
+  handleColor: HandleColorForCanvas;
+  sheathColor: SheathColorForCanvas;
+  bladeCoatingColor: BladeCoatingColorForCanvas;
+  bladeShape: BladeShapeForCanvas;
+  engravings: EngravingForCanvas[];
+  attachment: AttachmentForCanvas | null;
 }
 
 const state = proxy<State>({
-  invalidate : () => invalidate(),
+  invalidate: () => invalidate(),
   handleColor: {
     id: "",
-    colorName: "",
     colorCode: "#d8a635",
-    material: "",
-    isActive: false,
-    colorMapUrl: null,
-    normalMapUrl: null,
-    roughnessMapUrl: null,
+    colorMap: null,
+    normalMap: null,
+    roughnessMap: null,
+    modelUrl: null,
   },
   sheathColor: {
     id: "",
-    color: "",
-    price: 0,
-    material: "",
-    isActive: true,
-    colorMapUrl: null,
-    normalMapUrl: null,
-    roughnessMapUrl: null,
+    colorMap: null,
+    normalMap: null,
+    roughnessMap: null,
     colorCode: "",
     engravingColorCode: "",
   },
   bladeCoatingColor: {
     id: "",
-    color: "",
     colorCode: "#1810f3",
     engravingColorCode: "",
-    type: "",
-    price: 0,
-    isActive: true,
-    colorMapUrl: null,
-    normalMapUrl: null,
-    roughnessMapUrl: null,
+    colorMap: null,
+    normalMap: null,
+    roughnessMap: null,
   },
 
   bladeShape: {
     id: "",
     name: "",
-    bladeShapeModelUrl: "",
-    price: 0,
-    totalLength: 0,
-    bladeLength: 0,
-    bladeWidth: 0,
-    bladeWeight: 0,
-    sharpeningAngle: 0,
-    rockwellHardnessUnits: 0,
-    sheathModelUrl: "",
-    isActive: false,
+    bladeShapeModel: null as unknown as AppFile,
+    sheathModel: null,
   },
   engravings: [],
-  fastening: {
+  attachment: {
     id: "",
-    name: "",
-    color: "",
-    colorCode: "",
-    price: 0,
-    material: "",
-    modelUrl: "",
-    isActive: true,
+    model: null as unknown as AppFile,
   },
 });
 
