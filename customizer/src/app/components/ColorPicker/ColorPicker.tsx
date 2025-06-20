@@ -1,40 +1,44 @@
-"use client";
-import React from "react";
-import { Input } from "@nextui-org/react";
-import "./style.css";
+// /components/ColorPicker/ColorPicker.tsx
+import React, { useState, useRef, useEffect } from 'react';
+import { Popover, PopoverTrigger, PopoverContent, Button } from '@nextui-org/react';
+import { SketchPicker, ColorResult } from 'react-color';
 
-const ColorPicker = ({
-  value,
-  onChange,
-}: {
-  value: string;
+interface ColorPickerProps {
+  color: string;
   onChange: (color: string) => void;
-}) => {
-  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value);
+}
+
+const ColorPicker: React.FC<ColorPickerProps> = ({ color, onChange }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleColorChange = (colorResult: ColorResult) => {
+    onChange(colorResult.hex);
   };
 
   return (
-    <div className="p-4   rounded-lg   ">
-      <div className="mb-2">
-        <h3 className="text-md font-medium text-black"></h3>
-      </div>
-      <Input
-        type="color"
-        value={value}
-        onChange={handleColorChange}
-        aria-label="Color Picker"
-        style={{
-          width: "100%",
-          padding: "0.5rem",
-          backgroundColor: "#f9f9f9",
-          borderRadius: "8px",
-          height: "8rem",
-          cursor: "pointer",
-        }}
-        className="focus:ring-2 focus:ring-blue-400"
-      />
-    </div>
+    <Popover placement="bottom" isOpen={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger>
+        <Button
+          variant="bordered"
+          className="w-full justify-start"
+          startContent={
+            <div
+              className="w-6 h-6 rounded-md border"
+              style={{ backgroundColor: color }}
+            />
+          }
+        >
+          {color}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="p-0">
+        <SketchPicker
+          color={color}
+          onChangeComplete={handleColorChange}
+          disableAlpha // Вимикаємо прозорість, якщо вона не потрібна
+        />
+      </PopoverContent>
+    </Popover>
   );
 };
 

@@ -15,6 +15,7 @@ import {
 import HandleService from "@/app/services/HandleService";
 import FileUpload from "@/app/components/FileUpload/FileUpload";
 import LocalizedContentEditor from "@/app/components/LocalizedContentEditor/LocalizedContentEditor";
+import ColorPicker from "@/app/components/ColorPicker/ColorPicker"; // <-- 1. Імпортуємо новий компонент
 
 import TextureService from "@/app/services/TextureService";
 import BladeShapeTypeService from "@/app/services/BladeShapeTypeService";
@@ -38,15 +39,9 @@ const HandlePage = () => {
   const [handle, setHandle] = useState<Partial<Handle>>(initialHandleData);
   const [isLoading, setLoading] = useState(true);
   const [isSaving, setSaving] = useState(false);
-
-  // Дані для випадаючих списків
   const [textures, setTextures] = useState<Texture[]>([]);
   const [bladeShapeTypes, setBladeShapeTypes] = useState<BladeShapeType[]>([]);
-
-  // ID типу леза, для якого створюється/редагується руків'я
-  const [selectedBladeShapeTypeId, setSelectedBladeShapeTypeId] = useState<
-    string | null
-  >(null);
+  const [selectedBladeShapeTypeId, setSelectedBladeShapeTypeId] = useState<string | null>(null);
 
   const isCreating = id === "0";
   const handleService = useMemo(() => new HandleService(), []);
@@ -54,9 +49,9 @@ const HandlePage = () => {
   const bladeShapeTypeService = useMemo(() => new BladeShapeTypeService(), []);
 
   useEffect(() => {
+    // ... (код завантаження даних залишається без змін) ...
     if (!router.isReady) return;
 
-    // Завантажуємо дані для випадаючих списків
     const fetchDropdownData = async () => {
       try {
         const [texturesData, bladeShapeTypesData] = await Promise.all([
@@ -67,10 +62,9 @@ const HandlePage = () => {
         setBladeShapeTypes(bladeShapeTypesData);
       } catch (error) {
         console.error("Помилка завантаження даних для форми:", error);
-        alert("Не вдалося завантажити необхідні дані (текстури, типи лез).");
       }
     };
-
+    
     fetchDropdownData();
 
     if (isCreating) {
@@ -84,9 +78,7 @@ const HandlePage = () => {
         .getById(id as string)
         .then((data) => {
           setHandle(data);
-          // Тут потрібно визначити, до якого BladeShapeType належить це руків'я.
-          // API не повертає цю інформацію в об'єкті Handle, тому це поле може залишитись пустим при редагуванні.
-          // Якщо у вас є спосіб це визначити, логіку треба додати сюди.
+          setSelectedBladeShapeTypeId(data.bladeShapeTypeId); 
         })
         .catch((err) => {
           console.error("Помилка завантаження руків'я:", err);
@@ -96,14 +88,12 @@ const HandlePage = () => {
     }
   }, [id, router.isReady]);
 
-  const handleFieldChange = <K extends keyof Handle>(
-    field: K,
-    value: Handle[K]
-  ) => {
+  const handleFieldChange = <K extends keyof Handle>(field: K, value: Handle[K]) => {
     setHandle((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSave = async () => {
+    // ... (код збереження залишається без змін) ...
     if (!selectedBladeShapeTypeId) {
       alert("Будь ласка, виберіть тип форми леза.");
       return;
@@ -112,38 +102,23 @@ const HandlePage = () => {
     setSaving(true);
     try {
       if (isCreating) {
-        await handleService.create(
-          handle as Omit<Handle, "id">,
-          selectedBladeShapeTypeId
-        );
+        await handleService.create(handle as Omit<Handle, "id">, selectedBladeShapeTypeId);
         alert("Руків'я успішно створено!");
       } else {
-        await handleService.update(
-          id as string,
-          handle as Handle,
-          selectedBladeShapeTypeId
-        );
+        await handleService.update(id as string, handle as Handle, selectedBladeShapeTypeId);
         alert("Зміни успішно збережено!");
       }
       router.push("/handle");
     } catch (error) {
       console.error("Помилка збереження:", error);
-      alert(
-        `Сталася помилка: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      );
+      alert(`Сталася помилка: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       setSaving(false);
     }
   };
 
   if (isLoading)
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Spinner size="lg" />
-      </div>
-    );
+    return <div className="flex min-h-screen items-center justify-center"><Spinner size="lg" /></div>;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
@@ -164,13 +139,15 @@ const HandlePage = () => {
         />
 
         <div className="pt-6 border-t grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Input
-            label="Код кольору (Hex)"
-            name="colorCode"
-            value={handle.colorCode || ""}
-            onChange={(e) => handleFieldChange("colorCode", e.target.value)}
-            placeholder="#FFFFFF"
-          />
+          {/* --- 2. Замінюємо Input на ColorPicker --- */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Код кольору</label>
+            <ColorPicker
+              color={handle.colorCode || '#FFFFFF'}
+              onChange={(color) => handleFieldChange('colorCode', color)}
+            />
+          </div>
+
           <Input
             label="Ціна"
             name="price"
@@ -194,7 +171,9 @@ const HandlePage = () => {
             isRequired
           >
             {bladeShapeTypes.map((type) => (
-              <SelectItem key={type.id}>{type.name}</SelectItem>
+              <SelectItem key={type.id} value={type.id}>
+                {type.name}
+              </SelectItem>
             ))}
           </Select>
 
@@ -210,7 +189,9 @@ const HandlePage = () => {
             }}
           >
             {textures.map((tex) => (
-              <SelectItem key={tex.id}>{tex.name}</SelectItem>
+              <SelectItem key={tex.id} value={tex.id}>
+                {tex.name}
+              </SelectItem>
             ))}
           </Select>
 
@@ -224,7 +205,7 @@ const HandlePage = () => {
 
           <div className="md:col-span-2 flex justify-start">
             <Switch
-              isSelected={handle.isActive}
+              isSelected={!!handle.isActive}
               onValueChange={(v) => handleFieldChange("isActive", v)}
             >
               Активний
@@ -233,22 +214,8 @@ const HandlePage = () => {
         </div>
 
         <div className="flex gap-4 pt-4">
-          <Button
-            color="danger"
-            variant="flat"
-            onClick={() => router.back()}
-            fullWidth
-          >
-            Скасувати
-          </Button>
-          <Button
-            color="primary"
-            onClick={handleSave}
-            isLoading={isSaving}
-            fullWidth
-          >
-            Зберегти
-          </Button>
+          <Button color="danger" variant="flat" onClick={() => router.back()} fullWidth>Скасувати</Button>
+          <Button color="primary" onClick={handleSave} isLoading={isSaving} fullWidth>Зберегти</Button>
         </div>
       </div>
     </div>

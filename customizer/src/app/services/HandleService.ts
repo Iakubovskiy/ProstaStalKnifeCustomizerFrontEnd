@@ -6,13 +6,14 @@ import { HandleColorDTO } from "@/app/DTOs/HandleColorDTO";
 
 class HandleService {
   private apiService: APIService;
+  // Згідно зі Swagger, ресурс називається "handles" у множині
   private resource: string = "handles";
 
   constructor(apiService: APIService = new APIService()) {
     this.apiService = apiService;
   }
 
-  // Методи GET залишаються без змін
+  // Методи GET повертають модель Handle, яка зручна для UI
   async getAll(): Promise<Handle[]> {
     return this.apiService.getAll<Handle>(this.resource);
   }
@@ -25,29 +26,19 @@ class HandleService {
     return this.apiService.getById<Handle>(this.resource, id);
   }
 
-  // --- ВИПРАВЛЕНО ТУТ ---
+  // Приватний метод для перетворення моделі Handle у HandleColorDTO
   private mapModelToDto(
     data: Partial<Handle>,
     bladeShapeTypeId: string | null
   ): HandleColorDTO {
+    // Перевірка наявності обов'язкового поля
     if (!bladeShapeTypeId) {
       throw new Error(
         "Blade Shape Type ID є обов'язковим для створення/оновлення руків'я."
       );
     }
 
-    // Перевіряємо, чи `colors` та `materials` не є порожніми
-    if (!data.colors || Object.keys(data.colors).length === 0) {
-      throw new Error("Поле 'Colors' є обов'язковим і не може бути порожнім.");
-    }
-    if (!data.materials || Object.keys(data.materials).length === 0) {
-      throw new Error(
-        "Поле 'Materials' є обов'язковим і не може бути порожнім."
-      );
-    }
-
     return {
-      // Використовуємо правильні імена полів: `colors` та `materials`
       colors: data.colors,
       colorCode: data.colorCode,
       isActive: data.isActive ?? true,
@@ -60,6 +51,11 @@ class HandleService {
     };
   }
 
+  /**
+   * Створює нове руків'я.
+   * @param data - Дані у форматі моделі Handle
+   * @param bladeShapeTypeId - ID типу форми леза, для якого створюється руків'я
+   */
   async create(
     data: Omit<Handle, "id">,
     bladeShapeTypeId: string
@@ -68,6 +64,12 @@ class HandleService {
     return this.apiService.create<Handle>(this.resource, dtoToSend);
   }
 
+  /**
+   * Оновлює існуюче руків'я.
+   * @param id - ID руків'я
+   * @param data - Нові дані у форматі моделі Handle
+   * @param bladeShapeTypeId - ID типу форми леза
+   */
   async update(
     id: string,
     data: Handle,
