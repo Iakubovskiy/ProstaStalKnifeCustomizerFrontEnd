@@ -6,5 +6,5 @@ export interface BladeCoatingColor {
   engravingColorCode: string;
   isActive: boolean;
   texture: Texture | null;
-  colorMap: File | null;
+  colorMap: AppFile | null;
 }

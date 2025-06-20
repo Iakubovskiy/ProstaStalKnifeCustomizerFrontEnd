@@ -1,4 +1,4 @@
-export interface File {
+export interface AppFile {
   id: string;
   fileUrl: string;
 }

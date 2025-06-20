@@ -1,7 +1,7 @@
 interface Knife {
   id: string;
   isActive: boolean;
-  image: File;
+  image: AppFile;
   name: string;
   names?: LocalizedContent | null;
   title: string;

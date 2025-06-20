@@ -7,6 +7,6 @@ export interface Handle {
   material: string;
   materials?: LocalizedContent | null;
   texture: Texture | null;
-  colorMap: File | null;
+  colorMap: AppFile | null;
   price: number;
 }

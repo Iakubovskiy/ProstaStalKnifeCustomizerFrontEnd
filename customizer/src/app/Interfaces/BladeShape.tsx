@@ -8,8 +8,8 @@ export interface BladeShape {
   names?: LocalizedContent;
   price: number;
   characteristics: BladeCharacteristics;
-  bladeShapePhoto: File;
-  bladeShapeModel: File;
+  bladeShapePhoto: AppFile;
+  bladeShapeModel: AppFile;
   isActive: boolean;
   sheath: Sheath | null;
 }

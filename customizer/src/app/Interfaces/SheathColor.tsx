@@ -11,6 +11,6 @@ export interface SheathColor {
   materials?: LocalizedContent | null;
   engravingColorCode: string;
   texture: Texture | null;
-  colorMap: File | null;
+  colorMap: AppFile | null;
   prices: SheathColorPriceByType[];
 }

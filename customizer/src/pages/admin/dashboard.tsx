@@ -76,6 +76,20 @@ const DashboardPage = () => {
       description: "Палітра піхв",
     },
     {
+      title: "Текстури",
+      href: "/texture",
+      icon: <Palette className="w-6 h-6" />,
+      color: "secondary",
+      description: "Управління текстурами",
+    },
+    {
+      title: "Типи додатків",
+      href: "/attachmentType",
+      icon: <Palette className="w-6 h-6" />,
+      color: "secondary",
+      description: "Управління типами додатків",
+    },
+    {
       title: "Статуси замовлення",
       href: "/orderStatusesPage",
       icon: <CheckCircle className="w-6 h-6" />,
