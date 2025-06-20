@@ -4,7 +4,7 @@ import type { KnifeDTO } from "@/app/DTOs/KnifeDTO";
 
 class KnifeService {
     private apiService: APIService;
-    private resource: string = "knife";
+    private resource: string = "knives";
 
     constructor(apiService: APIService = new APIService()) {
         this.apiService = apiService;
