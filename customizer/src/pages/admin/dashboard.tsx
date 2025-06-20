@@ -103,6 +103,13 @@ const DashboardPage = () => {
       color: "secondary",
       description: "Управління статусами",
     },
+    {
+      title: "Додатки",
+      href: "/attachment",
+      icon: <CheckCircle className="w-6 h-6" />,
+      color: "secondary",
+      description: "Управління додатками",
+    },
   ];
 
   const getCardStyles = (color: string) => {

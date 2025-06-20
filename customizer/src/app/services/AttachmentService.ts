@@ -1,68 +1,95 @@
+// /services/AttachmentService.ts
+
 import APIService from "./ApiService";
-import type { Attachment } from "@/app/Interfaces/Attachment";
-import type { AttachmentDTO } from "@/app/DTOs/AttachmentDTO";
+import { Attachment } from "@/app/Interfaces/Attachment";
+import { AttachmentDTO } from "@/app/DTOs/AttachmentDTO";
 
 class AttachmentService {
-    private apiService: APIService;
-    private resource: string = "attachments";
+  private apiService: APIService;
+  private resource: string = "attachments";
 
-    constructor(apiService: APIService = new APIService()) {
-        this.apiService = apiService;
-    }
+  constructor(apiService: APIService = new APIService()) {
+    this.apiService = apiService;
+  }
 
-    async getAll(): Promise<Attachment[]> {
-        const res = await this.apiService.getAll<Attachment>(this.resource);
-        return res;
-    }
+  // Методи GET повертають зручну для UI модель Attachment
+  async getAll(): Promise<Attachment[]> {
+    return this.apiService.getAll<Attachment>(this.resource);
+  }
 
-    async getAllActive(): Promise<Attachment[]> {
-        const res = await this.apiService.getAll<Attachment>(
-            `${this.resource}/active`
-        );
-        return res;
-    }
+  async getAllActive(): Promise<Attachment[]> {
+    return this.apiService.getAll<Attachment>(`${this.resource}/active`);
+  }
 
-    async getById(id: string): Promise<Attachment> {
-        const res = await this.apiService.getById<Attachment>(this.resource, id);
-        return res;
-    }
+  async getById(id: string): Promise<Attachment> {
+    return this.apiService.getById<Attachment>(this.resource, id);
+  }
 
-    async create(attachmentData: AttachmentDTO): Promise<Attachment> {
-        const createdDto = await this.apiService.create<Attachment>(
-            this.resource,
-            attachmentData
-        );
-        return createdDto;
-    }
+  // Приватний метод для перетворення моделі в DTO
+  private mapModelToDto(data: Partial<Attachment>): AttachmentDTO {
+    // Валідація обов'язкових полів перед відправкою
+    if (!data.image?.id) throw new Error("Зображення є обов'язковим.");
+    if (!data.model?.id) throw new Error("3D модель є обов'язковою.");
+    if (!data.type?.id) throw new Error("Тип додатку є обов'язковим.");
+    if (!data.names?.["ua"])
+      throw new Error("Назва для української локалі ('ua') є обов'язковою.");
 
-    async update(id: string, attachmentData: AttachmentDTO): Promise<Attachment> {
-        const updatedDto = await this.apiService.update<Attachment>(
-            this.resource,
-            id,
-            attachmentData
-        );
-        return updatedDto;
-    }
+    return {
+      isActive: data.isActive ?? true,
+      imageFileId: data.image.id,
+      modelFileId: data.model.id,
+      typeId: data.type.id,
+      price: data.price ?? 0,
+      name: data.names,
+      title: data.titles,
+      description: data.descriptions,
+      metaTitle: data.metaTitles,
+      metaDescription: data.metaDescriptions,
+      color: data.colors,
+      material: data.materials,
+      // tagsIds відсутнє в моделі Attachment, якщо потрібно - додайте
+      tagsIds: [],
+    };
+  }
 
-    async delete(id: string): Promise<void> {
-        await this.apiService.delete<void>(this.resource, id);
-    }
+  /**
+   * Створює новий додаток
+   * @param attachmentData - Дані у форматі моделі Attachment
+   */
+  async create(attachmentData: Omit<Attachment, "id">): Promise<Attachment> {
+    const dtoToSend = this.mapModelToDto(attachmentData);
+    return this.apiService.create<Attachment>(this.resource, dtoToSend);
+  }
 
-    async activate(id: string): Promise<void> {
-        await this.apiService.partialUpdate<void>(
-            `${this.resource}/activate`,
-            id,
-            {}
-        );
-    }
+  /**
+   * Оновлює існуючий додаток
+   * @param id - ID додатку
+   * @param attachmentData - Нові дані у форматі моделі Attachment
+   */
+  async update(id: string, attachmentData: Attachment): Promise<Attachment> {
+    const dtoToSend = this.mapModelToDto(attachmentData);
+    return this.apiService.update<Attachment>(this.resource, id, dtoToSend);
+  }
 
-    async deactivate(id: string): Promise<void> {
-        await this.apiService.partialUpdate<void>(
-            `${this.resource}/deactivate`,
-            id,
-            {}
-        );
-    }
+  async delete(id: string): Promise<void> {
+    await this.apiService.delete<void>(this.resource, id);
+  }
+
+  async activate(id: string): Promise<Attachment> {
+    return this.apiService.partialUpdate<Attachment>(
+      `${this.resource}/activate`,
+      id,
+      {}
+    );
+  }
+
+  async deactivate(id: string): Promise<Attachment> {
+    return this.apiService.partialUpdate<Attachment>(
+      `${this.resource}/deactivate`,
+      id,
+      {}
+    );
+  }
 }
 
 export default AttachmentService;

@@ -20,6 +20,7 @@ import {
 
 import DeliveryTypeService from "@/app/services/DeliveryTypeService"; // Перевірте правильність шляху
 import { getLocaleFromCookies } from "@/app/config";
+import { DeliveryType } from "@/app/Interfaces/DeliveryType";
 type SortField = keyof DeliveryType;
 type SortDirection = "asc" | "desc";
 
