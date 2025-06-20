@@ -56,9 +56,9 @@ const AttachmentTypePage = () => {
     if (
       !attachmentType.names ||
       Object.keys(attachmentType.names).length === 0 ||
-      !attachmentType.names["uk"]
+      !attachmentType.names["ua"]
     ) {
-      alert("Назва для української локалі ('uk') є обов'язковою.");
+      alert("Назва для української локалі ('ua') є обов'язковою.");
       return;
     }
 

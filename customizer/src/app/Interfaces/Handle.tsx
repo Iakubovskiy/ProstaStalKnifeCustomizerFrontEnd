@@ -1,3 +1,6 @@
+import { AppFile } from "./File";
+import { Texture } from "./Texture";
+
 export interface Handle {
   id: string;
   color: string;
@@ -9,4 +12,5 @@ export interface Handle {
   texture: Texture | null;
   colorMap: AppFile | null;
   price: number;
+  bladeShapeTypeId: string;
 }

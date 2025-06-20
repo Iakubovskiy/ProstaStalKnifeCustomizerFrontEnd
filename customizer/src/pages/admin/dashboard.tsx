@@ -63,7 +63,7 @@ const DashboardPage = () => {
     },
     {
       title: "Кольори руків'я",
-      href: "/handleColorPage",
+      href: "/handle",
       icon: <Palette className="w-6 h-6" />,
       color: "primary",
       description: "Палітра руків'я",

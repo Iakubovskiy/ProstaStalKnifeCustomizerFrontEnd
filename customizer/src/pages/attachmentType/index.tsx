@@ -193,7 +193,7 @@ const AttachmentTypeListPage = () => {
                     className="border-b border-[#b8845f]/10 hover:bg-[#f0e5d6]/30 transition-colors"
                   >
                     <td className="p-4 font-medium text-[#2d3748]">
-                      {item.names?.[locale] || "(не вказано)"}
+                      {item.name || "(не вказано)"}
                     </td>
                     <td className="p-4">
                       <div className="flex items-center justify-center space-x-2">

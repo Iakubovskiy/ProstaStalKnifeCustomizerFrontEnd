@@ -1,10 +1,9 @@
 export interface HandleColorDTO {
   id?: string;
-  color?: LocalizedContent | null;
-
+  colors?: LocalizedContent | null;
   colorCode?: string | null;
   isActive: boolean;
-  material?: LocalizedContent | null;
+  materials?: LocalizedContent | null;
   textureId?: string | null;
   colorMapId?: string | null;
   handleModelId?: string | null;

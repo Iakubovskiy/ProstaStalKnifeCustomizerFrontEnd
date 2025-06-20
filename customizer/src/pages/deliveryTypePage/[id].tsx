@@ -6,6 +6,7 @@ import { Input, Select, SelectItem, Spinner, Button } from "@nextui-org/react";
 
 import DeliveryTypeService from "@/app/services/DeliveryTypeService";
 import LocalizedContentEditor from "@/app/components/LocalizedContentEditor/LocalizedContentEditor";
+import { DeliveryType } from "@/app/Interfaces/DeliveryType";
 
 const initialDeliveryTypeData: Omit<DeliveryType, "id" | "name" | "comment"> = {
   names: {},

@@ -1,3 +1,12 @@
+import { Attachment } from "./Attachment";
+import { BladeCoatingColor } from "./BladeCoatingColor";
+import { BladeShape } from "./BladeShape";
+import { Engraving } from "./Engraving";
+import { AppFile } from "./File";
+import { Handle } from "./Handle";
+import { Sheath } from "./Sheath";
+import { SheathColor } from "./SheathColor";
+
 interface Knife {
   id: string;
   isActive: boolean;

@@ -7,6 +7,8 @@ import "../../styles/globals.css";
 import { Input, Spinner, Button } from "@nextui-org/react";
 import TextureService from "@/app/services/TextureService";
 import FileUpload from "@/app/components/FileUpload/FileUpload";
+import { AppFile } from "@/app/Interfaces/File";
+import { Texture } from "@/app/Interfaces/Texture";
 
 const emptyFile: AppFile = { id: "", fileUrl: "" };
 
@@ -45,7 +47,7 @@ const TexturePage = () => {
         } catch (error) {
           console.error("Error fetching texture:", error);
           alert("Помилка завантаження текстури");
-          router.push("/admin/texture/0");
+          router.push("/texture/0");
         } finally {
           setLoading(false);
         }
@@ -80,7 +82,7 @@ const TexturePage = () => {
         await textureService.update(id as string, texture as Texture);
         alert("Зміни успішно збережено!");
       }
-      router.push("/admin/texture");
+      router.push("/texture");
     } catch (error) {
       console.error("Помилка збереження текстури:", error);
       alert("Сталася помилка під час збереження.");
