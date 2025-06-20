@@ -5,18 +5,18 @@ import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizati
 import HandleCustomizationComponent from "./Components/HandleCustomizationComponent";
 import SheathCustomizationComponent from "./Components/SheathCustomizationComponent";
 import BladeCoatingCustomizationComponent from "./Components/BladeCoatingCustomizationComponent";
-import FasteningCustomizationComponent from "./Components/FasteningCustomizationComponent";
+import FasteningCustomizationComponent from "./Components/AttachmentCustomizationComponent";
 import EngravingComponent, {
   PositioningControls,
 } from "../EngravingComponent/EngravingComponent";
-import BladeShape from "@/app/Models/BladeShape";
-import SheathColor from "@/app/Models/SheathColor";
-import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
 import { useCanvasState } from "@/app/state/canvasState";
-import HandleColor from "@/app/Models/HandleColor";
 import InitialDataService from "@/app/services/InitialDataService";
 import ArrowCard from "./Menu/ArrowCard";
 import { XCircle } from "lucide-react";
+import { BladeShapeForCanvas } from "@/app/Interfaces/Knife/BladeShapeForCanvas";
+import { SheathColorForCanvas } from "@/app/Interfaces/Knife/SheathColorForCanvas";
+import { HandleColorForCanvas } from "@/app/Interfaces/Knife/HandleColorForCanvas";
+import { BladeCoatingColorForCanvas } from "@/app/Interfaces/Knife/BladeCoatingColorForCanvas";
 
 const CustomizationPanel = () => {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
@@ -28,7 +28,6 @@ const CustomizationPanel = () => {
   const state = useCanvasState();
 
   const [isMobile, setIsMobile] = useState(false);
-  // Змінюємо назву стану для ясності: яке гравіювання зараз налаштовується в окремій панелі на мобільному
   const [mobilePositioningTargetId, setMobilePositioningTargetId] = useState<
     number | null
   >(null);
@@ -91,10 +90,10 @@ const CustomizationPanel = () => {
     setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
 
   const SelectByDefault = (
-    shape: BladeShape,
-    coatingColor: BladeCoatingColor,
-    sheath: SheathColor,
-    handleColor: HandleColor
+    shape: BladeShapeForCanvas,
+    coatingColor: BladeCoatingColorForCanvas,
+    sheath: SheathColorForCanvas,
+    handleColor: HandleColorForCanvas
   ) => {
     let changed = false;
     if (state.bladeShape.id !== shape.id) {

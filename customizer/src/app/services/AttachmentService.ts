@@ -1,33 +1,83 @@
 // /services/AttachmentService.ts
 
 import APIService from "./ApiService";
-import { Attachment } from "@/app/Interfaces/Attachment";
 import { AttachmentDTO } from "@/app/DTOs/AttachmentDTO";
+import ProductTagService from "./ProductTagService";
+import { Attachment } from "../Interfaces/Attachment";
+import { AttachmentForCanvas } from "../Interfaces/Knife/AttachmentForCanvas";
 
 class AttachmentService {
   private apiService: APIService;
+  private productTagService: ProductTagService;
   private resource: string = "attachments";
 
   constructor(apiService: APIService = new APIService()) {
     this.apiService = apiService;
+    this.productTagService = new ProductTagService(apiService);
   }
 
-  // Методи GET повертають зручну для UI модель Attachment
+  // --- ОПТИМІЗОВАНИЙ МЕТОД ---
+  // Метод, що виконує мапінг, тепер приймає список тегів, щоб уникнути повторних запитів
+  private mapApiToModel(dto: any, allTags: ProductTag[]): Attachment {
+    const selectedTags = allTags.filter((tag) => dto.tagsIds?.includes(tag.id));
+    return {
+      ...dto,
+      tags: selectedTags,
+    };
+  }
+
+  // --- ОПТИМІЗОВАНИЙ МЕТОД ---
+  // Тепер робить лише 2 запити до API замість N+1
   async getAll(): Promise<Attachment[]> {
-    return this.apiService.getAll<Attachment>(this.resource);
+    const [dtoList, allTags] = await Promise.all([
+      this.apiService.getAll<any[]>(this.resource),
+      this.productTagService.getAll(),
+    ]);
+    return dtoList.map((dto) => this.mapApiToModel(dto, allTags));
   }
 
+  // --- ОПТИМІЗОВАНИЙ МЕТОД ---
   async getAllActive(): Promise<Attachment[]> {
-    return this.apiService.getAll<Attachment>(`${this.resource}/active`);
+    const [dtoList, allTags] = await Promise.all([
+      this.apiService.getAll<any[]>(`${this.resource}/active`),
+      this.productTagService.getAll(),
+    ]);
+    return dtoList.map((dto) => this.mapApiToModel(dto, allTags));
   }
 
+  // --- НОВИЙ МЕТОД ---
+  /**
+   * Отримує всі активні додатки, але повертає лише дані для Canvas.
+   * Цей метод не потребує даних про теги, тому він дуже швидкий.
+   * @returns Масив об'єктів AttachmentForCanvas.
+   */
+  async getAllActiveForCanvas(): Promise<AttachmentForCanvas[]> {
+    // 1. Отримуємо повні об'єкти (або DTO) з API
+    const fullObjects = await this.apiService.getAll<Attachment>(
+      `${this.resource}/active`
+    );
+
+    // 2. Фільтруємо ті, що не мають моделі, і перетворюємо їх
+    return fullObjects
+      .filter((item) => item.model) // Залишаємо тільки ті, де є модель
+      .map((item) => ({
+        id: item.id,
+        model: item.model,
+      }));
+  }
+  // --- КІНЕЦЬ НОВОГО МЕТОДУ ---
+
+  // Метод getById також оптимізовано
   async getById(id: string): Promise<Attachment> {
-    return this.apiService.getById<Attachment>(this.resource, id);
+    const [dto, allTags] = await Promise.all([
+      this.apiService.getById<any>(this.resource, id),
+      this.productTagService.getAll(),
+    ]);
+    return this.mapApiToModel(dto, allTags);
   }
 
-  // Приватний метод для перетворення моделі в DTO
   private mapModelToDto(data: Partial<Attachment>): AttachmentDTO {
-    // Валідація обов'язкових полів перед відправкою
+    // ... логіка без змін ...
     if (!data.image?.id) throw new Error("Зображення є обов'язковим.");
     if (!data.model?.id) throw new Error("3D модель є обов'язковою.");
     if (!data.type?.id) throw new Error("Тип додатку є обов'язковим.");
@@ -40,55 +90,57 @@ class AttachmentService {
       modelFileId: data.model.id,
       typeId: data.type.id,
       price: data.price ?? 0,
-      name: data.names,
-      title: data.titles,
-      description: data.descriptions,
-      metaTitle: data.metaTitles,
-      metaDescription: data.metaDescriptions,
-      color: data.colors,
-      material: data.materials,
-      // tagsIds відсутнє в моделі Attachment, якщо потрібно - додайте
-      tagsIds: [],
+      names: data.names,
+      titles: data.titles,
+      descriptions: data.descriptions,
+      metaTitles: data.metaTitles,
+      metaDescriptions: data.metaDescriptions,
+      colors: data.colors,
+      materials: data.materials,
+      tagsIds: data.tags?.map((tag: ProductTag) => tag.id) || [],
     };
   }
 
-  /**
-   * Створює новий додаток
-   * @param attachmentData - Дані у форматі моделі Attachment
-   */
   async create(attachmentData: Omit<Attachment, "id">): Promise<Attachment> {
     const dtoToSend = this.mapModelToDto(attachmentData);
-    return this.apiService.create<Attachment>(this.resource, dtoToSend);
+    const createdDto = await this.apiService.create<any>(
+      this.resource,
+      dtoToSend
+    );
+    return this.getById(createdDto.id); // Отримуємо повний об'єкт з розгорнутими тегами
   }
 
-  /**
-   * Оновлює існуючий додаток
-   * @param id - ID додатку
-   * @param attachmentData - Нові дані у форматі моделі Attachment
-   */
   async update(id: string, attachmentData: Attachment): Promise<Attachment> {
     const dtoToSend = this.mapModelToDto(attachmentData);
-    return this.apiService.update<Attachment>(this.resource, id, dtoToSend);
+    const updatedDto = await this.apiService.update<any>(
+      this.resource,
+      id,
+      dtoToSend
+    );
+    return this.getById(updatedDto.id); // Отримуємо повний об'єкт з розгорнутими тегами
   }
 
   async delete(id: string): Promise<void> {
     await this.apiService.delete<void>(this.resource, id);
   }
 
+  // Методи activate/deactivate тепер повертають повний об'єкт
   async activate(id: string): Promise<Attachment> {
-    return this.apiService.partialUpdate<Attachment>(
+    await this.apiService.partialUpdate<any>(
       `${this.resource}/activate`,
       id,
       {}
     );
+    return this.getById(id);
   }
 
   async deactivate(id: string): Promise<Attachment> {
-    return this.apiService.partialUpdate<Attachment>(
+    await this.apiService.partialUpdate<any>(
       `${this.resource}/deactivate`,
       id,
       {}
     );
+    return this.getById(id);
   }
 }
 

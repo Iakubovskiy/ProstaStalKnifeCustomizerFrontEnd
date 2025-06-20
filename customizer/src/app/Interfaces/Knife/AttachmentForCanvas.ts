@@ -1,6 +1,9 @@
-import {AppFile} from "@/app/Interfaces/File";
+import { AppFile } from "@/app/Interfaces/File";
 
 export interface AttachmentForCanvas {
-    id: string;
-    model: AppFile;
+  id: string;
+  name: string;
+  price: number;
+  image: AppFile;
+  model: AppFile;
 }

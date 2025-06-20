@@ -1,10 +1,11 @@
-import {AppFile} from "@/app/Interfaces/File";
+import { AppFile } from "@/app/Interfaces/File";
 
 export interface BladeCoatingColorForCanvas {
-    id: string;
-    colorCode: string;
-    engravingColorCode: string;
-    colorMap: AppFile | null;
-    normalMap: AppFile | null;
-    roughnessMap: AppFile | null;
+  id: string;
+  price: number;
+  colorCode: string;
+  engravingColorCode: string;
+  colorMap: AppFile | null;
+  normalMap: AppFile | null;
+  roughnessMap: AppFile | null;
 }
