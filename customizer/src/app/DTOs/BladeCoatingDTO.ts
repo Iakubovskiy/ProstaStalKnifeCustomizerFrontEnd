@@ -1,5 +1,4 @@
 export interface BladeCoatingDTO {
-  id?: string;
   type?: LocalizedContent | null;
   color?: LocalizedContent | null;
   colorCode?: string | null;

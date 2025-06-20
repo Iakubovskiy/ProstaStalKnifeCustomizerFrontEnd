@@ -1,5 +1,4 @@
 export interface ProductFilters {
-    page?: number;
     productType?: "knife" | "sheath" | "attachment";
     styles?: string[];
     minBladeLength?: number;

@@ -1,5 +1,3 @@
-// /pages/admin/attachment-type/[id].tsx
-
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import "../../styles/globals.css";
@@ -9,7 +7,6 @@ import { Spinner, Button } from "@nextui-org/react";
 import AttachmentTypeService from "@/app/services/AttachmentTypeService";
 import LocalizedContentEditor from "@/app/components/LocalizedContentEditor/LocalizedContentEditor";
 
-// Початкові дані
 const initialData: Omit<AttachmentType, "id" | "name"> = {
   names: {},
 };
@@ -105,7 +102,7 @@ const AttachmentTypePage = () => {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4">
       <div className="w-full max-w-3xl bg-white shadow-md rounded-lg p-8 space-y-6">
         <h1 className="text-2xl font-bold text-center mb-4">
-          {isCreating ? "Створення типу додатку" : "Редагування типу додатку"}
+          {isCreating ? "Створення типу аксесуара" : "Редагування типу аксесуара"}
         </h1>
 
         <LocalizedContentEditor
@@ -128,7 +125,6 @@ const AttachmentTypePage = () => {
             onClick={handleSave}
             isLoading={isSaving}
             fullWidth
-            // Блокуємо кнопку, якщо це не створення, бо немає методу update
             isDisabled={!isCreating}
           >
             {isCreating

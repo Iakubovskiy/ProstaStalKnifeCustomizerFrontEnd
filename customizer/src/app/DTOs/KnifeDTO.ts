@@ -2,7 +2,6 @@ import type { AttachmentDTO } from "./AttachmentDTO";
 import type { EngravingDTO } from "./EngravingDTO";
 
 export interface KnifeDTO {
-  id?: string;
   isActive: boolean;
   imageFileId: string;
   names: Record<string, string>;
