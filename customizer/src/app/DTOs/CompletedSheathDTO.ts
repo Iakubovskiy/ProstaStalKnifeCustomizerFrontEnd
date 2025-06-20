@@ -2,7 +2,6 @@ import type { AttachmentDTO } from "./AttachmentDTO";
 import type { EngravingDTO } from "./EngravingDTO";
 
 export interface CompletedSheathDTO {
-    id?: string | null;
     isActive: boolean;
     imageFileId: string;
     names: Record<string, string> | null;

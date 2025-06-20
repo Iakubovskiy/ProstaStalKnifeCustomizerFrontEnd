@@ -1,5 +1,3 @@
-// /pages/product-tag/[id].tsx
-
 import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import "../../styles/globals.css";

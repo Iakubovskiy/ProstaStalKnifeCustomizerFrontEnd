@@ -1,4 +1,3 @@
-// /pages/admin/attachment-type/index.tsx
 "use client";
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
@@ -18,7 +17,7 @@ import {
 import AttachmentTypeService from "@/app/services/AttachmentTypeService";
 import APIService from "@/app/services/ApiService";
 
-type SortField = "name"; // Можна додати 'id' якщо потрібно сортувати і по ньому
+type SortField = "name";
 type SortDirection = "asc" | "desc";
 
 const AttachmentTypeListPage = () => {
@@ -31,7 +30,6 @@ const AttachmentTypeListPage = () => {
   const itemsPerPage = 10;
 
   const router = useRouter();
-  // Створюємо екземпляр APIService один раз, щоб отримати поточну локаль
   const apiService = useMemo(() => new APIService(), []);
   const locale = apiService.getCurrentLocale();
 
@@ -43,7 +41,7 @@ const AttachmentTypeListPage = () => {
       const data = await attachmentTypeService.getAll();
       setAttachmentTypes(data);
     } catch (error) {
-      console.error("Помилка при отриманні типів додатків:", error);
+      console.error("Помилка при отриманні типів аксесуарів:", error);
       alert("Помилка при завантаженні даних");
     } finally {
       setLoading(false);
@@ -56,8 +54,7 @@ const AttachmentTypeListPage = () => {
 
   // Фільтрація та сортування
   const filteredAndSortedData = useMemo(() => {
-    let filtered = attachmentTypes.filter((item) =>
-      // Шукаємо по назві для поточної локалі
+    const filtered = attachmentTypes.filter((item) =>
       (item.names?.[locale] || "")
         .toLowerCase()
         .includes(searchTerm.toLowerCase())
@@ -92,14 +89,14 @@ const AttachmentTypeListPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Ви впевнені, що хочете видалити цей тип додатку?"))
+    if (!window.confirm("Ви впевнені, що хочете видалити цей тип аксесуара?"))
       return;
     try {
       await attachmentTypeService.delete(id);
       setAttachmentTypes((prev) => prev.filter((item) => item.id !== id));
     } catch (error) {
       console.error("Помилка при видаленні:", error);
-      alert("Помилка при видаленні типу додатку.");
+      alert("Помилка при видаленні типу аксесуара.");
     }
   };
 
@@ -134,10 +131,10 @@ const AttachmentTypeListPage = () => {
               </button>
               <div>
                 <h1 className="text-2xl font-bold text-[#2d3748]">
-                  Типи додатків
+                  Типи аксесуарів
                 </h1>
                 <p className="text-[#2d3748]/60">
-                  Управління типами додатків до виробів
+                  Управління типами аксесуарів до виробів
                 </p>
               </div>
             </div>

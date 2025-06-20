@@ -1,5 +1,4 @@
 export interface EngravingDTO {
-  id?: string;
   name?: LocalizedContent | null;
   description?: LocalizedContent | null;
   pictureId?: string | null;

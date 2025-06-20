@@ -83,11 +83,11 @@ const DashboardPage = () => {
       description: "Управління текстурами",
     },
     {
-      title: "Типи додатків",
+      title: "Типи аксесуарів",
       href: "/attachmentType",
       icon: <Palette className="w-6 h-6" />,
       color: "secondary",
-      description: "Управління типами додатків",
+      description: "Управління типами аксесуарів",
     },
     {
       title: "Теги продуктів",

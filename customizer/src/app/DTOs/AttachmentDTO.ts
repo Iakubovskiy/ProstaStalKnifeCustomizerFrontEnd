@@ -1,5 +1,4 @@
 export interface AttachmentDTO {
-  id?: string;
   isActive: boolean;
   imageFileId: string;
   name?: LocalizedContent | null;
