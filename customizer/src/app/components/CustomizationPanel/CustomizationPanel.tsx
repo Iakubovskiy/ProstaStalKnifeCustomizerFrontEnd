@@ -47,11 +47,12 @@ const CustomizationPanel = () => {
     const fetchInitialData = async () => {
       try {
         const initialData = await initialDataService.getData();
+        console.log("Initial data fetched:", initialData);
         SelectByDefault(
-          initialData.bladeShape,
-          initialData.bladeCoatingColor,
-          initialData.sheathColor,
-          initialData.handleColor
+          initialData.knifeForCanvas.bladeShape,
+          initialData.knifeForCanvas.bladeCoatingColor,
+          initialData.knifeForCanvas.sheathColor,
+          initialData.knifeForCanvas.handleColor
         );
       } catch (error) {
         console.error("Error fetching initial data:", error);

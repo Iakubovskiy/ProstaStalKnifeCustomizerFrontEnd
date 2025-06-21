@@ -7,5 +7,5 @@ export interface BladeShapeForCanvas {
   bladeShapeImage: AppFile;
   price: number;
   bladeShapeModel: AppFile;
-  sheathModel: AppFile | null;
+  sheathModel: AppFile;
 }
