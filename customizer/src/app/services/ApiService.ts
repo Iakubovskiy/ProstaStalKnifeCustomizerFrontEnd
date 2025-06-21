@@ -1,4 +1,5 @@
 import { API_BASE_URL } from "../config";
+import {APIError} from "@/app/errors/APIError";
 
 class APIService {
   private baseURL: string;
@@ -26,34 +27,29 @@ class APIService {
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.log(response.status);
-      throw new Error(
-        `HTTP Error! Status: ${response.status}, Message: ${errorText}`
+      throw new APIError(
+          `HTTP Error! Status: ${response.status}, Message: ${errorText}`,
+          response.status
       );
     }
 
-    // Перевіряємо чи є контент для парсингу
     const contentType = response.headers.get("content-type");
     const contentLength = response.headers.get("content-length");
 
-    // Якщо немає контенту або це не JSON, повертаємо null або порожній об'єкт
     if (
-      response.status === 204 || // No Content
+      response.status === 204 ||
       contentLength === "0" ||
       !contentType?.includes("application/json")
     ) {
       return null as T;
     }
 
-    // Спробуємо отримати текст відповіді
     const responseText = await response.text();
 
-    // Якщо текст порожній, повертаємо null
     if (!responseText.trim()) {
       return null as T;
     }
 
-    // Спробуємо розпарсити JSON
     try {
       return JSON.parse(responseText);
     } catch (error) {

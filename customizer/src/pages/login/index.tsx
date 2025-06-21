@@ -1,85 +1,132 @@
-import { useState } from "react";
-import LoginService from "@/app/services/AuthService";
+import React, { useState, useMemo } from "react";
+import { useRouter } from "next/router";
 import "../../styles/globals.css";
 
-const LoginForm = () => {
-    const [formData, setFormData] = useState({
-        username: "",
-        password: "",
-    });
+import { Input, Button } from "@nextui-org/react";
+import { User, Lock } from "lucide-react";
+import UserService from "@/app/services/UserService";
+import { LoginDTO } from "@/app/DTOs/LoginDTO";
+import { APIError } from "@/app/errors/APIError";
 
+const LoginPage = () => {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    const loginService = new LoginService();
+    const router = useRouter();
+    const userService = useMemo(() => new UserService(), []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!username || !password) {
+            setError("Будь ласка, заповніть усі поля.");
+            return;
+        }
 
-        const { username, password } = formData;
+        setLoading(true);
+        setError(null);
+
+        const dto: LoginDTO = { username, password };
 
         try {
-            setError(null);
-            setSuccessMessage(null);
+            const token = await userService.login(dto);
+            if (typeof window !== "undefined") {
+                localStorage.setItem("token", token);
+            }
+            const parseJwt = (token: string): any => {
+                try {
+                    const base64 = token.split('.')[1]
+                        .replace(/-/g, '+')
+                        .replace(/_/g, '/');
+                    const json = decodeURIComponent(
+                        atob(base64)
+                            .split('')
+                            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+                            .join('')
+                    );
+                    return JSON.parse(json);
+                } catch {
+                    return null;
+                }
+            };
+            const role = parseJwt(token)?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
-            const response = await loginService.login(username, password);
+            if (role === "Admin") {
+                router.push("/admin/dashboard");
+            } else {
+                router.push("/");
+            }
+        } catch (err) {
+            console.log(err);
+            console.error("Помилка входу:", err);
 
-            setSuccessMessage("Login successful!");
-            console.log("Response:", response);
-        } catch (err: any) {
-            setError(err.message || "An error occurred during login.");
+            if (
+                err instanceof Error &&
+                (err as APIError).status === 401
+            ) {
+                setError("Невірний логін або пароль.");
+            } else {
+                setError("Сталася невідома помилка. Спробуйте ще раз.");
+            }
+
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-                <h2 className="text-2xl font-bold text-center mb-6 text-black">Login</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full p-2 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f8f4f0] to-[#f0e5d6] p-4">
+            <div className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-[#b8845f]/20 shadow-lg">
+                <form onSubmit={handleLogin} className="space-y-6">
+                    <div className="text-center">
+                        <h1 className="text-3xl font-bold text-[#2d3748]">Вхід</h1>
+                        <p className="text-[#2d3748]/60 mt-2">
+                            Введіть свої дані для доступу
+                        </p>
                     </div>
 
-                    <div className="mb-4">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full p-2 text-black border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                    </div>
+                    <Input
+                        label="Ім'я користувача або Email"
+                        value={username}
+                        onValueChange={setUsername}
+                        startContent={
+                            <User className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                        }
+                        variant="bordered"
+                        isRequired
+                    />
+                    <Input
+                        label="Пароль"
+                        value={password}
+                        onValueChange={setPassword}
+                        type="password"
+                        startContent={
+                            <Lock className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                        }
+                        variant="bordered"
+                        isRequired
+                    />
 
-                    {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-                    {successMessage && <p className="text-green-500 text-sm mb-4">{successMessage}</p>}
+                    {error && (
+                        <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg">
+                            {error}
+                        </div>
+                    )}
 
-                    <button
+                    <Button
                         type="submit"
-                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        color="primary"
+                        fullWidth
+                        isLoading={isLoading}
+                        className="bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white font-semibold"
                     >
-                        Login
-                    </button>
+                        {isLoading ? "Вхід..." : "Увійти"}
+                    </Button>
                 </form>
             </div>
         </div>
     );
 };
 
-export default LoginForm;
+export default LoginPage;

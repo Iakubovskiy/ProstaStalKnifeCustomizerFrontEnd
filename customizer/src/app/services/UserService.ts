@@ -4,6 +4,7 @@ import type { RegisterDTO } from "@/app/DTOs/RegisterDTO";
 import type { UpdateUserDTO } from "@/app/DTOs/UpdateUserDTO";
 import type { User } from "@/app/Interfaces/User";
 import type { ClientData } from "@/app/DTOs/ClientData";
+import {API_BASE_URL} from "@/app/config";
 
 class UserService {
     private apiService: APIService;
@@ -14,11 +15,26 @@ class UserService {
     }
 
     async login(data: LoginDTO): Promise<string> {
-        const token = await this.apiService.create<string>(
-            `${this.resource}/login`,
-            data
-        );
-        return token;
+        const response = await fetch(`${API_BASE_URL}/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+            const json = await response.json();
+            if (!json.token) {
+                throw new Error("Server returned an empty token.");
+            }
+            return json.token;
+        }
+        if (response.status === 401) {
+            throw new Error("Invalid credentials");
+        }
+
+        throw new Error("An unexpected error occurred during login.");
     }
 
     async register(data: RegisterDTO): Promise<User> {
@@ -31,7 +47,7 @@ class UserService {
 
     async getCurrentUser(): Promise<User> {
         const user = await this.apiService.get<User>(
-            `${this.resource}/current`
+            `${this.resource}/me`
         );
         return user;
     }
