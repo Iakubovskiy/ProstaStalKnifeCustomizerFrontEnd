@@ -1,8 +1,8 @@
 import { SheathColorPriceByTypeDTO } from "./SheathColorPriceByTypeDTO";
 
 export interface SheathColorDTO {
-  color?: LocalizedContent | null;
-  material?: LocalizedContent | null;
+  colors?: LocalizedContent | null;
+  materials?: LocalizedContent | null;
   colorCode?: string | null;
   engravingColorCode?: string | null;
   prices?: SheathColorPriceByTypeDTO[] | null;

@@ -70,7 +70,7 @@ const DashboardPage = () => {
     },
     {
       title: "Кольори піхв",
-      href: "/sheathColorPage",
+      href: "/sheath-colors",
       icon: <Eye className="w-6 h-6" />,
       color: "accent",
       description: "Палітра піхв",
@@ -109,6 +109,20 @@ const DashboardPage = () => {
       icon: <Palette className="w-6 h-6" />,
       color: "secondary",
       description: "Управління тегами гравіювань",
+    },
+    {
+      title: "Типи клинка",
+      href: "/blade-shape-type",
+      icon: <Palette className="w-6 h-6" />,
+      color: "secondary",
+      description: "Управління типами клинків",
+    },
+    {
+      title: "Валюти",
+      href: "/currencies",
+      icon: <Palette className="w-6 h-6" />,
+      color: "secondary",
+      description: "Управління валютами",
     },
   ];
 

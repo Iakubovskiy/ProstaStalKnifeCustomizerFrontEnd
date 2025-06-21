@@ -1,4 +1,5 @@
 import APIService from "./ApiService";
+import {BladeShapeTypeDTO} from "@/app/DTOs/BladeShapeTypeDTO";
 
 class BladeShapeTypeService {
   private apiService: APIService;
@@ -17,11 +18,10 @@ class BladeShapeTypeService {
   }
 
   async create(data: Omit<BladeShapeType, "id">): Promise<BladeShapeType> {
-    // Відправляємо об'єкт з полем 'name: string', як і вимагає API
     return this.apiService.create<BladeShapeType>(this.resource, data);
   }
 
-  async update(id: string, data: BladeShapeType): Promise<BladeShapeType> {
+  async update(id: string, data: BladeShapeTypeDTO): Promise<BladeShapeType> {
     return this.apiService.update<BladeShapeType>(this.resource, id, data);
   }
 
