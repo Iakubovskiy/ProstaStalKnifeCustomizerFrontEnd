@@ -76,6 +76,13 @@ const DashboardPage = () => {
       description: "Палітра піхв",
     },
     {
+      title: "Піхви",
+      href: "/sheath",
+      icon: <Eye className="w-6 h-6" />,
+      color: "accent",
+      description: "Редагування піхв",
+    },
+    {
       title: "Текстури",
       href: "/texture",
       icon: <Palette className="w-6 h-6" />,
