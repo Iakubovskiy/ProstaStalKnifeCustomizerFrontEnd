@@ -131,6 +131,13 @@ const DashboardPage = () => {
       color: "secondary",
       description: "Управління валютами",
     },
+    {
+      title: "Користувачі",
+      href: "/user-management",
+      icon: <Palette className="w-6 h-6" />,
+      color: "secondary",
+      description: "Управління користувачами",
+    },
   ];
 
   const getCardStyles = (color: string) => {

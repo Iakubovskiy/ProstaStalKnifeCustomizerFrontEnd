@@ -97,6 +97,14 @@ class UserService {
         );
         return roles;
     }
+
+    async registerAdmin(data: RegisterDTO): Promise<User> {
+        const createdAdmin = await this.apiService.create<User>(
+            "admin/register",
+            data
+        );
+        return createdAdmin;
+    }
 }
 
 export default UserService;
