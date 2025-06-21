@@ -7,6 +7,7 @@ import { User, Lock } from "lucide-react";
 import UserService from "@/app/services/UserService";
 import { LoginDTO } from "@/app/DTOs/LoginDTO";
 import { APIError } from "@/app/errors/APIError";
+import Link from "next/link";
 
 const LoginPage = () => {
     const [username, setUsername] = useState("");
@@ -55,7 +56,7 @@ const LoginPage = () => {
             if (role === "Admin") {
                 router.push("/admin/dashboard");
             } else {
-                router.push("/");
+                router.push("/shop");
             }
         } catch (err) {
             console.log(err);
@@ -123,6 +124,15 @@ const LoginPage = () => {
                     >
                         {isLoading ? "Вхід..." : "Увійти"}
                     </Button>
+                    <div className="text-center text-sm text-gray-600">
+                        <span>Немає акаунту? </span>
+                        <Link
+                            href="/register"
+                            className="font-medium text-[#8b7258] hover:underline"
+                        >
+                            Зареєструватися
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>

@@ -39,7 +39,7 @@ class UserService {
 
     async register(data: RegisterDTO): Promise<User> {
         const createdUser = await this.apiService.create<User>(
-            `${this.resource}/register`,
+            `/register`,
             data
         );
         return createdUser;
@@ -82,10 +82,10 @@ class UserService {
         return userData;
     }
 
-    async updateCurrentUserData(data: ClientData): Promise<ClientData> {
-        const updatedUserData = await this.apiService.update<ClientData>(
-            `${this.resource}/user-data`,
-            "PUT",
+    async updateCurrentUserData(data: UpdateUserDTO): Promise<User> {
+        const updatedUserData = await this.apiService.update<User>(
+            `${this.resource}/me`,
+            "",
             data
         );
         return updatedUserData;
