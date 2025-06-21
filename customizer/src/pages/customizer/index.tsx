@@ -7,6 +7,7 @@ import "../../styles/globals.css";
 import CustomNavbar from "@/app/components/CustomNavbar/CustomNavbar";
 import NavigationMob from "@/app/components/Nav/MobileNavBar";
 import Footer from "@/app/components/Footer/Footer";
+import { KnifePurchaseContainer } from "@/app/components/CustomizationPanel/Components/KnifePurchase/KnifePurchaseContainer";
 const CustomizerPage = () => {
   return (
     <>
@@ -22,7 +23,7 @@ const CustomizerPage = () => {
         </div>
         <div className={styles.controlsContainer}>
           <CustomizationPanel />
-          {/* <KnifePurchaseContainer productId={null} /> */}
+          <KnifePurchaseContainer productId={null} />
         </div>
       </div>
       <div className={styles.footer}>

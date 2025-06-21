@@ -9,11 +9,12 @@ import ModelPart from "./ModelPart";
 import { Suspense } from "react";
 import CustomLoader from "./CustomLoader";
 import { Perf } from "r3f-perf";
+import { AppFile } from "@/app/Interfaces/File";
 
 const KnifeConfigurator = () => {
   const state = useCanvasState();
   const snap = useSnapshot(state);
-
+  console.log("KnifeConfigurator snap", snap);
   const validateModelUrl = (url: string): boolean => {
     return Boolean(
       url &&
@@ -22,7 +23,11 @@ const KnifeConfigurator = () => {
           url.startsWith("blob:"))
     );
   };
+  const isValidAppFile = (file: AppFile | null): file is AppFile => {
+    console.log("isValidAppFile", file);
 
+    return file !== null && file.fileUrl !== null && file.fileUrl !== undefined;
+  };
   const bladeSettings = {
     materialProps: {
       default: {
@@ -33,11 +38,13 @@ const KnifeConfigurator = () => {
 
   const sheathSettings = {
     materialProps: {
-      default: {},
+      default: {
+        color: snap.sheathColor.colorCode,
+      },
     },
   };
 
-  if (!validateModelUrl(snap.bladeShape.bladeShapeModel.fileUrl)) {
+  if (!isValidAppFile(snap.bladeShape.bladeShapeModel)) {
     return (
       <Canvas>
         <Lighting />
@@ -65,16 +72,17 @@ const KnifeConfigurator = () => {
           <Background />
           {/*@ts-ignore*/}
           <group position={[0, 0, 0]} rotation={[0, 0, 0]} scale={1}>
-            {validateModelUrl(snap.bladeShape.bladeShapeModel.fileUrl) && (
-              <ModelPart
-                url={snap.bladeShape.bladeShapeModel.fileUrl}
-                {...bladeSettings}
-              />
-            )}
-            {snap.bladeShape.sheathModel &&
-              validateModelUrl(snap.bladeShape.sheathModel?.fileUrl) && (
+            {isValidAppFile(snap.bladeShape.bladeShapeModel) &&
+              validateModelUrl(snap.bladeShape.bladeShapeModel.fileUrl) && (
                 <ModelPart
-                  url={snap.bladeShape.sheathModel?.fileUrl}
+                  url={snap.bladeShape.bladeShapeModel.fileUrl}
+                  {...bladeSettings}
+                />
+              )}
+            {isValidAppFile(snap.bladeShape.sheathModel) &&
+              validateModelUrl(snap.bladeShape.sheathModel.fileUrl) && (
+                <ModelPart
+                  url={snap.bladeShape.sheathModel.fileUrl}
                   {...sheathSettings}
                   position={[0, -10, 0]}
                   rotation={[0, 0, 0]}
@@ -82,6 +90,7 @@ const KnifeConfigurator = () => {
               )}
 
             {snap.attachment &&
+              snap.attachment.model &&
               validateModelUrl(snap.attachment?.model.fileUrl) && (
                 <ModelPart
                   url={snap.attachment.model.fileUrl}

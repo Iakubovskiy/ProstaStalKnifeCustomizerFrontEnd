@@ -1,6 +1,5 @@
 import { useCanvasState } from "@/app/state/canvasState";
 import React, { useEffect, useState } from "react";
-import EngravingModel from "@/app/Models/Engraving";
 import {
   ChevronDown,
   ChevronUp,
@@ -12,6 +11,7 @@ import {
 import ModalFormButton from "../ModalButton/ModalButton";
 import { DraggablePopup } from "./DraggablePopup";
 import Select, { StylesConfig, SingleValue, GroupBase } from "react-select";
+import { EngravingForCanvas } from "@/app/Interfaces/Knife/EngravingForCanvas";
 
 // PositioningControls залишається без змін
 export const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
@@ -312,11 +312,8 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     if (!customState.engravings || customState.engravings.length === 0) {
       setItems([]);
     } else {
-      // При ініціалізації/оновленні `customState.engravings`
-      // створюємо `items`, зберігаючи їхній поточний стан `isExpanded` (якщо вони вже існували),
-      // або встановлюємо `isExpanded: true` для нових.
       const newItems = customState.engravings.map(
-        (engraving: EngravingModel, index: number) => {
+        (engraving, index: number) => {
           const existingItem = items.find((it) => it.id === index);
           return {
             id: index,
@@ -324,10 +321,8 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
             selectedSide: engraving.side,
             font: engraving.font || "Montserrat",
             text: engraving.text || "",
-            // Якщо позиціонування винесене, картка за замовчуванням розгорнута,
-            // але користувач може її згорнути.
             isExpanded: existingItem ? existingItem.isExpanded : true,
-            selectedFile: existingItem ? existingItem.selectedFile : null, // Зберігаємо файл, якщо він був
+            selectedFile: existingItem ? existingItem.selectedFile : null,
             isPositioningOpen: existingItem
               ? existingItem.isPositioningOpen
               : false,
@@ -366,11 +361,17 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     text: string,
     fontFamily: string,
     color: string,
-    fontSize: number = 100
+    returnAsString: boolean = false
   ): string {
+    const fontSize = 100;
     const textWidth = text.length * fontSize * 0.6 + fontSize * 0.4;
     const textHeight = fontSize * 1.2;
     const svg = `<svg width="${textWidth}" height="${textHeight}" viewBox="0 0 ${textWidth} ${textHeight}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="none" /><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="${fontFamily}" font-size="${fontSize}" fill="${color}" font-weight="normal">${text}</text></svg>`;
+
+    if (returnAsString) {
+      return svg;
+    }
+
     const blob = new Blob([svg.replace(/\s\s+/g, " ")], {
       type: "image/svg+xml",
     });
@@ -398,7 +399,9 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                 value,
                 customState.bladeCoatingColor.engravingColorCode || "#000000"
               );
-              customState.engravings[id].pictureUrl = newUrl;
+              if (customState.engravings[id].picture) {
+                customState.engravings[id].picture.fileUrl = newUrl;
+              }
             }
             customState.invalidate();
           }
@@ -452,14 +455,18 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
               customState.engravings[id].font = "";
             } else {
               updatedItem.selectedFile = null;
-              customState.engravings[id].pictureUrl = emptyImage;
+              if (customState.engravings[id].picture) {
+                customState.engravings[id].picture.fileUrl = emptyImage;
+              }
               if (item.text && item.font) {
                 const newUrl = textToSvgUrl(
                   item.text,
                   item.font,
                   customState.bladeCoatingColor.engravingColorCode || "#000000"
                 );
-                customState.engravings[id].pictureUrl = newUrl;
+                if (customState.engravings[id].picture) {
+                  customState.engravings[id].picture.fileUrl = newUrl;
+                }
               }
             }
             customState.invalidate();
@@ -470,49 +477,87 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
       })
     );
   };
+  const blobUrlToFile = async (
+    blobUrl: string,
+    fileName: string = "image.png"
+  ): Promise<File> => {
+    try {
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
 
-  const handleTextChange = (id: number, value: string) => {
+      const file = new File([blob], fileName, { type: blob.type });
+
+      return file;
+    } catch (error) {
+      console.error("Error converting blob URL to file:", error);
+      throw error;
+    }
+  };
+  const updateEngravingState = (
+    index: number,
+    newProps: Partial<EngravingForCanvas>
+  ) => {
+    const currentEngraving = customState.engravings[index];
+    if (currentEngraving) {
+      // Створюємо повністю новий об'єкт гравіювання
+      const updatedEngraving = { ...currentEngraving, ...newProps };
+      // Створюємо повністю новий масив
+      const newEngravings = [...customState.engravings];
+      newEngravings[index] = updatedEngraving;
+      // Замінюємо старий масив на новий. Це гарантовано викличе оновлення.
+      customState.engravings = newEngravings;
+    }
+  };
+
+  const handleTextChange = async (id: number, value: string) => {
     setItems((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          const updatedItem = { ...item, text: value };
-          const engraving = customState.engravings[id];
-          if (engraving) {
-            const newUrl = textToSvgUrl(
-              value,
-              item.font ?? "Montserrat",
-              customState.bladeCoatingColor.engravingColorCode || "#000000"
-            );
-            engraving.text = value;
-            engraving.pictureUrl = newUrl;
-            engraving.locationZ = 0.01;
-            customState.invalidate();
-          }
-          return updatedItem;
-        }
-        return item;
-      })
+      prev.map((item) => (item.id === id ? { ...item, text: value } : item))
     );
+    const item = items.find((it) => it.id === id);
+    const currentEngraving = customState.engravings[id];
+
+    if (item && currentEngraving) {
+      const svgString = textToSvgUrl(
+        value,
+        item.font ?? "Montserrat",
+        customState.bladeCoatingColor.engravingColorCode || "#000000",
+        true
+      );
+      const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+      const localPreviewUrl = URL.createObjectURL(svgBlob);
+      updateEngravingState(id, {
+        text: value,
+        picture: {
+          id: `svg-pending-${customState.engravings[id].id}`,
+          fileUrl: localPreviewUrl,
+        },
+        fileObject: await blobUrlToFile(localPreviewUrl, `engraving-${id}.svg`),
+      });
+    }
   };
 
   const handleFileChange = (id: number, file: File | null) => {
     setItems((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          const updatedItem = { ...item, selectedFile: file };
-          const engraving = customState.engravings[id];
-          if (engraving) {
-            engraving.pictureUrl = file
-              ? URL.createObjectURL(file)
-              : emptyImage;
-            engraving.locationZ = 0.01;
-            customState.invalidate();
-          }
-          return updatedItem;
-        }
-        return item;
-      })
+      prev.map((item) =>
+        item.id === id ? { ...item, selectedFile: file } : item
+      )
     );
+    console.log("Selected file:", file);
+    if (file) {
+      updateEngravingState(id, {
+        picture: {
+          id: "",
+          fileUrl: URL.createObjectURL(file),
+        },
+        fileObject: file,
+      });
+    } else {
+      // Користувач скасував вибір
+      updateEngravingState(id, {
+        picture: { id: "empty", fileUrl: emptyImage },
+        fileObject: null,
+      });
+    }
   };
 
   const toggleExpand = (id: number) => {
@@ -526,10 +571,9 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
 
   const addCard = () => {
     const newEngravingId = customState.engravings.length;
-    const newEngraving: EngravingModel = {
+    const newEngraving: EngravingForCanvas = {
       id: `engraving-${newEngravingId}-${Date.now()}`,
-      name: `Engraving ${newEngravingId + 1}`,
-      pictureUrl: emptyImage,
+      picture: { fileUrl: emptyImage, id: "" },
       side: Side.Right,
       text: "",
       font: "Montserrat",

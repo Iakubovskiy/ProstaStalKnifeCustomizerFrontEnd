@@ -58,17 +58,10 @@ const state = proxy<State>({
     price: 0,
     bladeShapeImage: null as unknown as AppFile,
     bladeShapeModel: null as unknown as AppFile,
-    sheathModel: null,
+    sheathModel: null as unknown as AppFile,
   },
-  engravings: [],
-  attachment: {
-    id: "",
-    name: "",
-    price: 0,
-    image: null as unknown as AppFile,
-    model: null as unknown as AppFile,
-    typeId: "",
-  },
+  engravings: [] as EngravingForCanvas[],
+  attachment: null as AttachmentForCanvas | null,
 });
 
 export const useCanvasState = () => {
