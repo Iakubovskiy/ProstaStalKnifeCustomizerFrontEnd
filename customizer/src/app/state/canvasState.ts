@@ -23,6 +23,7 @@ const state = proxy<State>({
   invalidate: () => invalidate(),
   handleColor: {
     id: "",
+    price: 0,
     colorCode: "#d8a635",
     colorMap: null,
     normalMap: null,
@@ -32,6 +33,7 @@ const state = proxy<State>({
   sheathColor: {
     id: "",
     colorMap: null,
+    prices: [],
     normalMap: null,
     roughnessMap: null,
     colorCode: "",
@@ -39,6 +41,7 @@ const state = proxy<State>({
   },
   bladeCoatingColor: {
     id: "",
+    price: 0,
     colorCode: "#1810f3",
     engravingColorCode: "",
     colorMap: null,
@@ -49,12 +52,18 @@ const state = proxy<State>({
   bladeShape: {
     id: "",
     name: "",
+    shapeType: null as unknown as BladeShapeType,
+    price: 0,
+    bladeShapeImage: null as unknown as AppFile,
     bladeShapeModel: null as unknown as AppFile,
     sheathModel: null,
   },
   engravings: [],
   attachment: {
     id: "",
+    name: "",
+    price: 0,
+    image: null as unknown as AppFile,
     model: null as unknown as AppFile,
   },
 });

@@ -63,6 +63,9 @@ class AttachmentService {
       .map((item) => ({
         id: item.id,
         model: item.model,
+        image: item.image,
+        name: item.name,
+        price: item.price,
       }));
   }
   // --- КІНЕЦЬ НОВОГО МЕТОДУ ---
