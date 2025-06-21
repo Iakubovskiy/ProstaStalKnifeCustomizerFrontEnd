@@ -1,7 +1,7 @@
 import { ClientData } from "./ClientData";
 
 export interface RegisterDTO {
-  clientData: ClientData;
+  clientData?: ClientData;
   email?: string | null;
   password?: string | null;
   passwordConfirmation?: string | null;
