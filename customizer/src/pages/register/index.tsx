@@ -1,152 +1,148 @@
-import { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useRouter } from "next/router";
 import "../../styles/globals.css";
-import RegistrationService from "@/app/services/RegistrationService";
 
-const RegistrationForm = () => {
-    const [formData, setFormData] = useState({
-        username: "",
-        password: "",
-        confirmPassword: "",
-        role: "",
-        email: "",
-        phoneNumber: "",
-    });
+import { Input, Button } from "@nextui-org/react";
+import { Lock, Mail } from "lucide-react";
+import UserService from "@/app/services/UserService";
+import { RegisterDTO } from "@/app/DTOs/RegisterDTO";
+import { APIError } from "@/app/errors/APIError";
+import Link from "next/link";
 
+const initialData: RegisterDTO = {
+    email: "",
+    password: "",
+    passwordConfirmation: "",
+    role: "User",
+};
+
+const RegisterPage = () => {
+    const [userData, setUserData] = useState<RegisterDTO>(initialData);
+    const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-    const registrationService = new RegistrationService();
+    const router = useRouter();
+    const userService = useMemo(() => new UserService(), []);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({ ...prev, [name]: value }));
-    };
-
-    const handleSubmit = async (e: React.FormEvent) => {
+    const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        const { username, password, confirmPassword, role, email, phoneNumber } = formData;
-
-        if (password !== confirmPassword) {
-            setError("Passwords do not match.");
+        if (
+            !userData.email ||
+            !userData.password ||
+            !userData.passwordConfirmation
+        ) {
+            setError("Будь ласка, заповніть усі обов'язкові поля.");
+            return;
+        }
+        if (userData.password !== userData.passwordConfirmation) {
+            setError("Паролі не співпадають.");
             return;
         }
 
+        setLoading(true);
+        setError(null);
+
         try {
-            setError(null);
-            setSuccessMessage(null);
+            await userService.register(userData);
 
-            const response = await registrationService.register(
-                username,
-                password,
-                role,
-                email,
-                phoneNumber
-            );
+            const token = await userService.login({
+                username: userData.email,
+                password: userData.password,
+            });
 
-            setSuccessMessage("Registration successful!");
-            console.log("Response:", response);
-        } catch (err: any) {
-            setError(err.message || "An error occurred during registration.");
+            if (typeof window !== "undefined") {
+                localStorage.setItem("token", token);
+            }
+            router.push("/shop");
+        } catch (err) {
+            console.error("Помилка реєстрації:", err);
+            if (err instanceof APIError) {
+                setError("Користувач з таким email вже існує або дані некоректні.");
+            } else {
+                setError("Сталася невідома помилка. Спробуйте ще раз.");
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-                <h2 className="text-2xl font-bold text-black text-center mb-6">Register</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
-                        <input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
-                        />
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#f8f4f0] to-[#f0e5d6] p-4">
+            <div className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-[#b8845f]/20 shadow-lg">
+                <form onSubmit={handleRegister} className="space-y-4">
+                    <div className="text-center">
+                        <h1 className="text-3xl font-bold text-[#2d3748]">Реєстрація</h1>
+                        <p className="text-[#2d3748]/60 mt-2">
+                            Створіть свій обліковий запис
+                        </p>
                     </div>
+                    <Input
+                        label="Email"
+                        type="email"
+                        value={userData.email || ""}
+                        onValueChange={(value) => setUserData({ ...userData, email: value })}
+                        startContent={
+                            <Mail className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                        }
+                        variant="bordered"
+                        isRequired
+                    />
+                    <Input
+                        label="Пароль"
+                        type="password"
+                        value={userData.password || ""}
+                        onValueChange={(value) =>
+                            setUserData({ ...userData, password: value })
+                        }
+                        startContent={
+                            <Lock className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                        }
+                        variant="bordered"
+                        isRequired
+                    />
+                    <Input
+                        label="Підтвердження пароля"
+                        type="password"
+                        value={userData.passwordConfirmation || ""}
+                        onValueChange={(value) =>
+                            setUserData({ ...userData, passwordConfirmation: value })
+                        }
+                        startContent={
+                            <Lock className="text-2xl text-default-400 pointer-events-none flex-shrink-0" />
+                        }
+                        variant="bordered"
+                        isRequired
+                    />
 
-                    <div className="mb-4">
-                        <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full p-2 border text-black border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                    </div>
+                    {error && (
+                        <div className="text-red-500 text-sm text-center p-2 bg-red-50 rounded-lg">
+                            {error}
+                        </div>
+                    )}
 
-                    <div className="mb-4">
-                        <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
-                        <input
-                            type="password"
-                            id="confirmPassword"
-                            name="confirmPassword"
-                            value={formData.confirmPassword}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full p-2 border text-black border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="role" className="block text-sm font-medium text-gray-700">Role</label>
-                        <input
-                            type="text"
-                            id="role"
-                            name="role"
-                            value={formData.role}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full p-2 border text-black border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full p-2 border text-black border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Phone Number</label>
-                        <input
-                            type="text"
-                            id="phoneNumber"
-                            name="phoneNumber"
-                            value={formData.phoneNumber}
-                            onChange={handleChange}
-                            required
-                            className="mt-1 block w-full p-2 border text-black border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                        />
-                    </div>
-
-                    {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-                    {successMessage && <p className="text-green-500 text-sm mb-4">{successMessage}</p>}
-
-                    <button
+                    <Button
                         type="submit"
-                        className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        color="primary"
+                        fullWidth
+                        isLoading={isLoading}
+                        className="bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white font-semibold mt-4"
                     >
-                        Register
-                    </button>
+                        {isLoading ? "Реєстрація..." : "Зареєструватися"}
+                    </Button>
+
+                    <div className="text-center text-sm text-gray-600">
+                        <span>Вже є акаунт? </span>
+                        <Link
+                            href="/login"
+                            className="font-medium text-[#8b7258] hover:underline"
+                        >
+                            Увійти
+                        </Link>
+                    </div>
                 </form>
             </div>
         </div>
     );
 };
 
-export default RegistrationForm;
+export default RegisterPage;

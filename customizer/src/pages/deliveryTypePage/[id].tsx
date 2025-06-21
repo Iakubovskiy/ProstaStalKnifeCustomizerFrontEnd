@@ -106,7 +106,7 @@ const DeliveryTypePage = () => {
         );
         alert("Зміни успішно збережено!");
       }
-      router.push("/admin/deliveryTypePage");
+      router.push("/deliveryTypePage");
     } catch (error) {
       console.error("Error saving delivery type:", error);
       alert("Сталася помилка під час збереження.");

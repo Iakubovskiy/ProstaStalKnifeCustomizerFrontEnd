@@ -105,7 +105,7 @@ export default function ProductCard({
               loading="lazy"
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).src =
-                  "/fallback-image.jpg";
+                  "/fallback-image.png";
               }}
             />
           </div>
