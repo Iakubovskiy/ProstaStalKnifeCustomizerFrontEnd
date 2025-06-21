@@ -6,4 +6,5 @@ export interface AttachmentForCanvas {
   price: number;
   image: AppFile;
   model: AppFile;
+  typeId?: string | null;
 }

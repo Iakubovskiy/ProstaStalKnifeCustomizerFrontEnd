@@ -6,10 +6,12 @@ import { BladeShapeForCanvas } from "../Interfaces/Knife/BladeShapeForCanvas";
 import { HandleColorForCanvas } from "../Interfaces/Knife/HandleColorForCanvas";
 import { SheathColorForCanvas } from "../Interfaces/Knife/SheathColorForCanvas";
 import { BladeCoatingColorForCanvas } from "../Interfaces/Knife/BladeCoatingColorForCanvas";
+import { AttachmentForCanvas } from "../Interfaces/Knife/AttachmentForCanvas";
 
 export default interface InitialData {
   bladeShape: BladeShapeForCanvas;
   handleColor: HandleColorForCanvas;
   sheathColor: SheathColorForCanvas;
   bladeCoatingColor: BladeCoatingColorForCanvas;
+  attachment: AttachmentForCanvas;
 }

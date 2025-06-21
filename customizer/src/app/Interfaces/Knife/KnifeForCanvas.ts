@@ -7,8 +7,7 @@ import { SheathColorForCanvas } from "./SheathColorForCanvas";
 
 export interface KnifeForCanvas {
   id: string;
-  isActive: boolean;
-  attachments: AttachmentForCanvas[] | null;
+  attachment: AttachmentForCanvas[] | null;
   bladeCoatingColor: BladeCoatingColorForCanvas;
   bladeShape: BladeShapeForCanvas;
   engravings: EngravingForCanvas[] | null;

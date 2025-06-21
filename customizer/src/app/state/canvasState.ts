@@ -11,6 +11,7 @@ import { AppFile } from "../Interfaces/File";
 
 interface State {
   invalidate: () => void;
+  id: string;
   handleColor: HandleColorForCanvas;
   sheathColor: SheathColorForCanvas;
   bladeCoatingColor: BladeCoatingColorForCanvas;
@@ -21,6 +22,7 @@ interface State {
 
 const state = proxy<State>({
   invalidate: () => invalidate(),
+  id: "",
   handleColor: {
     id: "",
     price: 0,
@@ -33,7 +35,7 @@ const state = proxy<State>({
   sheathColor: {
     id: "",
     colorMap: null,
-    prices: [],
+    prices: [] as SheathColorForCanvas["prices"],
     normalMap: null,
     roughnessMap: null,
     colorCode: "",
@@ -65,6 +67,7 @@ const state = proxy<State>({
     price: 0,
     image: null as unknown as AppFile,
     model: null as unknown as AppFile,
+    typeId: "",
   },
 });
 
