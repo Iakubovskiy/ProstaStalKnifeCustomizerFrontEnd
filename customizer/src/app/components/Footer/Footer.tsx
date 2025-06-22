@@ -1,6 +1,7 @@
+"use client";
 import React from "react";
 import Link from "next/link";
-import { useTranslation } from "react-i18next";
+import {useTranslation} from "react-i18next";
 
 const Footer = () => {
   const { t } = useTranslation();
@@ -11,7 +12,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <Link href="/" className="inline-block">
-              <h2 className="text-xl font-bold">PROSTA STAL</h2>
+              <h2 className="text-xl font-bold">PROSTASTAL</h2>
             </Link>
             <p className="text-sm text-gray-600">© 2023 - {currentYear}</p>
             <p className="text-sm text-gray-600">{t("footer.description")}</p>

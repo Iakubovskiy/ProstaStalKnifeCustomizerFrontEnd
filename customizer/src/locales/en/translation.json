@@ -167,5 +167,77 @@
       "street": "16 Shevchenka St"
     },
     "salesMap": "Sales Map"
+  },
+  "navigationMob": {
+    "about": "About Us",
+    "delivery": "Payment & Delivery",
+    "returns": "Exchanges & Returns",
+    "contacts": "Contacts",
+    "reviews": "Store Reviews",
+    "blog": "Blog",
+    "terms": "User Agreement",
+    "login": "Login",
+    "language": "Language",
+    "cartIconAlt": "Cart icon"
+  },
+  "customizationPanel": {
+    "menu": {
+      "bladeShape": {
+        "name": "Blade Shape",
+        "tooltip": "Blade Shapes"
+      },
+      "bladeCoating": {
+        "name": "Blade Coating",
+        "tooltip": "Blade Coatings"
+      },
+      "handleColor": {
+        "name": "Handle Color",
+        "tooltip": "Handle Colors"
+      },
+      "scabbardColor": {
+        "name": "Sheath Color",
+        "tooltip": "Sheath Colors"
+      },
+      "attachments": {
+        "name": "Attachments",
+        "tooltip": "Attachments"
+      },
+      "engraving": {
+        "name": "Engraving",
+        "tooltip": "Engraving"
+      }
+    }
+  },
+  "orderButtons":
+  {
+    "order": "Place order"
+  },
+  "customizationPanel2": {
+    "selectOptionPrompt": "Select an option to customize",
+    "positioningTitle": "Positioning: Engr. {id}",
+    "closePositioningPanelTooltip": "Close positioning panel",
+    "engravingNotFoundError": "Error: Engraving for setup not found.",
+    "previousPageTooltip": "Previous page",
+    "nextPageTooltip": "Next page"
+  },
+  "priceCalculator": {
+    "add": "Add",
+    "clearCart": "Clear cart"
+  },
+  "purchaseContainer": {
+    "engravingUploadError": "Failed to upload engraving file. Please try again.",
+    "customKnifeName": "Custom Knife",
+    "addedToCartToast": "Product added to cart!"
+  },
+  "modalForm": {
+    "reportErrorButton": "Report an Error",
+    "title": "Feedback Form",
+    "emailLabel": "Email",
+    "emailPlaceholder": "example@mail.com",
+    "phoneLabel": "Phone Number",
+    "phonePlaceholder": "+15551234567",
+    "messageLabel": "Message",
+    "messagePlaceholder": "Enter your message...",
+    "submitButton": "Send"
   }
 }

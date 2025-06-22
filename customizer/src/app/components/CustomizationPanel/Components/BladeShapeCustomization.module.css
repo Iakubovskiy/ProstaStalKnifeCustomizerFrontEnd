@@ -121,28 +121,28 @@
   transition: background 0.3s ease;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .container {
-    background: linear-gradient(135deg, #2d2520 0%, #1a1612 100%);
-    border-color: rgba(139, 114, 88, 0.4);
-  }
-  
-  .title {
-    color: #f8f4f0;
-  }
-  
-  .header {
-    border-bottom-color: rgba(184, 132, 95, 0.3);
-  }
-  
-  .selectionGrid {
-    background: rgba(45, 37, 32, 0.4);
-    border-color: rgba(184, 132, 95, 0.3);
-  }
-  
-  .characteristicsWrapper::before {
-    background: linear-gradient(135deg, #2d2520 0%, #1a1612 100%);
-    color: #b8845f;
-  }
-}
+/*!* Dark mode support *!*/
+/*@media (prefers-color-scheme: dark) {*/
+/*  .container {*/
+/*    background: linear-gradient(135deg, #2d2520 0%, #1a1612 100%);*/
+/*    border-color: rgba(139, 114, 88, 0.4);*/
+/*  }*/
+/*  */
+/*  .title {*/
+/*    color: #f8f4f0;*/
+/*  }*/
+/*  */
+/*  .header {*/
+/*    border-bottom-color: rgba(184, 132, 95, 0.3);*/
+/*  }*/
+/*  */
+/*  .selectionGrid {*/
+/*    background: rgba(45, 37, 32, 0.4);*/
+/*    border-color: rgba(184, 132, 95, 0.3);*/
+/*  }*/
+/*  */
+/*  .characteristicsWrapper::before {*/
+/*    background: linear-gradient(135deg, #2d2520 0%, #1a1612 100%);*/
+/*    color: #b8845f;*/
+/*  }*/
+/*}*/

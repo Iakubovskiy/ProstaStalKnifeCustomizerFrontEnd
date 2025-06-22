@@ -12,12 +12,6 @@ import KnifeConfigurator from "@/app/components/CustomCanvas/CustomCanvas";
 const CustomizerPage = () => {
   return (
     <>
-      <div className={styles.desk}>
-        <CustomNavbar></CustomNavbar>
-      </div>
-      <div className={styles.mob}>
-        <NavigationMob></NavigationMob>
-      </div>
       <div className={styles.customizer}>
         <div className={styles.canvasContainer}>
           <KnifeConfigurator />
@@ -26,9 +20,6 @@ const CustomizerPage = () => {
           <CustomizationPanel />
           <KnifePurchaseContainer productId={null} />
         </div>
-      </div>
-      <div className={styles.footer}>
-        <Footer></Footer>
       </div>
     </>
   );

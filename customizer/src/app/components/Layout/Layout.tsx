@@ -1,6 +1,9 @@
 import Head from "next/head";
 import CustomNavbar from "../CustomNavbar/CustomNavbar";
 import Footer from "../Footer/Footer";
+import styles from "@/pages/customizer/customizer.module.css";
+import NavigationMob from "@/app/components/Nav/MobileNavBar";
+import React from "react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -239,7 +242,12 @@ const Layout: React.FC<LayoutProps> = ({
       </Head>
 
       <div className="min-h-screen flex flex-col">
-        <CustomNavbar />
+        <div className={styles.desk}>
+          <CustomNavbar></CustomNavbar>
+        </div>
+        <div className={styles.mob}>
+          <NavigationMob></NavigationMob>
+        </div>
         <main className="flex-1" role="main">
           {/* Breadcrumbs */}
           {breadcrumbs && (

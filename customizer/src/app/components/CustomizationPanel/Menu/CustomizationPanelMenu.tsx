@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MenuCard from "./MenuCard";
+import { useTranslation } from "react-i18next";
 
 interface CustomizationPanelMenuProps {
   setSelectedOption: (option: string | null) => void;
@@ -8,50 +9,51 @@ interface CustomizationPanelMenuProps {
 }
 
 const CustomizationPanelMenu: React.FC<CustomizationPanelMenuProps> = ({
-  setSelectedOption,
-  currentPage,
-  setCurrentPage,
-}) => {
+                                                                         setSelectedOption,
+                                                                         currentPage,
+                                                                         setCurrentPage,
+                                                                       }) => {
+  const { t } = useTranslation();
   const [screenWidth, setScreenWidth] = useState<number>(0);
 
   const menuOptions = [
     {
       id: "bladeShape",
-      name: "Форма клинка",
+      nameKey: "customizationPanel.menu.bladeShape.name",
+      tooltipKey: "customizationPanel.menu.bladeShape.tooltip",
       icon: "/icons/blade-shape.svg",
-      tooltip: "Форми клинка",
     },
     {
       id: "bladeCoating",
-      name: "Покриття клинка",
+      nameKey: "customizationPanel.menu.bladeCoating.name",
+      tooltipKey: "customizationPanel.menu.bladeCoating.tooltip",
       icon: "/icons/blade-coating.svg",
-      tooltip: "Покриття клинка",
     },
     {
       id: "handleColor",
-      name: "Колір руків'я",
+      nameKey: "customizationPanel.menu.handleColor.name",
+      tooltipKey: "customizationPanel.menu.handleColor.tooltip",
       icon: "/icons/handle.svg",
-      tooltip: "Колір руків'я",
     },
     {
       id: "scabbardColor",
-      name: "Колір піхв",
+      nameKey: "customizationPanel.menu.scabbardColor.name",
+      tooltipKey: "customizationPanel.menu.scabbardColor.tooltip",
       icon: "/icons/sheath.svg",
-      tooltip: "Колір піхв",
     },
     {
       id: "attachments",
-      name: "Кріплення",
+      nameKey: "customizationPanel.menu.attachments.name",
+      tooltipKey: "customizationPanel.menu.attachments.tooltip",
       icon: "/icons/fastening.svg",
-      tooltip: "Кріплення",
     },
     {
       id: "engraving",
-      name: "Гравіювання",
+      nameKey: "customizationPanel.menu.engraving.name",
+      tooltipKey: "customizationPanel.menu.engraving.tooltip",
       icon: "/icons/laser-pen.svg",
-      tooltip: "Гравіювання",
     },
-  ];
+  ] as const;
 
   const getCardsPerPage = (width: number): number => {
     if (width >= 480) return 2;
@@ -71,14 +73,12 @@ const CustomizationPanelMenu: React.FC<CustomizationPanelMenuProps> = ({
       setScreenWidth(window.innerWidth);
     };
 
-    // Set initial width
     setScreenWidth(window.innerWidth);
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // Reset page when cards per page changes
   useEffect(() => {
     const newTotalPages = Math.ceil(menuOptions.length / cardsPerPage);
     if (currentPage >= newTotalPages && newTotalPages > 0) {
@@ -89,29 +89,27 @@ const CustomizationPanelMenu: React.FC<CustomizationPanelMenuProps> = ({
   const isVerySmallScreen = screenWidth > 0 && screenWidth < 320;
 
   return (
-    <div className="customization-menu w-full">
-      <div
-        className={`menu-container w-full ${
-          cardsPerPage === 2
-            ? "grid grid-cols-2 gap-1 sm:gap-2"
-            : cardsPerPage === 3
-            ? "grid grid-cols-3 gap-1 sm:gap-2"
-            : "flex flex-col"
-        }`}
-      >
-        {currentOptions.map((option) => (
-          <div key={option.id} className="w-full">
-            <MenuCard
-              icon={option.icon}
-              name={option.name}
-              tooltipText={option.tooltip}
-              onClick={() => setSelectedOption(option.id)}
-              isCompact={isVerySmallScreen}
-            />
-          </div>
-        ))}
+      <div className="customization-menu w-full">
+        <div
+            className={`menu-container w-full ${
+                cardsPerPage === 2
+                    ? "grid grid-cols-2 gap-1 sm:gap-2"
+                    : "flex flex-col"
+            }`}
+        >
+          {currentOptions.map((option) => (
+              <div key={option.id} className="w-full">
+                <MenuCard
+                    icon={option.icon}
+                    name={t(option.nameKey)}
+                    tooltipText={t(option.tooltipKey)}
+                    onClick={() => setSelectedOption(option.id)}
+                    isCompact={isVerySmallScreen}
+                />
+              </div>
+          ))}
+        </div>
       </div>
-    </div>
   );
 };
 

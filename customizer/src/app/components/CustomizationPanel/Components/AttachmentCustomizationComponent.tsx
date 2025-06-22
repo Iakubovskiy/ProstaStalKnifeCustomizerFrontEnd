@@ -92,7 +92,7 @@ const AttachmentCustomizationComponent: React.FC = () => {
         )}
       </div> */}
       <div className="p-3">
-        <ModalFormButton component="bladeShape"></ModalFormButton>
+        <ModalFormButton component="attachments"></ModalFormButton>
       </div>
     </>
   );
