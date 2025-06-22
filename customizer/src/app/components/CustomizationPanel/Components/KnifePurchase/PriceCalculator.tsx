@@ -1,4 +1,5 @@
 import React from "react";
+import {useTranslation} from "react-i18next";
 
 interface Props {
   price: number;
@@ -15,6 +16,7 @@ export const PriceCalculator: React.FC<Props> = ({
   onClearCart,
   onAddToCart,
 }) => {
+  const { t } = useTranslation();
   return (
     <div className="flex gap-4 items-center">
       <div className="flex items-center gap-2">
@@ -36,13 +38,13 @@ export const PriceCalculator: React.FC<Props> = ({
           onClick={onAddToCart}
           className="px-4 py-2 bg-warning text-white rounded"
         >
-          Додати
+          {t("priceCalculator.add")}
         </button>
         <button
           onClick={onClearCart}
           className="px-4 py-2 bg-gray-700 rounded  text-white"
         >
-          Очистити кошик
+          {t("priceCalculator.clearCart")}
         </button>
       </div>
     </div>

@@ -95,5 +95,149 @@
   "rangeFilter": {
     "min_text": "Мін : ",
     "max_text": "Макс : "
+  },
+  "productDetailPage": {
+    "reviewsCount_one": "відгук",
+    "reviewsCount_other": "відгуки",
+    "reviewsCount_many": "відгуків",
+    "noReviews": "Відгуків ще немає",
+    "inStock": "В наявності",
+    "customizeNow": "Кастомізувати зараз",
+    "specs": {
+      "title": "Детальні характеристики",
+      "subtitle": "Технічні параметри та особливості продукту",
+      "bladeLength": "Довжина леза",
+      "bladeWidth": "Ширина леза",
+      "bladeWeight": "Вага леза",
+      "totalLength": "Загальна довжина",
+      "sharpnessAngle": "Кут заточки",
+      "hardnessRockwell": "Твердість",
+      "sheathColor": "Колір піхов",
+      "bladeCoatingColor": "Покриття леза",
+      "handleColor": "Колір руків'я",
+      "engravingNames": "Гравіювання",
+      "bladeCoatingType": "Тип покриття"
+    },
+    "loading": {
+      "title": "Завантаження...",
+      "subtitle": "Отримуємо інформацію про товар"
+    },
+    "error": {
+      "pageTitle": "Помилка завантаження товару",
+      "title": "Ой, сталася помилка!",
+      "loadFailed": "Не вдалося завантажити товар.",
+      "backButton": "До всіх товарів"
+    },
+    "notFound": {
+      "pageTitle": "Товар не знайдено",
+      "message": "Товар не знайдено."
+    },
+    "meta": {
+      "title": "{productName} | Деталі товару",
+      "keywords": {
+        "buy": "купити",
+        "details": "деталі"
+      }
+    },
+    "currency": "грн"
+  },
+  "footer": {
+    "description": "ProstaSTAL - магазин ножів ручної роботи",
+    "catalogTitle": "Каталог",
+    "catalog": {
+      "knives": "Ножі",
+      "sheaths": "Піхви (чохли)",
+      "accessories": "Кріплення та аксесуари",
+      "hunting": "Мисливство"
+    },
+    "clientsTitle": "Клієнтам",
+    "clients": {
+      "account": "Вхід до кабінету",
+      "about": "Про нас",
+      "delivery": "Оплата і доставка",
+      "returns": "Обмін та повернення",
+      "contacts": "Контакти",
+      "reviews": "Відгуки про магазин",
+      "blog": "Блог",
+      "terms": "Угода користувача"
+    },
+    "contactTitle": "Контактна інформація",
+    "address": {
+      "countryCity": "Україна, 29023, м. Хмельницький,",
+      "street": "вул. Шевченка, 16"
+    },
+    "salesMap": "Мапа продажів"
+  },
+  "navigationMob": {
+    "about": "Про нас",
+    "delivery": "Оплата і доставка",
+    "returns": "Обмін та повернення",
+    "contacts": "Контакти",
+    "reviews": "Відгуки про магазин",
+    "blog": "Блог",
+    "terms": "Угода користувача",
+    "login": "Вхід",
+    "language": "Мова",
+    "cartIconAlt": "Іконка кошика"
+  },
+  "customizationPanel": {
+    "menu": {
+      "bladeShape": {
+        "name": "Форма клинка",
+        "tooltip": "Форми клинка"
+      },
+      "bladeCoating": {
+        "name": "Покриття клинка",
+        "tooltip": "Покриття клинка"
+      },
+      "handleColor": {
+        "name": "Колір руків'я",
+        "tooltip": "Колір руків'я"
+      },
+      "scabbardColor": {
+        "name": "Колір піхв",
+        "tooltip": "Колір піхв"
+      },
+      "attachments": {
+        "name": "Кріплення",
+        "tooltip": "Кріплення"
+      },
+      "engraving": {
+        "name": "Гравіювання",
+        "tooltip": "Гравіювання"
+      }
+    }
+  },
+  "orderButtons":
+  {
+    "order": "Оформити замовлення"
+  },
+  "customizationPanel2": {
+    "selectOptionPrompt": "Виберіть опцію для кастомізації",
+    "positioningTitle": "Позиціонування: Грав. {id}",
+    "closePositioningPanelTooltip": "Закрити панель позиціонування",
+    "engravingNotFoundError": "Помилка: Гравіювання для налаштування не знайдено.",
+    "previousPageTooltip": "Попередня сторінка",
+    "nextPageTooltip": "Наступна сторінка"
+  },
+  "priceCalculator": {
+    "add": "Додати",
+    "clearCart": "Очистити кошик"
+  },
+  "purchaseContainer": {
+    "engravingUploadError": "Не вдалося завантажити файл гравіювання. Спробуйте ще раз.",
+    "customKnifeName": "Кастомний ніж",
+    "addedToCartToast": "Товар додано до кошика!"
+  },
+  "modalForm": {
+    "reportErrorButton": "Повідомити про помилку",
+    "title": "Форма зворотного зв'язку",
+    "emailLabel": "Електронна пошта",
+    "emailPlaceholder": "example@mail.com",
+    "phoneLabel": "Номер телефону",
+    "phonePlaceholder": "+380501234567",
+    "messageLabel": "Повідомлення",
+    "messagePlaceholder": "Введіть ваше повідомлення...",
+    "submitButton": "Відправити"
   }
 }

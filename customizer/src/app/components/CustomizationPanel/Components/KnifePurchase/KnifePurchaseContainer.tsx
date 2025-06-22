@@ -9,21 +9,17 @@ import Toast from "../../../Toast/Toast";
 import { SheathColorPriceByType } from "@/app/Interfaces/SheathColorPriceByType";
 import { KnifeDTO } from "@/app/DTOs/KnifeDTO";
 import { EngravingDTO } from "@/app/DTOs/EngravingDTO";
-import { AttachmentDTO } from "@/app/DTOs/AttachmentDTO";
-import {
-  CartItem,
-  CustomKnifeCartItem,
-  ExistingProductCartItem,
-} from "@/app/Interfaces/CartItem";
+import { CartItem } from "@/app/Interfaces/CartItem";
 import FileService from "@/app/services/FileService";
 import { AppFile } from "@/app/Interfaces/File";
-import { Attachment } from "./../../../../Interfaces/Attachment";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   productId?: string | null;
 }
 
 export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
+  const { t, i18n } = useTranslation();
   const [quantity, setQuantity] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const state = useCanvasState();
@@ -41,19 +37,19 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
     attachment,
     engravings,
   } = snap;
+
   const calculateSingleItemPrice = useCallback(async (): Promise<number> => {
     let price = 0;
-
     price += snap.bladeShape?.price || 0;
     price += snap.bladeCoatingColor?.price || 0;
     price += snap.handleColor?.price || 0;
     price += snap.attachment?.price || 0;
 
     const sheathPriceInfo = (
-      snap.sheathColor?.prices as SheathColorPriceByType[]
+        snap.sheathColor?.prices as SheathColorPriceByType[]
     )?.find(
-      (priceItem) =>
-        priceItem.bladeShapeType?.id === snap.bladeShape.shapeType.id
+        (priceItem) =>
+            priceItem.bladeShapeType?.id === snap.bladeShape.shapeType.id
     );
     price += sheathPriceInfo?.price || 0;
 
@@ -61,11 +57,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
       const engravingService = new EngravingPriceService();
       try {
         const engravingPriceData = await engravingService.get();
-
-        if (
-          engravingPriceData &&
-          typeof engravingPriceData.price === "number"
-        ) {
+        if (engravingPriceData && typeof engravingPriceData.price === "number") {
           const uniqueSides = new Set(engravings.map((eng) => eng.side)).size;
           price += uniqueSides * engravingPriceData.price;
         }
@@ -73,16 +65,8 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
         console.error("Could not get engraving price", e);
       }
     }
-
     return price;
-  }, [
-    sheathColor,
-    bladeShape,
-    bladeCoatingColor,
-    handleColor,
-    attachment,
-    engravings,
-  ]);
+  }, [sheathColor, bladeShape, bladeCoatingColor, handleColor, attachment, engravings]);
 
   const updateDisplayPrice = useCallback(async () => {
     const singlePrice = await calculateSingleItemPrice();
@@ -91,7 +75,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
 
   useEffect(() => {
     updateDisplayPrice();
-  }, [updateDisplayPrice]); // useEffect тепер залежить від useCallback-функції
+  }, [updateDisplayPrice]);
 
   const handleClearCart = () => {
     localStorage.removeItem("cart");
@@ -100,6 +84,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const handleCloseToast = () => {
     setShowToast(false);
   };
+
   const resetToDefaultSettings = async () => {
     try {
       const initialData = await initialDataService.getData();
@@ -117,12 +102,11 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const handleAddToCart = async () => {
     if (isLoading) return;
     setIsLoading(true);
-    console.log(snap);
+
     try {
       let cartItem: CartItem;
-
-      // Визначаємо ціну за ОДНУ одиницю товару
       const pricePerUnit = await calculateSingleItemPrice();
+
       if (productId) {
         cartItem = {
           type: "existing_product",
@@ -133,31 +117,20 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
         };
       } else {
         const processedEngravings: EngravingDTO[] = [];
-        const engravingsToProcess = [...snap.engravings];
-
-        for (const engraving of engravingsToProcess) {
+        for (const engraving of snap.engravings) {
           let pictureId: string | null = null;
-
-          const uploadable = engraving.fileObject;
-          if (uploadable) {
+          if (engraving.fileObject) {
             try {
-              console.log("Engraving file to upload:", uploadable);
-              const uploadedFile: AppFile = await fileService.upload(
-                uploadable
-              );
-              console.log("Uploaded engraving file:", uploadedFile);
+              const uploadedFile: AppFile = await fileService.upload(engraving.fileObject);
               pictureId = uploadedFile.id;
             } catch (error) {
               console.error("Failed to upload engraving file:", error);
-              alert(
-                "Не вдалося завантажити файл гравіювання. Спробуйте ще раз."
-              );
+              alert(t("purchaseContainer.engravingUploadError"));
               throw error;
             }
           }
-
           processedEngravings.push({
-            pictureId: pictureId,
+            pictureId,
             side: engraving.side,
             text: engraving.text,
             font: engraving.font,
@@ -173,15 +146,15 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
           });
         }
 
-        let processedAttachments: string[] = [];
-        if (snap.attachment) {
-          processedAttachments.push(snap.attachment.id);
-        }
+        const processedAttachments: string[] = snap.attachment ? [snap.attachment.id] : [];
 
         const knifeToCreate: KnifeDTO = {
           isActive: true,
           imageFileId: state.bladeShape.bladeShapeImage?.id || "",
-          names: { ua: "Кастомний ніж", en: "Custom Knife" },
+          names: {
+            ua: i18n.getFixedT('uk')('purchaseContainer.customKnifeName'),
+            en: i18n.getFixedT('en')('purchaseContainer.customKnifeName')
+          },
           shapeId: state.bladeShape.id,
           bladeCoatingColorId: state.bladeCoatingColor.id,
           handleId: state.handleColor?.id ?? null,
@@ -196,6 +169,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
           existingEngravingIds: [],
           existingAttachmentIds: processedAttachments,
         };
+
         cartItem = {
           type: "custom_knife",
           price: pricePerUnit,
@@ -204,9 +178,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
         };
       }
 
-      const existingCart: CartItem[] = JSON.parse(
-        localStorage.getItem("cart") || "[]"
-      );
+      const existingCart: CartItem[] = JSON.parse(localStorage.getItem("cart") || "[]");
       localStorage.setItem("cart", JSON.stringify([...existingCart, cartItem]));
 
       setShowToast(true);
@@ -219,21 +191,20 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <PriceCalculator
-        price={totalPrice}
-        quantity={quantity}
-        onQuantityChange={setQuantity}
-        onClearCart={handleClearCart}
-        onAddToCart={handleAddToCart}
-      />
-      <OrderButton />
-
-      <Toast
-        message="Товар додано до кошика!"
-        isVisible={showToast}
-        onClose={handleCloseToast}
-      />
-    </div>
+      <div className="flex flex-col gap-4">
+        <PriceCalculator
+            price={totalPrice}
+            quantity={quantity}
+            onQuantityChange={setQuantity}
+            onClearCart={handleClearCart}
+            onAddToCart={handleAddToCart}
+        />
+        <OrderButton />
+        <Toast
+            message={t("purchaseContainer.addedToCartToast")}
+            isVisible={showToast}
+            onClose={handleCloseToast}
+        />
+      </div>
   );
 };
