@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import "../../styles/globals.css";
+import { useTranslation } from "react-i18next";
 
 import { Input, Button } from "@nextui-org/react";
 import { Lock, Mail } from "lucide-react";
@@ -17,6 +18,7 @@ const initialData: RegisterDTO = {
 };
 
 const RegisterPage = () => {
+    const { t } = useTranslation();
     const [userData, setUserData] = useState<RegisterDTO>(initialData);
     const [isLoading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -31,11 +33,11 @@ const RegisterPage = () => {
             !userData.password ||
             !userData.passwordConfirmation
         ) {
-            setError("Будь ласка, заповніть усі обов'язкові поля.");
+            setError(t("registerPage.errorFillFields"));
             return;
         }
         if (userData.password !== userData.passwordConfirmation) {
-            setError("Паролі не співпадають.");
+            setError(t("registerPage.errorPasswordsDoNotMatch"));
             return;
         }
 
@@ -57,9 +59,9 @@ const RegisterPage = () => {
         } catch (err) {
             console.error("Помилка реєстрації:", err);
             if (err instanceof APIError) {
-                setError("Користувач з таким email вже існує або дані некоректні.");
+                setError(t("registerPage.errorUserExists"));
             } else {
-                setError("Сталася невідома помилка. Спробуйте ще раз.");
+                setError(t("registerPage.errorUnknown"));
             }
         } finally {
             setLoading(false);
@@ -71,13 +73,15 @@ const RegisterPage = () => {
             <div className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-[#b8845f]/20 shadow-lg">
                 <form onSubmit={handleRegister} className="space-y-4">
                     <div className="text-center">
-                        <h1 className="text-3xl font-bold text-[#2d3748]">Реєстрація</h1>
+                        <h1 className="text-3xl font-bold text-[#2d3748]">
+                            {t("registerPage.title")}
+                        </h1>
                         <p className="text-[#2d3748]/60 mt-2">
-                            Створіть свій обліковий запис
+                            {t("registerPage.subtitle")}
                         </p>
                     </div>
                     <Input
-                        label="Email"
+                        label={t("registerPage.emailLabel")}
                         type="email"
                         value={userData.email || ""}
                         onValueChange={(value) => setUserData({ ...userData, email: value })}
@@ -88,7 +92,7 @@ const RegisterPage = () => {
                         isRequired
                     />
                     <Input
-                        label="Пароль"
+                        label={t("registerPage.passwordLabel")}
                         type="password"
                         value={userData.password || ""}
                         onValueChange={(value) =>
@@ -101,7 +105,7 @@ const RegisterPage = () => {
                         isRequired
                     />
                     <Input
-                        label="Підтвердження пароля"
+                        label={t("registerPage.passwordConfirmationLabel")}
                         type="password"
                         value={userData.passwordConfirmation || ""}
                         onValueChange={(value) =>
@@ -127,16 +131,18 @@ const RegisterPage = () => {
                         isLoading={isLoading}
                         className="bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white font-semibold mt-4"
                     >
-                        {isLoading ? "Реєстрація..." : "Зареєструватися"}
+                        {isLoading
+                            ? t("registerPage.submitButtonLoading")
+                            : t("registerPage.submitButton")}
                     </Button>
 
                     <div className="text-center text-sm text-gray-600">
-                        <span>Вже є акаунт? </span>
+                        <span>{t("registerPage.alreadyHaveAccount")}</span>
                         <Link
                             href="/login"
                             className="font-medium text-[#8b7258] hover:underline"
                         >
-                            Увійти
+                            {t("registerPage.loginLink")}
                         </Link>
                     </div>
                 </form>

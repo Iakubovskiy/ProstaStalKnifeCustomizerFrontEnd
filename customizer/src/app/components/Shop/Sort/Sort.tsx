@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { ChevronDown, Check } from "lucide-react";
+import {useTranslation} from "react-i18next";
 
 interface SortOption {
   value: string;
@@ -17,6 +18,7 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
   currentSort,
   onSortChange,
 }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -52,7 +54,7 @@ const SortDropdown: React.FC<SortDropdownProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-[#d8a878] focus:border-transparent transition-colors duration-200"
       >
-        <span>Сортувати: {currentSortLabel}</span>
+        <span>{t("sortDropdown.sort")}: {currentSortLabel}</span>
         <ChevronDown
           className={`w-4 h-4 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""

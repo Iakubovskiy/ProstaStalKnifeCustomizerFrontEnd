@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import {useTranslation} from "react-i18next";
 
 interface RangeFilterProps {
   title: string;
@@ -22,17 +23,16 @@ const RangeFilter: React.FC<RangeFilterProps> = ({
   onFilterChange,
   defaultValue,
 }) => {
-  // Always use defaultValue if provided, otherwise use min/max
   const [range, setRange] = useState<[number, number]>(
     defaultValue ? [defaultValue.min, defaultValue.max] : [min, max]
   );
-  // If defaultValue is provided, the filter should be active initially
   const [isActive, setIsActive] = useState<boolean>(defaultValue !== undefined);
   const [isDragging, setIsDragging] = useState<"min" | "max" | null>(null);
 
   const sliderRef = useRef<HTMLDivElement>(null);
   const minThumbRef = useRef<HTMLDivElement>(null);
   const maxThumbRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     console.log("default1111", defaultValue);
@@ -43,7 +43,6 @@ const RangeFilter: React.FC<RangeFilterProps> = ({
     }
   }, []);
 
-  // Update filter values when range changes
   const updateFilter = (newRange: [number, number]) => {
     if (isActive) {
       onFilterChange(name, { min: newRange[0], max: newRange[1] });
@@ -199,7 +198,7 @@ const RangeFilter: React.FC<RangeFilterProps> = ({
       <div className="grid grid-cols-2 gap-4 mb-2">
         <div>
           <label className="block text-xs text-gray-500 mb-1">
-            Мін: {range[0]}
+            {t("rangeFilter.min_text")} {range[0]}
           </label>
           <input
             type="number"
@@ -215,7 +214,7 @@ const RangeFilter: React.FC<RangeFilterProps> = ({
         </div>
         <div>
           <label className="block text-xs text-gray-500 mb-1">
-            Макс: {range[1]}
+            {t("rangeFilter.max_text")} {range[1]}
           </label>
           <input
             type="number"
