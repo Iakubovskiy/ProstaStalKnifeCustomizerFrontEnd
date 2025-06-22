@@ -17,6 +17,7 @@ import {
 } from "@/app/Interfaces/CartItem";
 import FileService from "@/app/services/FileService";
 import { AppFile } from "@/app/Interfaces/File";
+import { Attachment } from "./../../../../Interfaces/Attachment";
 
 interface Props {
   productId?: string | null;
@@ -43,45 +44,36 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const calculateSingleItemPrice = useCallback(async (): Promise<number> => {
     let price = 0;
 
+    price += snap.bladeShape?.price || 0;
+    price += snap.bladeCoatingColor?.price || 0;
+    price += snap.handleColor?.price || 0;
+    price += snap.attachment?.price || 0;
+
     const sheathPriceInfo = (
       snap.sheathColor?.prices as SheathColorPriceByType[]
     )?.find(
       (priceItem) =>
         priceItem.bladeShapeType?.id === snap.bladeShape.shapeType.id
     );
-    if (sheathPriceInfo) {
-      price += sheathPriceInfo.price;
-    }
-    if (snap.bladeShape) {
-      price += snap.bladeShape.price;
-    }
-    if (snap.bladeCoatingColor) {
-      price += snap.bladeCoatingColor.price;
-    }
-    if (snap.handleColor) {
-      price += snap.handleColor.price;
-    }
-    if (snap.attachment) {
-      price += snap.attachment.price;
-    }
-    if (state.engravings && state.engravings.length > 0) {
-      console.log("Calculating engraving price for", state.engravings);
+    price += sheathPriceInfo?.price || 0;
+
+    if (engravings && engravings.length > 0) {
       const engravingService = new EngravingPriceService();
-      const prices = await engravingService.get();
-      if (prices) {
-        console.log(
-          `Engraving price per side: ${prices.price}, total sides: ${state.engravings.length}`
-        );
-        const uniqueSides = new Set(state.engravings.map((eng) => eng.side))
-          .size;
-        price += uniqueSides * prices.price;
-        console.log(
-          `Calculated engraving price: ${uniqueSides} sides * ${
-            prices.price
-          } = ${uniqueSides * prices.price}`
-        );
+      try {
+        const engravingPriceData = await engravingService.get();
+
+        if (
+          engravingPriceData &&
+          typeof engravingPriceData.price === "number"
+        ) {
+          const uniqueSides = new Set(engravings.map((eng) => eng.side)).size;
+          price += uniqueSides * engravingPriceData.price;
+        }
+      } catch (e) {
+        console.error("Could not get engraving price", e);
       }
     }
+
     return price;
   }, [
     sheathColor,
@@ -125,7 +117,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const handleAddToCart = async () => {
     if (isLoading) return;
     setIsLoading(true);
-
+    console.log(snap);
     try {
       let cartItem: CartItem;
 
@@ -181,16 +173,9 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
           });
         }
 
-        let processedAttachments: AttachmentDTO[] = [];
-        if (state.attachment) {
-          processedAttachments.push({
-            isActive: true,
-            price: state.attachment.price,
-            typeId: state.attachment.typeId ?? "",
-            imageFileId: state.attachment.image?.id ?? "",
-            modelFileId: state.attachment.model?.id ?? "",
-            names: { ua: state.attachment.name, en: state.attachment.name },
-          });
+        let processedAttachments: string[] = [];
+        if (snap.attachment) {
+          processedAttachments.push(snap.attachment.id);
         }
 
         const knifeToCreate: KnifeDTO = {
@@ -203,18 +188,17 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
           sheathId: state.bladeShape.sheathId,
           sheathColorId: state.sheathColor?.id ?? null,
           newEngravings: processedEngravings,
-          newAttachments: processedAttachments,
           titles: {},
           descriptions: {},
           metaTitles: {},
           metaDescriptions: {},
           tagsIds: [],
           existingEngravingIds: [],
-          existingAttachmentIds: [],
+          existingAttachmentIds: processedAttachments,
         };
         cartItem = {
           type: "custom_knife",
-          price: pricePerUnit, // Використовуємо ціну за одиницю
+          price: pricePerUnit,
           productData: knifeToCreate,
           quantity: quantity,
         };

@@ -28,6 +28,9 @@ import LocalizedContentEditor from "@/app/components/LocalizedContentEditor/Loca
 // --- Стан для 3D ---
 import { useCanvasState } from "@/app/state/canvasState";
 import { useSnapshot } from "valtio";
+import { EngravingDTO } from "@/app/DTOs/EngravingDTO";
+import { AppFile } from "@/app/Interfaces/File";
+import FileService from "./../../app/services/FileService";
 
 const initialData: Partial<Knife> = {
   isActive: true,
@@ -54,11 +57,10 @@ const KnifeEditPage = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  // Стан для полів форми
   const [knifeData, setKnifeData] = useState<Partial<Knife>>(initialData);
   const [isLoading, setLoading] = useState(true);
   const [isSaving, setSaving] = useState(false);
-
+  const fileService = new FileService();
   // Отримуємо доступ до стану 3D-сцени для збереження
   const canvasState = useCanvasState();
   const snap = useSnapshot(canvasState);
@@ -80,8 +82,8 @@ const KnifeEditPage = () => {
       knifeService
         .getById(id as string)
         .then((data) => {
-          // Заповнюємо стан форми даними, які не стосуються 3D
           setKnifeData(data);
+          console.log("data: ", data);
         })
         .catch((err) => {
           console.error("Failed to fetch knife, redirecting...", err);
@@ -101,7 +103,61 @@ const KnifeEditPage = () => {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // 1. Збираємо дані з 3D-сцени (з valtio snap)
+      const newEngravingsDto: EngravingDTO[] = [];
+      const existingEngravingIds: string[] = snap.engravings
+        .filter((eng) => "id" in eng && eng.id)
+        .map((eng) => eng.id!);
+
+      const engravingsToCreate = snap.engravings.filter(
+        (eng) => !("id" in eng) || !eng.id
+      ); // Беремо тільки нові
+
+      for (const engraving of engravingsToCreate) {
+        let pictureId: string | null = null;
+
+        // Якщо у гравіювання вже є завантажене зображення, використовуємо його ID
+        if (engraving.picture) {
+          pictureId = engraving.picture.id;
+        }
+
+        // Якщо є новий файл для завантаження (fileObject), завантажуємо його
+        const uploadable = engraving.fileObject;
+        if (uploadable) {
+          try {
+            console.log("Engraving file to upload:", uploadable);
+            const uploadedFile: AppFile = await fileService.upload(uploadable);
+            console.log("Uploaded engraving file:", uploadedFile);
+            pictureId = uploadedFile.id; // Перезаписуємо pictureId новим ID
+          } catch (error) {
+            console.error("Failed to upload engraving file:", error);
+            alert("Не вдалося завантажити файл гравіювання. Спробуйте ще раз.");
+            throw error;
+          }
+        }
+
+        newEngravingsDto.push({
+          pictureId: pictureId,
+          side: engraving.side,
+          text: engraving.text,
+          font: engraving.font,
+          locationX: engraving.locationX,
+          locationY: engraving.locationY,
+          locationZ: engraving.locationZ,
+          rotationX: engraving.rotationX,
+          rotationY: engraving.rotationY,
+          rotationZ: engraving.rotationZ,
+          scaleX: engraving.scaleX,
+          scaleY: engraving.scaleY,
+          scaleZ: engraving.scaleZ,
+          // Додайте names, descriptions, tagsIds, якщо вони є у вашому EngravingDTO
+          names: {
+            ua: engraving.text || "Гравіювання",
+            en: engraving.text || "Engraving",
+          },
+          descriptions: { ua: "-", en: "-" },
+          tagsIds: [],
+        });
+      }
       const canvasData = {
         shapeId: snap.bladeShape.id,
         bladeCoatingColorId: snap.bladeCoatingColor.id,
@@ -109,8 +165,7 @@ const KnifeEditPage = () => {
         sheathId: snap.bladeShape.sheathModel?.id ?? null,
         sheathColorId: snap.sheathColor?.id ?? null,
         newEngravings: snap.engravings.map((eng) => ({
-          // Мапуємо EngravingForCanvas -> EngravingDTO
-          pictureId: null, // Потрібно буде реалізувати завантаження файлу, якщо потрібно
+          pictureId: eng.picture.id,
           side: eng.side,
           text: eng.text,
           font: eng.font,
@@ -124,27 +179,14 @@ const KnifeEditPage = () => {
           scaleY: eng.scaleY,
           scaleZ: eng.scaleZ,
         })),
-        newAttachments: snap.attachment
-          ? [
-              {
-                // Мапуємо AttachmentForCanvas -> AttachmentDTO
-                isActive: true,
-                price: snap.attachment.price,
-                typeId: snap.attachment.typeId ?? "",
-                imageFileId: snap.attachment.image?.id ?? "",
-                modelFileId: snap.attachment.model?.id ?? "",
-                names: { ua: snap.attachment.name, en: snap.attachment.name },
-              },
-            ]
-          : [],
+
         existingEngravingIds: [], // Логіка для існуючих гравіювань
         existingAttachmentIds: [], // Логіка для існуючих додатків
       };
-
-      // 2. Збираємо дані з форми (з useState)
+      console.log("image: ", knifeData.imageUrl);
       const formData = {
         isActive: knifeData.isActive ?? false,
-        imageFileId: knifeData.imageUrl?.id || "", // Потрібно вирішити, як оновлювати головне зображення
+        imageFileId: knifeData.imageUrl?.id || "",
         names: Object.fromEntries(
           Object.entries(
             knifeData.names || { ua: knifeData.name, en: knifeData.name }

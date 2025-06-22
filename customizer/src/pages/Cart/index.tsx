@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect } from "react";
 import DeliveryType from "@/app/Models/DeliveryType";
 import OrderService from "@/app/services/OrderService";
@@ -126,9 +127,13 @@ const CartAndOrderPage = () => {
       for (const item of cartItems) {
         let productId: string;
         if (item.type === "custom_knife") {
-          const knifeData = item.productData;
-          // Тут має бути логіка створення гравіювань, якщо вона потрібна
+          console.log(item);
+          const knifeData = {
+            ...item.productData,
+            price: item.price,
+          };
           const createdKnife = await knifeService.create(knifeData);
+          console.log(createdKnife);
           productId = createdKnife.id;
         } else {
           productId = item.productId;
@@ -146,7 +151,8 @@ const CartAndOrderPage = () => {
         comment: comment || null,
       };
 
-      await orderService.create(orderData);
+      const order = await orderService.create(orderData);
+      console.log(order);
       setToastMessage("Замовлення успішно створено!");
       setShowToast(true);
       setCartItems([]);

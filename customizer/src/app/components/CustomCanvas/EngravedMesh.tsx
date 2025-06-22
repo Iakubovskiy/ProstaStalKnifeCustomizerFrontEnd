@@ -26,7 +26,13 @@ const EngravedMesh: React.FC<EngravedMeshProps> = ({
 
   useEffect(() => {
     setMeshKey((prev) => prev + 1);
-  }, [engravings.length, engravings.map((e) => e.picture.fileUrl).join(",")]);
+  }, [
+    engravings.length,
+    engravings
+      .filter((e) => e.picture && e.picture.fileUrl)
+      .map((e) => e.picture.fileUrl)
+      .join(","),
+  ]);
 
   useEffect(() => {
     if (meshRef.current && matrix) {

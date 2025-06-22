@@ -8,9 +8,10 @@ const SingleDecal = ({ meshRef, engraving, offsetFactor }) => {
 
   useEffect(() => {
     setDecalKey((prev) => prev + 1);
-  }, [engraving.picture.fileUrl]);
+  }, [engraving.picture?.fileUrl]);
 
-  if (!meshRef.current || !engraving?.picture.fileUrl) return null;
+  if (!meshRef.current || !engraving?.picture || !engraving?.picture.fileUrl)
+    return null;
 
   return (
     <Decal

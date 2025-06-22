@@ -70,6 +70,7 @@ const Scene = () => {
             />
           )}
         {snap.attachment &&
+          snap.attachment.model &&
           isValidAppFile(snap.attachment.model) &&
           validateModelUrl(snap.attachment.model.fileUrl) && (
             <ModelPart
