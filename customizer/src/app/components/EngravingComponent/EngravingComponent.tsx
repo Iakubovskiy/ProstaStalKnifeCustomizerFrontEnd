@@ -635,7 +635,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     <div className="w-full">
       <div className="p-0 sm:p-0 w-full max-w-2xl mx-auto">
         <div className="mb-4">
-          <ModalFormButton component="Engraving"></ModalFormButton>
+          <ModalFormButton></ModalFormButton>
         </div>
         <button
           className="p-3 w-full rounded-lg transition font-medium mb-6 shadow-sm hover:shadow-md active:shadow-inner"
