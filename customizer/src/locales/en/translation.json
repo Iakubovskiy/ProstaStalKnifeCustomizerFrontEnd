@@ -95,5 +95,77 @@
   "rangeFilter": {
     "min_text": "Min : ",
     "max_text": "Max : "
+  },
+  "productDetailPage": {
+    "reviewsCount_one": "review",
+    "reviewsCount_other": "reviews",
+    "reviewsCount_many": "reviews",
+    "noReviews": "No reviews yet",
+    "inStock": "In stock",
+    "customizeNow": "Customize Now",
+    "specs": {
+      "title": "Detailed Specifications",
+      "subtitle": "Technical parameters and product features",
+      "bladeLength": "Blade Length",
+      "bladeWidth": "Blade Width",
+      "bladeWeight": "Blade Weight",
+      "totalLength": "Total Length",
+      "sharpnessAngle": "Sharpness Angle",
+      "hardnessRockwell": "Hardness",
+      "sheathColor": "Sheath Color",
+      "bladeCoatingColor": "Blade Coating",
+      "handleColor": "Handle Color",
+      "engravingNames": "Engraving",
+      "bladeCoatingType": "Coating Type"
+    },
+    "loading": {
+      "title": "Loading...",
+      "subtitle": "Getting product information"
+    },
+    "error": {
+      "pageTitle": "Error Loading Product",
+      "title": "Oops, an error occurred!",
+      "loadFailed": "Failed to load the product.",
+      "backButton": "To All Products"
+    },
+    "notFound": {
+      "pageTitle": "Product Not Found",
+      "message": "Product not found."
+    },
+    "meta": {
+      "title": "{productName} | Product Details",
+      "keywords": {
+        "buy": "buy",
+        "details": "details"
+      }
+    },
+    "currency": "$"
+  },
+  "footer": {
+    "description": "ProstaSTAL - handmade knives store",
+    "catalogTitle": "Catalog",
+    "catalog": {
+      "knives": "Knives",
+      "sheaths": "Sheaths (cases)",
+      "accessories": "Mounts & Accessories",
+      "hunting": "Hunting"
+    },
+    "clientsTitle": "For Clients",
+    "clients": {
+      "account": "My Account",
+      "about": "About Us",
+      "delivery": "Payment & Delivery",
+      "returns": "Exchanges & Returns",
+      "contacts": "Contacts",
+      "reviews": "Store Reviews",
+      "blog": "Blog",
+      "terms": "User Agreement"
+    },
+    "contactTitle": "Contact Information",
+    "address": {
+      "countryCity": "Ukraine, 29023, Khmelnytskyi,",
+      "street": "16 Shevchenka St"
+    },
+    "salesMap": "Sales Map"
   }
 }

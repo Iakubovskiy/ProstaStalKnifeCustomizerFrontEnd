@@ -95,5 +95,77 @@
   "rangeFilter": {
     "min_text": "Мін : ",
     "max_text": "Макс : "
+  },
+  "productDetailPage": {
+    "reviewsCount_one": "відгук",
+    "reviewsCount_other": "відгуки",
+    "reviewsCount_many": "відгуків",
+    "noReviews": "Відгуків ще немає",
+    "inStock": "В наявності",
+    "customizeNow": "Кастомізувати зараз",
+    "specs": {
+      "title": "Детальні характеристики",
+      "subtitle": "Технічні параметри та особливості продукту",
+      "bladeLength": "Довжина леза",
+      "bladeWidth": "Ширина леза",
+      "bladeWeight": "Вага леза",
+      "totalLength": "Загальна довжина",
+      "sharpnessAngle": "Кут заточки",
+      "hardnessRockwell": "Твердість",
+      "sheathColor": "Колір піхов",
+      "bladeCoatingColor": "Покриття леза",
+      "handleColor": "Колір руків'я",
+      "engravingNames": "Гравіювання",
+      "bladeCoatingType": "Тип покриття"
+    },
+    "loading": {
+      "title": "Завантаження...",
+      "subtitle": "Отримуємо інформацію про товар"
+    },
+    "error": {
+      "pageTitle": "Помилка завантаження товару",
+      "title": "Ой, сталася помилка!",
+      "loadFailed": "Не вдалося завантажити товар.",
+      "backButton": "До всіх товарів"
+    },
+    "notFound": {
+      "pageTitle": "Товар не знайдено",
+      "message": "Товар не знайдено."
+    },
+    "meta": {
+      "title": "{productName} | Деталі товару",
+      "keywords": {
+        "buy": "купити",
+        "details": "деталі"
+      }
+    },
+    "currency": "грн"
+  },
+  "footer": {
+    "description": "ProstaSTAL - магазин ножів ручної роботи",
+    "catalogTitle": "Каталог",
+    "catalog": {
+      "knives": "Ножі",
+      "sheaths": "Піхви (чохли)",
+      "accessories": "Кріплення та аксесуари",
+      "hunting": "Мисливство"
+    },
+    "clientsTitle": "Клієнтам",
+    "clients": {
+      "account": "Вхід до кабінету",
+      "about": "Про нас",
+      "delivery": "Оплата і доставка",
+      "returns": "Обмін та повернення",
+      "contacts": "Контакти",
+      "reviews": "Відгуки про магазин",
+      "blog": "Блог",
+      "terms": "Угода користувача"
+    },
+    "contactTitle": "Контактна інформація",
+    "address": {
+      "countryCity": "Україна, 29023, м. Хмельницький,",
+      "street": "вул. Шевченка, 16"
+    },
+    "salesMap": "Мапа продажів"
   }
 }
