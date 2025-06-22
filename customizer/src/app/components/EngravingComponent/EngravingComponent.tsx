@@ -12,6 +12,7 @@ import ModalFormButton from "../ModalButton/ModalButton";
 import { DraggablePopup } from "./DraggablePopup";
 import Select, { StylesConfig, SingleValue, GroupBase } from "react-select";
 import { EngravingForCanvas } from "@/app/Interfaces/Knife/EngravingForCanvas";
+import { ref } from "valtio";
 
 // PositioningControls залишається без змін
 export const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
@@ -531,7 +532,9 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
           id: `svg-pending-${customState.engravings[id].id}`,
           fileUrl: localPreviewUrl,
         },
-        fileObject: await blobUrlToFile(localPreviewUrl, `engraving-${id}.svg`),
+        fileObject: ref(
+          await blobUrlToFile(localPreviewUrl, `engraving-${id}.svg`)
+        ),
       });
     }
   };
@@ -549,7 +552,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
           id: "",
           fileUrl: URL.createObjectURL(file),
         },
-        fileObject: file,
+        fileObject: ref(file),
       });
     } else {
       // Користувач скасував вибір

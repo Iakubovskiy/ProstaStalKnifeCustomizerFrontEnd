@@ -17,7 +17,7 @@ class EngravingService {
 
   async getAllActive(): Promise<Engraving[]> {
     const res = await this.apiService.getAll<Engraving>(
-        `${this.resource}/active`
+      `${this.resource}/active`
     );
     return res;
   }
@@ -29,17 +29,17 @@ class EngravingService {
 
   async create(data: EngravingDTO): Promise<Engraving> {
     const createdDto = await this.apiService.create<Engraving>(
-        this.resource,
-        data
+      this.resource,
+      data
     );
     return createdDto;
   }
 
   async update(id: string, data: EngravingDTO): Promise<Engraving> {
     const updatedDto = await this.apiService.update<Engraving>(
-        this.resource,
-        id,
-        data
+      this.resource,
+      id,
+      data
     );
     return updatedDto;
   }
@@ -50,17 +50,17 @@ class EngravingService {
 
   async activate(id: string): Promise<void> {
     await this.apiService.partialUpdate<void>(
-        `${this.resource}/activate`,
-        id,
-        {}
+      `${this.resource}/activate`,
+      id,
+      {}
     );
   }
 
   async deactivate(id: string): Promise<void> {
     await this.apiService.partialUpdate<void>(
-        `${this.resource}/deactivate`,
-        id,
-        {}
+      `${this.resource}/deactivate`,
+      id,
+      {}
     );
   }
 }

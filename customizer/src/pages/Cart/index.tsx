@@ -3,6 +3,9 @@ import DeliveryType from "@/app/Models/DeliveryType";
 import OrderService from "@/app/services/OrderService";
 import DeliveryTypeService from "@/app/services/DeliveryTypeService";
 import KnifeService from "@/app/services/KnifeService";
+import PaymentMethodService from "@/app/services/PaymentMethodService";
+import EngravingService from "@/app/services/EngravingService";
+import { PaymentMethod } from "@/app/Interfaces/PaymentMethod";
 import {
   Button,
   Card,
@@ -22,24 +25,35 @@ import Toast from "../../app/components/Toast/Toast";
 import { CartItem } from "@/app/Interfaces/CartItem";
 import { OrderDTO } from "@/app/DTOs/OrderDTO";
 import { OrderItemDTO } from "@/app/DTOs/OrderItemDTO";
+import { ClientData } from "@/app/DTOs/ClientData";
 
 const CartAndOrderPage = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);
-  const [clientInfo, setClientInfo] = useState({
-    fullName: "",
-    phoneNumber: "",
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+
+  // 2. Оновлюємо стан clientInfo, щоб він відповідав інтерфейсу ClientData
+  const [clientInfo, setClientInfo] = useState<ClientData>({
+    clientFullName: "",
+    clientPhoneNumber: "",
     email: "",
-    country: "",
+    countryForDelivery: "",
     city: "",
+    address: "", // Нове поле
+    zipCode: "", // Нове поле
   });
+
   const [selectedDeliveryType, setSelectedDeliveryType] = useState<string>("");
+  const [selectedPaymentMethod, setSelectedPaymentMethod] =
+    useState<string>("");
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   const orderService = new OrderService();
   const knifeService = new KnifeService();
   const deliveryTypeService = new DeliveryTypeService();
+  const paymentMethodService = new PaymentMethodService();
+  const engravingService = new EngravingService();
 
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
@@ -56,22 +70,30 @@ const CartAndOrderPage = () => {
       }
     }
     deliveryTypeService.getAllActive().then((types) => setDeliveryTypes(types));
+    paymentMethodService
+      .getAllActive()
+      .then((methods) => setPaymentMethods(methods));
   }, []);
 
   const handleCloseToast = () => setShowToast(false);
 
-  const handleSelectionChange = (keys: any) => {
-    // Обробник для Select від NextUI
+  const handleDeliverySelectionChange = (keys: any) => {
     if (keys instanceof Set && keys.size > 0) {
       const selectedKey = Array.from(keys)[0] as string;
       setSelectedDeliveryType(selectedKey);
     }
   };
 
+  const handlePaymentSelectionChange = (keys: any) => {
+    if (keys instanceof Set && keys.size > 0) {
+      const selectedKey = Array.from(keys)[0] as string;
+      setSelectedPaymentMethod(selectedKey);
+    }
+  };
+
   const calculateTotal = () => {
     const deliveryPrice =
       deliveryTypes.find((d) => d.id === selectedDeliveryType)?.price || 0;
-    // FIX: Тепер item.price існує, помилки не буде
     const itemsTotal = cartItems.reduce(
       (sum, item) => sum + item.price * item.quantity,
       0
@@ -80,13 +102,17 @@ const CartAndOrderPage = () => {
   };
 
   const createOrder = async () => {
+    // 3. Оновлюємо перевірку валідації
     if (
-      !clientInfo.fullName ||
-      !clientInfo.phoneNumber ||
+      !clientInfo.clientFullName ||
+      !clientInfo.clientPhoneNumber ||
       !clientInfo.city ||
-      !selectedDeliveryType
+      !selectedDeliveryType ||
+      !selectedPaymentMethod
     ) {
-      alert("Будь ласка, заповніть усі обов'язкові поля.");
+      alert(
+        "Будь ласка, заповніть усі обов'язкові поля, включаючи доставку та оплату."
+      );
       return;
     }
     if (cartItems.length === 0) {
@@ -97,12 +123,12 @@ const CartAndOrderPage = () => {
 
     try {
       const orderItems: OrderItemDTO[] = [];
-
       for (const item of cartItems) {
         let productId: string;
         if (item.type === "custom_knife") {
-          console.log("Creating custom knife:", item.productData);
-          const createdKnife = await knifeService.create(item.productData);
+          const knifeData = item.productData;
+          // Тут має бути логіка створення гравіювань, якщо вона потрібна
+          const createdKnife = await knifeService.create(knifeData);
           productId = createdKnife.id;
         } else {
           productId = item.productId;
@@ -113,21 +139,14 @@ const CartAndOrderPage = () => {
       const orderData: OrderDTO = {
         orderItems: orderItems,
         deliveryTypeId: selectedDeliveryType,
-        paymentMethodId: "some-default-payment-id",
+        paymentMethodId: selectedPaymentMethod,
         total: calculateTotal(),
-        clientData: {
-          clientFullName: clientInfo.fullName,
-          clientPhoneNumber: clientInfo.phoneNumber,
-          email: clientInfo.email,
-          countryForDelivery: clientInfo.country,
-          city: clientInfo.city,
-        },
+        // 4. Спрощуємо передачу даних - тепер можна передати об'єкт напряму
+        clientData: clientInfo,
         comment: comment || null,
       };
 
-      console.log("Creating order with data:", orderData);
       await orderService.create(orderData);
-
       setToastMessage("Замовлення успішно створено!");
       setShowToast(true);
       setCartItems([]);
@@ -159,6 +178,10 @@ const CartAndOrderPage = () => {
     return item.name || `Продукт #${item.productId.substring(0, 8)}...`;
   };
 
+  const getPaymentMethodName = (method: PaymentMethod): string => {
+    return method.names?.ua || method.name;
+  };
+
   return (
     <div className="min-h-screen p-8 bg-gray-50">
       <Toast
@@ -166,10 +189,9 @@ const CartAndOrderPage = () => {
         isVisible={showToast}
         onClose={handleCloseToast}
       />
-
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-8">Кошик та Замовлення</h1>
-
+        {/* ... решта коду для таблиці ... */}
         <Card className="p-8 mb-8">
           <h2 className="text-xl font-semibold mb-4">Ваш кошик</h2>
           {cartItems.length > 0 ? (
@@ -177,16 +199,15 @@ const CartAndOrderPage = () => {
               <TableHeader>
                 <TableColumn>Назва</TableColumn>
                 <TableColumn>Кількість</TableColumn>
-                <TableColumn>Ціна за одиницю</TableColumn>
+                <TableColumn>Ціна</TableColumn>
                 <TableColumn>Сума</TableColumn>
-                <TableColumn>Дії</TableColumn>
+                <TableColumn>Дія</TableColumn>
               </TableHeader>
               <TableBody>
                 {cartItems.map((item, index) => (
                   <TableRow key={`${item.type}-${index}`}>
                     <TableCell>{getItemName(item)}</TableCell>
                     <TableCell>{item.quantity}</TableCell>
-                    {/* FIX: Тепер item.price існує */}
                     <TableCell>₴{item.price.toFixed(2)}</TableCell>
                     <TableCell>
                       ₴{(item.price * item.quantity).toFixed(2)}
@@ -213,26 +234,27 @@ const CartAndOrderPage = () => {
             <h2 className="text-xl font-semibold mb-4">
               Оформлення замовлення
             </h2>
+            {/* 5. Оновлюємо поля вводу */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <Input
                 label="Повне ім'я"
                 required
-                value={clientInfo.fullName}
+                value={clientInfo.clientFullName || ""}
                 onChange={(e) =>
                   setClientInfo((prev) => ({
                     ...prev,
-                    fullName: e.target.value,
+                    clientFullName: e.target.value,
                   }))
                 }
               />
               <Input
                 label="Номер телефону"
                 required
-                value={clientInfo.phoneNumber}
+                value={clientInfo.clientPhoneNumber || ""}
                 onChange={(e) =>
                   setClientInfo((prev) => ({
                     ...prev,
-                    phoneNumber: e.target.value,
+                    clientPhoneNumber: e.target.value,
                   }))
                 }
               />
@@ -240,7 +262,7 @@ const CartAndOrderPage = () => {
                 label="Email"
                 type="email"
                 required
-                value={clientInfo.email}
+                value={clientInfo.email || ""}
                 onChange={(e) =>
                   setClientInfo((prev) => ({ ...prev, email: e.target.value }))
                 }
@@ -248,37 +270,72 @@ const CartAndOrderPage = () => {
               <Input
                 label="Країна"
                 required
-                value={clientInfo.country}
+                value={clientInfo.countryForDelivery || ""}
                 onChange={(e) =>
                   setClientInfo((prev) => ({
                     ...prev,
-                    country: e.target.value,
+                    countryForDelivery: e.target.value,
                   }))
                 }
               />
               <Input
                 label="Місто"
                 required
-                value={clientInfo.city}
+                value={clientInfo.city || ""}
                 onChange={(e) =>
                   setClientInfo((prev) => ({ ...prev, city: e.target.value }))
                 }
               />
+              {/* Нові поля */}
+              <Input
+                label="Адреса (опціонально)"
+                value={clientInfo.address || ""}
+                onChange={(e) =>
+                  setClientInfo((prev) => ({
+                    ...prev,
+                    address: e.target.value,
+                  }))
+                }
+              />
+              <Input
+                label="Поштовий індекс (опціонально)"
+                value={clientInfo.zipCode || ""}
+                onChange={(e) =>
+                  setClientInfo((prev) => ({
+                    ...prev,
+                    zipCode: e.target.value,
+                  }))
+                }
+              />
               <Select
                 label="Тип доставки"
-                // FIX: Передаємо Set, що є більш правильним для NextUI
                 selectedKeys={
                   selectedDeliveryType
                     ? new Set([selectedDeliveryType])
                     : undefined
                 }
-                onSelectionChange={handleSelectionChange}
+                onSelectionChange={handleDeliverySelectionChange}
                 required
               >
                 {deliveryTypes.map((type) => (
-                  // Тут помилки не було, але перевіряємо, що key та value - це рядки
                   <SelectItem key={type.id} value={type.id}>
                     {`${type.name} - ₴${type.price.toFixed(2)}`}
+                  </SelectItem>
+                ))}
+              </Select>
+              <Select
+                label="Спосіб оплати"
+                selectedKeys={
+                  selectedPaymentMethod
+                    ? new Set([selectedPaymentMethod])
+                    : undefined
+                }
+                onSelectionChange={handlePaymentSelectionChange}
+                required
+              >
+                {paymentMethods.map((method) => (
+                  <SelectItem key={method.id} value={method.id}>
+                    {getPaymentMethodName(method)}
                   </SelectItem>
                 ))}
               </Select>

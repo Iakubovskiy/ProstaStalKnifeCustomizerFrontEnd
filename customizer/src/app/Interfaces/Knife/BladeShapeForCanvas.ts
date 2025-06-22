@@ -8,4 +8,5 @@ export interface BladeShapeForCanvas {
   price: number;
   bladeShapeModel: AppFile;
   sheathModel: AppFile;
+  sheathId: string;
 }

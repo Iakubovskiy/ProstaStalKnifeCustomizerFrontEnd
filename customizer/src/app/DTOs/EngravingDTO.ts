@@ -1,6 +1,6 @@
 export interface EngravingDTO {
-  name?: LocalizedContent | null;
-  description?: LocalizedContent | null;
+  names?: LocalizedContent | null;
+  descriptions?: LocalizedContent | null;
   pictureId?: string | null;
   side: number;
   text?: string | null;

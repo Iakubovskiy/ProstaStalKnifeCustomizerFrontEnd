@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useCanvasState } from "@/app/state/canvasState";
 import { PriceCalculator } from "./PriceCalculator";
 import { OrderButton } from "./OrderButton";
@@ -32,8 +32,15 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const [totalPrice, setTotalPrice] = useState(0);
   const initialDataService = new InitialDataService();
   const [showToast, setShowToast] = useState(false);
-
-  const calculatePrice = async () => {
+  const {
+    sheathColor,
+    bladeShape,
+    bladeCoatingColor,
+    handleColor,
+    attachment,
+    engravings,
+  } = snap;
+  const calculateSingleItemPrice = useCallback(async (): Promise<number> => {
     let price = 0;
 
     const sheathPriceInfo = (
@@ -54,27 +61,45 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
     if (snap.handleColor) {
       price += snap.handleColor.price;
     }
-
     if (snap.attachment) {
       price += snap.attachment.price;
     }
-
-    if (snap.engravings && snap.engravings.length > 0) {
+    if (state.engravings && state.engravings.length > 0) {
+      console.log("Calculating engraving price for", state.engravings);
       const engravingService = new EngravingPriceService();
-      const prices = await engravingService.getAll();
-      if (prices.length > 0) {
-        const uniqueSides = new Set(snap.engravings.map((eng) => eng.side))
+      const prices = await engravingService.get();
+      if (prices) {
+        console.log(
+          `Engraving price per side: ${prices.price}, total sides: ${state.engravings.length}`
+        );
+        const uniqueSides = new Set(state.engravings.map((eng) => eng.side))
           .size;
-        price += uniqueSides * prices[0].price;
+        price += uniqueSides * prices.price;
+        console.log(
+          `Calculated engraving price: ${uniqueSides} sides * ${
+            prices.price
+          } = ${uniqueSides * prices.price}`
+        );
       }
     }
+    return price;
+  }, [
+    sheathColor,
+    bladeShape,
+    bladeCoatingColor,
+    handleColor,
+    attachment,
+    engravings,
+  ]);
 
-    setTotalPrice(price * quantity);
-  };
+  const updateDisplayPrice = useCallback(async () => {
+    const singlePrice = await calculateSingleItemPrice();
+    setTotalPrice(singlePrice * quantity);
+  }, [quantity, calculateSingleItemPrice]);
 
   useEffect(() => {
-    calculatePrice();
-  }, [state, quantity]);
+    updateDisplayPrice();
+  }, [updateDisplayPrice]); // useEffect тепер залежить від useCallback-функції
 
   const handleClearCart = () => {
     localStorage.removeItem("cart");
@@ -105,20 +130,18 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
       let cartItem: CartItem;
 
       // Визначаємо ціну за ОДНУ одиницю товару
-      const pricePerUnit = quantity > 0 ? totalPrice / quantity : 0;
-
+      const pricePerUnit = await calculateSingleItemPrice();
       if (productId) {
         cartItem = {
           type: "existing_product",
           name: state.bladeShape.name,
-          price: pricePerUnit, // Використовуємо ціну за одиницю
+          price: pricePerUnit,
           productId: productId,
           quantity: quantity,
         };
       } else {
         const processedEngravings: EngravingDTO[] = [];
-        // Робимо копію, щоб уникнути роботи з проксі напряму в циклі
-        const engravingsToProcess = [...state.engravings];
+        const engravingsToProcess = [...snap.engravings];
 
         for (const engraving of engravingsToProcess) {
           let pictureId: string | null = null;
@@ -137,7 +160,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
               alert(
                 "Не вдалося завантажити файл гравіювання. Спробуйте ще раз."
               );
-              throw error; // Зупиняємо виконання, щоб не додати неповний товар
+              throw error;
             }
           }
 
@@ -177,9 +200,8 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
           shapeId: state.bladeShape.id,
           bladeCoatingColorId: state.bladeCoatingColor.id,
           handleId: state.handleColor?.id ?? null,
-          sheathId: state.bladeShape.sheathModel?.id ?? null,
+          sheathId: state.bladeShape.sheathId,
           sheathColorId: state.sheathColor?.id ?? null,
-          // Використовуємо наш оброблений масив
           newEngravings: processedEngravings,
           newAttachments: processedAttachments,
           titles: {},
@@ -190,7 +212,6 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
           existingEngravingIds: [],
           existingAttachmentIds: [],
         };
-
         cartItem = {
           type: "custom_knife",
           price: pricePerUnit, // Використовуємо ціну за одиницю

@@ -54,6 +54,7 @@ const state = proxy<State>({
   bladeShape: {
     id: "",
     name: "",
+    sheathId: "",
     shapeType: null as unknown as BladeShapeType,
     price: 0,
     bladeShapeImage: null as unknown as AppFile,

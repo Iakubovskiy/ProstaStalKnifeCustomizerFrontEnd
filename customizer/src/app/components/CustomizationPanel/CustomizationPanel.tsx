@@ -61,7 +61,7 @@ const CustomizationPanel = () => {
     if (!state.bladeShape.id) {
       fetchInitialData();
     }
-  }, []); // Залежність прибрана, щоб виконувалось один раз
+  }, []);
 
   const getCardsPerPage = (width: number): number => {
     if (width <= 0) return 1;
@@ -98,7 +98,8 @@ const CustomizationPanel = () => {
   ) => {
     let changed = false;
     if (state.bladeShape.id !== shape.id) {
-      state.bladeShape = { ...shape }; // Простіше присвоєння, якщо структура однакова
+      state.bladeShape = { ...shape };
+      state.bladeShape.sheathId = shape.sheathId; // Простіше присвоєння, якщо структура однакова
       changed = true;
     }
     if (state.bladeCoatingColor.id !== coatingColor.id) {
@@ -116,14 +117,13 @@ const CustomizationPanel = () => {
     if (changed) state.invalidate();
   };
 
-  // Функція для встановлення/скидання гравіювання, чиї PositioningControls показуються окремо
   const toggleMobilePositioningTarget = (id: number | null) => {
     if (id === null) {
       setMobilePositioningTargetId(null);
     } else if (mobilePositioningTargetId === id) {
-      setMobilePositioningTargetId(null); // Якщо клікнули на те саме, то закриваємо
+      setMobilePositioningTargetId(null);
     } else {
-      setMobilePositioningTargetId(id); // Встановлюємо нове
+      setMobilePositioningTargetId(id);
     }
   };
 

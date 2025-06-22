@@ -38,6 +38,7 @@ const BladeShapeCustomizationComponent: React.FC = () => {
       name: shape.name,
       bladeShapeModel: shape.bladeShapeModel,
       sheathModel: shape.sheathModel,
+      sheathId: shape.sheathId,
     };
     state.invalidate();
   };

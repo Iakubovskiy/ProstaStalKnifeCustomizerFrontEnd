@@ -44,7 +44,6 @@ class AttachmentService {
     ]);
     return dtoList.map((dto) => this.mapApiToModel(dto, allTags));
   }
-
   // --- НОВИЙ МЕТОД ---
   /**
    * Отримує всі активні додатки, але повертає лише дані для Canvas.

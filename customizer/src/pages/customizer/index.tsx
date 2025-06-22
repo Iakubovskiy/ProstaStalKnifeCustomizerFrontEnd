@@ -8,6 +8,7 @@ import CustomNavbar from "@/app/components/CustomNavbar/CustomNavbar";
 import NavigationMob from "@/app/components/Nav/MobileNavBar";
 import Footer from "@/app/components/Footer/Footer";
 import { KnifePurchaseContainer } from "@/app/components/CustomizationPanel/Components/KnifePurchase/KnifePurchaseContainer";
+import KnifeConfigurator from "@/app/components/CustomCanvas/CustomCanvas";
 const CustomizerPage = () => {
   return (
     <>
@@ -19,7 +20,7 @@ const CustomizerPage = () => {
       </div>
       <div className={styles.customizer}>
         <div className={styles.canvasContainer}>
-          <CustomCanvas />
+          <KnifeConfigurator />
         </div>
         <div className={styles.controlsContainer}>
           <CustomizationPanel />
