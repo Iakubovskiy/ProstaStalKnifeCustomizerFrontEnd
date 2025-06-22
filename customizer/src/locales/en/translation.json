@@ -81,6 +81,22 @@
     "noResults.description": "Try changing the filters or search query",
     "noResults.button": "Clear All Filters"
   },
+  "addReviewForm": {
+ "title": "Leave a Review",
+ "ratingLabel": "Your Rating",
+ "commentLabel": "Your Comment",
+ "commentPlaceholder": "Share your impressions about the product...",
+ "submitButton": "Submit Review",
+ "submittingButton": "Submitting...",
+ "errors": {
+   "ratingRequired": "Please provide a rating.",
+   "submitFailed": "Failed to submit review. Please try again later."
+ },
+ "success": {
+   "title": "Thank you for your review!",
+   "message": "It will be published after moderation."
+ }
+},
   "sortDropdown" : {
     "sort": "Sort"
   },

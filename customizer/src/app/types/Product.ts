@@ -1,5 +1,5 @@
 export interface Product {
-  id: string | number;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -17,13 +17,15 @@ export interface Product {
   bladeCoatingType?: string;
   category?: string;
   stock?: number;
-  reviews?: {
-    comment: string;
-    rating: number;
-    client: string;
-  }[] | null;
+  reviews?:
+    | {
+        comment: string;
+        rating: number;
+        client: string;
+      }[]
+    | null;
 
-  averageRating? : number | null;
+  averageRating?: number | null;
 }
 
 export interface AccessoryProduct extends Product {

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Minus, Plus } from "lucide-react";
+import { useRouter } from "next/router";
 
 export interface ProductSpecs {
   bladeLength: number;
@@ -11,7 +12,7 @@ export interface ProductSpecs {
 }
 
 export interface ProductType {
-  id: number;
+  id: string | null;
   name: string;
   category: string;
   price: number;
@@ -35,7 +36,7 @@ export default function ProductCard({
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [quantity, setQuantity] = useState(1);
-
+  const router = useRouter();
   const formatPrice = (price: number) =>
     new Intl.NumberFormat("uk-UA").format(price);
 
@@ -50,14 +51,13 @@ export default function ProductCard({
   };
 
   const handleBuyNow = () => {
-    onBuyNow?.(product, quantity);
+    router.push(`/products/${product.id}`);
   };
 
   const handleAddToCart = () => {
     onAddToCart?.(product, quantity);
   };
 
-  // Функція для перекладу характеристик
   const translateSpec = (key: string) => {
     const translations: Record<string, string> = {
       bladeLength: "Довжина леза",
@@ -168,7 +168,7 @@ export default function ProductCard({
                   onClick={handleBuyNow}
                   className="w-full py-2 px-3 bg-orange-400 hover:bg-orange-500 text-white font-medium rounded transition-colors text-sm"
                 >
-                  Купити зараз
+                  Перейти
                 </button>
               )}
             </div>

@@ -3,7 +3,7 @@ import FilterSelect from "./FilterSelect";
 import RangeFilter from "./RangeFilter";
 import { useTranslation } from "react-i18next";
 
-type FilterItem =
+export type FilterItem =
   | {
       name: string;
       data: string[];

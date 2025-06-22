@@ -1,209 +1,132 @@
 "use client";
-import "../../styles/globals.css";
 
-import Card from "@/app/components/Shop/Card/Card";
-import { ProductType } from "@/app/components/Shop/Card/Card";
+import Card, { ProductType } from "@/app/components/Shop/Card/Card";
 import FilterPanel from "@/app/components/Shop/Filter/FiltersPanel";
+import type { FilterItem } from "@/app/components/Shop/Filter/FiltersPanel";
 import SearchBar from "@/app/components/Shop/SearchBar.tsx/SearchBar";
 import SortDropdown from "@/app/components/Shop/Sort/Sort";
-import ShopTabs from "@/app/components/Shop/Tabs/Tabs";
 import { Pagination } from "@nextui-org/react";
-import { Filter, Grid, List, X } from "lucide-react";
+import { Filter, Grid, List, X, LoaderCircle } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import ProductCatalogService from "@/app/services/ProductCatalogService"; // Припускаємо, що сервіс лежить тут
+import type { ProductFilters } from "@/app/DTOs/ProductFilters";
+
+// --- НОВІ ІНТЕРФЕЙСИ, ЩО ВІДПОВІДАЮТЬ РЕАЛЬНОМУ API ---
+
+// Описує один продукт з масиву `items`
+interface ApiProduct {
+  id: string;
+  name: string;
+  image: {
+    id: string;
+    fileUrl: string;
+  };
+  price: number;
+  characteristics: {
+    totalLength: number;
+    bladeLength: number;
+    bladeWidth: number;
+    bladeWeight: number;
+    sharpeningAngle: number;
+    rockwellHardnessUnits: number;
+  } | null;
+  isActive: boolean;
+}
+
+// Описує блок з пагінацією продуктів
+interface PaginatedProducts {
+  items: ApiProduct[];
+  totalItems: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+// Описує один з фільтрів, що приходять з API
+interface ApiFilterOption {
+  name: string; // Наприклад, 'bladeLength'
+  data?: string[]; // Для select/checkbox
+  min?: number; // Для range
+  max?: number; // Для range
+}
+
+// Описує повну відповідь від API
+interface ApiCatalogResponse {
+  filters: Record<string, ApiFilterOption>;
+  products: PaginatedProducts;
+}
+
+// Допоміжна функція для перетворення продукту з API у тип, який очікує Card
+const mapApiProductToProductType = (product: ApiProduct): ProductType => {
+  const isKnife = !!product.characteristics;
+
+  const baseProduct: ProductType = {
+    id: product.id,
+    name: product.name,
+    category: isKnife ? "Ніж" : "Доповнення",
+    price: product.price || 0,
+    image_url: product.image?.fileUrl || "/fallback-image.png",
+    color: "", // В API відповіді немає поля для кольору, залишаємо пустим
+    specs: undefined,
+  };
+
+  if (isKnife && product.characteristics) {
+    baseProduct.specs = {
+      bladeLength: product.characteristics.bladeLength,
+      bladeWidth: product.characteristics.bladeWidth,
+      bladeWeight: product.characteristics.bladeWeight,
+      totalLength: product.characteristics.totalLength,
+      sharpnessAngle: product.characteristics.sharpeningAngle,
+      hardnessRockwell: product.characteristics.rockwellHardnessUnits,
+    };
+  }
+
+  return baseProduct;
+};
+
+// Допоміжна функція для перетворення фільтрів з API у формат для FilterPanel
+const transformApiFilters = (
+  apiFilters: Record<string, ApiFilterOption>,
+  t: (key: string) => string
+): FilterItem[] => {
+  const filterNameMap: Record<string, string> = {
+    style: t("shopPage.filters.style"),
+    bladeLength: t("shopPage.filters.bladeLength"),
+    totalLength: t("shopPage.filters.totalLength"),
+    bladeWidth: t("shopPage.filters.bladeWidth"),
+    bladeWeight: t("shopPage.filters.weight"),
+    colors: t("shopPage.filters.color"),
+    prices: t("shopPage.filters.price"),
+  };
+
+  return Object.values(apiFilters)
+    .map((filter) => {
+      const displayName = filterNameMap[filter.name] || filter.name;
+      if (filter.data) {
+        // Унікалізуємо дані, бо в прикладі є дублікати
+        return { name: displayName, data: [...new Set(filter.data)] };
+      }
+      if (filter.min !== undefined && filter.max !== undefined) {
+        return { name: displayName, min: filter.min, max: filter.max };
+      }
+      return null;
+    })
+    .filter((f): f is FilterItem => f !== null);
+};
 
 const ShopPage: React.FC = () => {
   const { t } = useTranslation();
-  const [mockProducts] = useState<ProductType[]>(() => {
-    const knifeNames = [
-      "Складний ніж Buck 110 Hunter",
-      "Мисливський ніж Mora Companion",
-      "Тактичний ніж Benchmade Griptilian",
-      "Кухонний ніж Santoku Damascus",
-      "Ніж виживання Gerber Bear Grylls",
-      "Складний ніж Spyderco Tenacious",
-      "Мисливський ніж Cold Steel SRK",
-      "Тактичний ніж SOG SEAL Pup",
-      "Кухонний ніж шеф-кухаря Wusthof",
-      "Ніж для риболовлі Rapala Fillet",
-      "Складний ніж Opinel Carbon",
-      "Мисливський ніж Condor Bushlore",
-      "Тактичний ніж Ka-Bar USMC",
-      "Кухонний ніж для овочів Victorinox",
-      "Ніж для кемпінгу Esee-4",
-      "Складний ніж Kershaw Leek",
-      "Мисливський ніж Fallkniven F1",
-      "Тактичний ніж Zero Tolerance",
-      "Кухонний ніж для хліба Henckels",
-      "Ніж для полювання Helle Temagami",
-    ];
-
-    // Назви для кріплень
-    const fastenersNames = [
-      "Кобура для ножа Kydex",
-      "Ножні шкіряні premium",
-      "Тактичне кріплення MOLLE",
-      "Кліпса для поясу EDC",
-      "Магнітне кріплення для ножа",
-      "Ножні з твердого пластику",
-      "Підвіска для шиї паракорд",
-      "Кобура універсальна нейлон",
-      "Кріплення на стегно тактичне",
-      "Ножні з карбону custom",
-      "Підсумок для складного ножа",
-      "Кріплення для розвантажувального жилета",
-      "Ножні з натуральної шкіри",
-      "Кліпса титанова deep carry",
-      "Магнітний тримач під стіл",
-    ];
-
-    // Назви для доповнень
-    const attachmentsNames = [
-      "Точильний камінь японський 1000/6000",
-      "Система заточки Work Sharp",
-      "Олія для догляду за лезом",
-      "Паста для полірування ножів",
-      "Електричний точильний верстат",
-      "Кераміковий стержень для заточки",
-      "Алмазна паста для фінішної обробки",
-      "Точильна система Lansky",
-      "Кит для догляду за ножами",
-      "Захисний воск для леза",
-      "Брусок арканзаський натуральний",
-      "Точильний стержень сталевий",
-      "Система заточки Sharpmaker",
-      "Абразивна стрічка для заточки",
-      "Мікрофіброва серветка для ножів",
-    ];
-
-    // Доступні кольори
-    const colors = [
-      "Чорний",
-      "Коричневий",
-      "Сірий",
-      "Сталевий",
-      "Зелений",
-      "Бежевий",
-      "Червоний",
-      "Синій",
-    ];
-
-    return Array.from({ length: 50 }, (_, i) => {
-      const categoryIndex = Math.floor(Math.random() * 3);
-      const categories = ["Ножі", "Кріплення", "Доповнення"];
-      const category = categories[categoryIndex];
-
-      let name: string;
-      let imageUrl: string;
-
-      // Використовуємо локальні зображення для кожної категорії
-      switch (category) {
-        case "Ножі":
-          name = knifeNames[i % knifeNames.length] || `Ніж ${i + 1}`;
-          const knifeImageNumber = (i % 26) + 1;
-          imageUrl = `/knives/${knifeImageNumber}.jpg`;
-          break;
-        case "Кріплення":
-          name =
-            fastenersNames[i % fastenersNames.length] || `Кріплення ${i + 1}`;
-          const holsterImageNumber = (i % 26) + 1;
-          imageUrl = `/knives/${holsterImageNumber}.jpg`;
-          break;
-        case "Доповнення":
-          name =
-            attachmentsNames[i % attachmentsNames.length] ||
-            `Доповнення ${i + 1}`;
-          const toolsImageNumber = (i % 26) + 1;
-          imageUrl = `/knives/${toolsImageNumber}.jpg`;
-          break;
-        default:
-          name = `Товар ${i + 1}`;
-          const defaultImageNumber = (i % 26) + 1;
-          imageUrl = `/knives/${defaultImageNumber}.jpg`;
-      }
-
-      const baseProduct: ProductType = {
-        id: i + 1,
-        name: name,
-        category: category,
-        price: Math.floor(Math.random() * 10000) + 100,
-        image_url: imageUrl,
-        color: colors[Math.floor(Math.random() * colors.length)],
-      };
-
-      if (category === "Ножі") {
-        return {
-          ...baseProduct,
-          specs: {
-            bladeLength: parseFloat((Math.random() * 10 + 10).toFixed(1)), // 10–20 см
-            bladeWidth: parseFloat((Math.random() * 2 + 2).toFixed(1)), // 2–4 см
-            bladeWeight: parseFloat((Math.random() * 200 + 100).toFixed(1)), // 100–300 г
-            totalLength: parseFloat((Math.random() * 15 + 20).toFixed(1)), // 20–35 см
-            sharpnessAngle: parseFloat((Math.random() * 10 + 15).toFixed(1)), // 15–25°
-            hardnessRockwell: parseFloat((Math.random() * 5 + 58).toFixed(1)), // 58–63 HRC
-          },
-        };
-      }
-
-      return baseProduct;
-    });
-  });
-
-  const tabs = [
-    { id: "all", label: t("shopPage.tabs.all"), count: mockProducts.length },
-    {
-      id: "knives",
-      label: t("shopPage.tabs.knives"),
-      count: mockProducts.filter((p) => p.category === "Ножі").length,
-    },
-    {
-      id: "fastenings",
-      label: t("shopPage.tabs.fastenings"),
-      count: mockProducts.filter((p) => p.category === "Кріплення").length,
-    },
-    {
-      id: "attachments",
-      label: t("shopPage.tabs.attachments"),
-      count: mockProducts.filter((p) => p.category === "Доповнення").length,
-    },
-  ];
-
-  const sortOptions = [
-    { value: "name-asc", label: t("shopPage.sort.nameAsc") },
-    { value: "name-desc", label: t("shopPage.sort.nameDesc") },
-    { value: "price-asc", label: t("shopPage.sort.priceAsc") },
-    { value: "price-desc", label: t("shopPage.sort.priceDesc") },
-    { value: "newest", label: t("shopPage.sort.newest") },
-  ];
-
-  const mockFilters = [
-    { 
-      name: t("shopPage.filters.category"), 
-      data: ["Ножі", "Кріплення", "Доповнення"] 
-    },
-    { 
-      name: t("shopPage.filters.price"), 
-      min: 100, 
-      max: 10100 
-    },
-    {
-      name: t("shopPage.filters.color"),
-      data: Array.from(new Set(mockProducts.map((p) => p.color))).sort(),
-    },
-    { 
-      name: t("shopPage.filters.bladeLength"), 
-      min: 10, 
-      max: 20 
-    },
-    { 
-      name: t("shopPage.filters.weight"), 
-      min: 100, 
-      max: 300 
-    },
-  ];
+  const productCatalogService = useMemo(() => new ProductCatalogService(), []);
 
   // State
-  const [activeTab, setActiveTab] = useState<string>("all");
+  const [products, setProducts] = useState<ApiProduct[]>([]);
+  const [availableFilters, setAvailableFilters] = useState<FilterItem[]>([]);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [sortBy, setSortBy] = useState<string>("name-asc");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -213,149 +136,102 @@ const ShopPage: React.FC = () => {
 
   const itemsPerPage = 20;
 
-  const filteredProducts = useMemo(() => {
-    let filtered = mockProducts;
+  // Data fetching effect
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setIsLoading(true);
+      setError(null);
 
-    if (activeTab !== "all") {
-      const categoryMap: Record<string, string> = {
-        knives: "Ножі",
-        fastenings: "Кріплення",
-        attachments: "Доповнення",
+      const apiFilters: ProductFilters = {
+        page: currentPage,
+        pageSize: itemsPerPage,
+        // @ts-ignore
+        search: searchQuery || undefined,
       };
-      filtered = filtered.filter(
-        (product) => product.category === categoryMap[activeTab]
-      );
-    }
 
-    // Filter by search query
-    if (searchQuery.trim()) {
-      filtered = filtered.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+      try {
+        // Припускаємо, що сервіс тепер повертає повну структуру
+        const result = (await productCatalogService.getProducts(
+          apiFilters
+        )) as unknown as ApiCatalogResponse;
 
-    // Apply filters
-    Object.entries(activeFilters).forEach(([filterName, filterValue]) => {
-      if (!filterValue) return;
+        setProducts(result.products.items || []);
+        setTotalItems(result.products.totalItems || 0);
+        setTotalPages(result.products.totalPages || 0);
 
-      if (
-        filterName === t("shopPage.filters.price") &&
-        filterValue.min !== undefined &&
-        filterValue.max !== undefined
-      ) {
-        filtered = filtered.filter(
-          (product) =>
-            product.price >= filterValue.min && product.price <= filterValue.max
-        );
-      } else if (
-        filterName === t("shopPage.filters.bladeLength") &&
-        filterValue.min !== undefined &&
-        filterValue.max !== undefined
-      ) {
-        filtered = filtered.filter((product) => {
-          if (product.specs && "bladeLength" in product.specs) {
-            const bladeLength = product.specs.bladeLength as number;
-            return (
-              bladeLength >= filterValue.min && bladeLength <= filterValue.max
-            );
-          }
-          return false;
-        });
-      } else if (
-        filterName === t("shopPage.filters.weight") &&
-        filterValue.min !== undefined &&
-        filterValue.max !== undefined
-      ) {
-        filtered = filtered.filter((product) => {
-          if (product.specs && "bladeWeight" in product.specs) {
-            const bladeWeight = product.specs.bladeWeight as number;
-            return (
-              bladeWeight >= filterValue.min && bladeWeight <= filterValue.max
-            );
-          }
-          return false;
-        });
-      } else if (Array.isArray(filterValue) && filterValue.length > 0) {
-        if (filterName === t("shopPage.filters.category")) {
-          filtered = filtered.filter((product) =>
-            filterValue.includes(product.category)
-          );
-        } else if (filterName === t("shopPage.filters.color")) {
-          filtered = filtered.filter((product) =>
-            filterValue.includes(product.color)
+        if (availableFilters.length === 0 && result.filters) {
+          setAvailableFilters(
+            transformApiFilters(
+              result.filters,
+              t as unknown as (key: string) => string
+            )
           );
         }
+      } catch (err) {
+        setError(t("shopPage.noResults.title"));
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setIsLoading(false);
       }
-    });
+    };
 
-    // Sort products
-    switch (sortBy) {
-      case "name-asc":
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-        break;
-      case "name-desc":
-        filtered.sort((a, b) => b.name.localeCompare(a.name));
-        break;
-      case "price-asc":
-        filtered.sort((a, b) => a.price - b.price);
-        break;
-      case "price-desc":
-        filtered.sort((a, b) => b.price - a.price);
-        break;
-      case "newest":
-        filtered.sort((a, b) => b.id - a.id);
-        break;
-    }
-
-    return filtered;
-  }, [mockProducts, activeTab, searchQuery, activeFilters, sortBy, t]);
-
-  // Calculate pagination
-  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedProducts = filteredProducts.slice(
-    startIndex,
-    startIndex + itemsPerPage
-  );
+    fetchProducts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeFilters, searchQuery, currentPage, productCatalogService, t]);
 
   // Reset page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [activeTab, searchQuery, activeFilters]);
+  }, [activeFilters, searchQuery]);
 
-  const handleFiltersChange = (filters: Record<string, any>) => {
-    setActiveFilters(filters);
+  // Client-side sorting
+  const sortedProducts = useMemo(() => {
+    const sortableProducts = [...products];
+    switch (sortBy) {
+      case "name-asc":
+        sortableProducts.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "name-desc":
+        sortableProducts.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case "price-asc":
+        sortableProducts.sort((a, b) => a.price - b.price);
+        break;
+      case "price-desc":
+        sortableProducts.sort((a, b) => b.price - a.price);
+        break;
+      case "newest":
+        // Немає дати, сортуємо по ID як запасний варіант
+        sortableProducts.sort((a, b) => b.id.localeCompare(a.id));
+        break;
+    }
+    return sortableProducts;
+  }, [products, sortBy]);
+
+  const displayProducts = useMemo(
+    () => sortedProducts.map(mapApiProductToProductType),
+    [sortedProducts]
+  );
+
+  const sortOptions = [
+    { value: "name-asc", label: t("shopPage.sort.nameAsc") },
+    { value: "name-desc", label: t("shopPage.sort.nameDesc") },
+    { value: "price-asc", label: t("shopPage.sort.priceAsc") },
+    { value: "price-desc", label: t("shopPage.sort.priceDesc") },
+    { value: "newest", label: t("shopPage.sort.newest") },
+  ];
+
+  const handleFiltersChange = (newFilters: Record<string, any>) => {
+    setActiveFilters(newFilters);
   };
 
   const clearAllFilters = () => {
     setActiveFilters({});
     setSearchQuery("");
-    setActiveTab("all");
   };
-
-  const [isClient, setIsClient] = useState(false);
-  
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  if (!isClient) {
-    return <div className="min-h-screen bg-gray-50 p-6 flex justify-center items-center">
-      <div className="animate-pulse text-lg">Завантаження...</div>
-    </div>;
-  }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header with Tabs */}
-      <div className="bg-white shadow-sm sticky top-0 z-40">
-        <ShopTabs
-          tabs={tabs}
-          activeTab={activeTab}
-          onTabChange={setActiveTab}
-        />
-      </div>
-
       <div className="max-w-8xl mx-auto px-4 py-6">
         <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
@@ -365,7 +241,6 @@ const ShopPage: React.FC = () => {
                 onSearch={setSearchQuery}
                 defaultValue={searchQuery}
               />
-
               <button
                 onClick={() => setShowFilters(!showFilters)}
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 lg:hidden"
@@ -380,9 +255,7 @@ const ShopPage: React.FC = () => {
               </button>
             </div>
 
-            {/* Right side - Sort, View mode and Results info */}
             <div className="flex items-center gap-4 w-full sm:w-auto">
-              {/* View Mode Toggle */}
               <div className="flex items-center bg-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setViewMode("grid")}
@@ -406,7 +279,6 @@ const ShopPage: React.FC = () => {
                 </button>
               </div>
 
-              {/* Sort Dropdown */}
               <SortDropdown
                 options={sortOptions}
                 currentSort={sortBy}
@@ -415,7 +287,6 @@ const ShopPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Active Filters Display */}
           {Object.keys(activeFilters).length > 0 && (
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex flex-wrap items-center gap-2">
@@ -481,28 +352,24 @@ const ShopPage: React.FC = () => {
             </div>
           )}
 
-          {/* Results Summary */}
           <div className="mt-4 pt-4 border-t border-gray-100">
             <p className="text-sm text-gray-600">
-              {t("shopPage.results.found", { count: filteredProducts.length })}{" "}
+              {t("shopPage.results.found", { count: totalItems })}{" "}
               {searchQuery && (
                 <span>
-                  {" "}
-                  {t("shopPage.results.forQuery")} "<span className="font-medium">{searchQuery}</span>
-                  "
+                  {t("shopPage.results.forQuery")} "
+                  <span className="font-medium">{searchQuery}</span>"
                 </span>
               )}
             </p>
           </div>
         </div>
 
-        {/* Main Content Area */}
         <div className="flex gap-6">
-          {/* Sidebar Filters - Desktop */}
           <div className="hidden lg:block w-80 flex-shrink-0">
             <div className="sticky top-24">
               <FilterPanel
-                filters={mockFilters}
+                filters={availableFilters}
                 activeFilters={activeFilters}
                 onFiltersChange={handleFiltersChange}
                 onClearAll={clearAllFilters}
@@ -510,7 +377,6 @@ const ShopPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Mobile Filters Overlay */}
           {showFilters && (
             <div className="fixed inset-0 z-50 lg:hidden">
               <div
@@ -518,22 +384,20 @@ const ShopPage: React.FC = () => {
                 onClick={() => setShowFilters(false)}
               />
               <div className="fixed right-0 top-0 h-full w-80 bg-white shadow-xl overflow-y-auto">
-                <div className="p-4 border-b border-gray-100">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-medium text-gray-900">
-                      {t("shopPage.buttons.filters")}
-                    </h3>
-                    <button
-                      onClick={() => setShowFilters(false)}
-                      className="p-2 hover:bg-gray-100 rounded-md"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
-                  </div>
+                <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                  <h3 className="text-lg font-medium text-gray-900">
+                    {t("shopPage.buttons.filters")}
+                  </h3>
+                  <button
+                    onClick={() => setShowFilters(false)}
+                    className="p-2 hover:bg-gray-100 rounded-md"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 </div>
                 <div className="p-4">
                   <FilterPanel
-                    filters={mockFilters}
+                    filters={availableFilters}
                     activeFilters={activeFilters}
                     onFiltersChange={handleFiltersChange}
                     onClearAll={clearAllFilters}
@@ -543,26 +407,30 @@ const ShopPage: React.FC = () => {
             </div>
           )}
 
-          {/* Products Grid/List */}
           <div className="flex-1">
-            <div className="bg-white rounded-lg shadow-sm p-6">
-              {paginatedProducts.length > 0 ? (
+            <div className="bg-white rounded-lg shadow-sm p-6 min-h-[600px]">
+              {isLoading ? (
+                <div className="flex justify-center items-center h-full min-h-[500px]">
+                  <LoaderCircle className="w-12 h-12 text-[#d8a878] animate-spin" />
+                </div>
+              ) : error ? (
+                <div className="text-center py-12 text-red-500">{error}</div>
+              ) : displayProducts.length > 0 ? (
                 <>
                   {viewMode === "grid" ? (
                     <div className="flex justify-center">
                       <div className="grid gap-[50px] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-fit">
-                        {paginatedProducts.map((product, index) => (
-                          <div key={`product-${product.id}-${index}`} className="w-full">
+                        {displayProducts.map((product) => (
+                          <div key={product.id} className="w-full">
                             <Card
-                              key={`card-${product.id}-${index}`}
                               product={product}
                               viewMode="grid"
-                              onAddToCart={() => {
-                                console.log("Додано до кошика:", product.name);
-                              }}
-                              onBuyNow={() => {
-                                console.log("Купити зараз:", product.name);
-                              }}
+                              onAddToCart={() =>
+                                console.log("Додано:", product.name)
+                              }
+                              onBuyNow={() =>
+                                console.log("Купити:", product.name)
+                              }
                             />
                           </div>
                         ))}
@@ -570,23 +438,19 @@ const ShopPage: React.FC = () => {
                     </div>
                   ) : (
                     <div className="space-y-4">
-                      {paginatedProducts.map((product, index) => (
+                      {displayProducts.map((product) => (
                         <Card
-                          key={`card-${product.id}-${index}`}
+                          key={product.id}
                           product={product}
                           viewMode="list"
-                          onAddToCart={() => {
-                            console.log("Додано до кошика:", product.name);
-                          }}
-                          onBuyNow={() => {
-                            console.log("Купити зараз:", product.name);
-                          }}
+                          onAddToCart={() =>
+                            console.log("Додано:", product.name)
+                          }
+                          onBuyNow={() => console.log("Купити:", product.name)}
                         />
                       ))}
                     </div>
                   )}
-
-                  {/* Pagination */}
                   {totalPages > 1 && (
                     <div className="mt-8 flex justify-center">
                       <Pagination

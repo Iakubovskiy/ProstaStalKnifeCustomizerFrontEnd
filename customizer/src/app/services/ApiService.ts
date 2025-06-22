@@ -1,5 +1,5 @@
 import { API_BASE_URL } from "../config";
-import {APIError} from "@/app/errors/APIError";
+import { APIError } from "@/app/errors/APIError";
 
 class APIService {
   private baseURL: string;
@@ -28,8 +28,8 @@ class APIService {
     if (!response.ok) {
       const errorText = await response.text();
       throw new APIError(
-          `HTTP Error! Status: ${response.status}, Message: ${errorText}`,
-          response.status
+        `HTTP Error! Status: ${response.status}, Message: ${errorText}`,
+        response.status
       );
     }
 
@@ -153,27 +153,27 @@ class APIService {
   }
 
   public async NotStandardPartialUpdate<T>(
-      url: string,
-      body?: FormData | any,
-      headers: HeadersInit = this.getDefaultHeaders(body instanceof FormData)
+    url: string,
+    body?: FormData | any,
+    headers: HeadersInit = this.getDefaultHeaders(body instanceof FormData)
   ): Promise<T> {
     const method = "PATCH";
     const response = await fetch(`${this.baseURL}/${url}`, {
       method,
       headers,
       body:
-          body instanceof FormData
-              ? body
-              : body
-                  ? JSON.stringify(body)
-                  : undefined,
+        body instanceof FormData
+          ? body
+          : body
+          ? JSON.stringify(body)
+          : undefined,
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.log(response.status);
       throw new Error(
-          `HTTP Error! Status: ${response.status}, Message: ${errorText}`
+        `HTTP Error! Status: ${response.status}, Message: ${errorText}`
       );
     }
 
@@ -183,9 +183,9 @@ class APIService {
 
     // Якщо немає контенту або це не JSON, повертаємо null або порожній об'єкт
     if (
-        response.status === 204 || // No Content
-        contentLength === "0" ||
-        !contentType?.includes("application/json")
+      response.status === 204 || // No Content
+      contentLength === "0" ||
+      !contentType?.includes("application/json")
     ) {
       return null as T;
     }
@@ -208,9 +208,9 @@ class APIService {
   }
 
   public async NotStandardDelete<T>(
-      url: string,
-      body?: FormData | any,
-      headers: HeadersInit = this.getDefaultHeaders(body instanceof FormData)
+    url: string,
+    body?: FormData | any,
+    headers: HeadersInit = this.getDefaultHeaders(body instanceof FormData)
   ): Promise<T> {
     const method = "DELETE";
     const response = await fetch(`${this.baseURL}/${url}`, {
@@ -222,7 +222,7 @@ class APIService {
       const errorText = await response.text();
       console.log(response.status);
       throw new Error(
-          `HTTP Error! Status: ${response.status}, Message: ${errorText}`
+        `HTTP Error! Status: ${response.status}, Message: ${errorText}`
       );
     }
 
@@ -232,9 +232,9 @@ class APIService {
 
     // Якщо немає контенту або це не JSON, повертаємо null або порожній об'єкт
     if (
-        response.status === 204 || // No Content
-        contentLength === "0" ||
-        !contentType?.includes("application/json")
+      response.status === 204 || // No Content
+      contentLength === "0" ||
+      !contentType?.includes("application/json")
     ) {
       return null as T;
     }

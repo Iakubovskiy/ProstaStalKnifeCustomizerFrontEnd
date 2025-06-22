@@ -15,6 +15,22 @@
     "errorInvalidCredentials": "Невірний логін або пароль.",
     "errorUnknown": "Сталася невідома помилка. Спробуйте ще раз."
   },
+   "addReviewForm": {
+    "title": "Залишити відгук",
+    "ratingLabel": "Ваша оцінка",
+    "commentLabel": "Ваш коментар",
+    "commentPlaceholder": "Поділіться своїми враженнями про товар...",
+    "submitButton": "Відправити відгук",
+    "submittingButton": "Відправка...",
+    "errors": {
+      "ratingRequired": "Будь ласка, поставте оцінку.",
+      "submitFailed": "Не вдалося відправити відгук. Спробуйте пізніше."
+    },
+    "success": {
+      "title": "Дякуємо за ваш відгук!",
+      "message": "Його буде опубліковано після модерації."
+    }
+  },
   "registerPage": {
     "title": "Реєстрація",
     "subtitle": "Створіть свій обліковий запис",
