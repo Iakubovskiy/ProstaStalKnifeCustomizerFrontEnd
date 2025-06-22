@@ -62,6 +62,13 @@ const DashboardPage = () => {
       description: "Аксесуари",
     },
     {
+      title: "Замовлення",
+      href: "/order",
+      icon: <Link2 className="w-6 h-6" />,
+      color: "secondary",
+      description: "Замовлення",
+    },
+    {
       title: "Кольори руків'я",
       href: "/handle",
       icon: <Palette className="w-6 h-6" />,

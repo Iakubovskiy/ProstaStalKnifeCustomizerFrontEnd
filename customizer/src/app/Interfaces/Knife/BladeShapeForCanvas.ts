@@ -7,6 +7,6 @@ export interface BladeShapeForCanvas {
   bladeShapeImage: AppFile;
   price: number;
   bladeShapeModel: AppFile;
-  sheathModel: AppFile;
-  sheathId: string;
+  sheathModel?: AppFile;
+  sheathId?: string;
 }

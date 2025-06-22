@@ -132,6 +132,8 @@ const CartAndOrderPage = () => {
             ...item.productData,
             price: item.price,
           };
+          console.log("knifedata:", knifeData);
+          console.log("item.price: ", item.price);
           const createdKnife = await knifeService.create(knifeData);
           console.log(createdKnife);
           productId = createdKnife.id;

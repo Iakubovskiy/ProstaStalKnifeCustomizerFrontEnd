@@ -575,7 +575,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
   const addCard = () => {
     const newEngravingId = customState.engravings.length;
     const newEngraving: EngravingForCanvas = {
-      id: `engraving-${newEngravingId}-${Date.now()}`,
+      id: "",
       picture: { fileUrl: emptyImage, id: "" },
       side: Side.Right,
       text: "",

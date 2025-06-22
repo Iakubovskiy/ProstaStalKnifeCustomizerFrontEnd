@@ -9,10 +9,13 @@ import { useSnapshot } from "valtio";
 import ModalFormButton from "../../ModalButton/ModalButton";
 import styles from "./BladeShapeCustomization.module.css";
 import { BladeShapeForCanvas } from "@/app/Interfaces/Knife/BladeShapeForCanvas";
+import SheathService from "@/app/services/SheathService";
+import { AppFile } from "@/app/Interfaces/File";
 
 const BladeShapeCustomizationComponent: React.FC = () => {
   const [bladeShapes, setBladeShapes] = useState<BladeShapeForCanvas[]>([]);
   const bladeShapeService = new BladeShapeService();
+  const sheathService = new SheathService();
   const state = useCanvasState();
   const snap = useSnapshot(state);
 
@@ -31,14 +34,21 @@ const BladeShapeCustomizationComponent: React.FC = () => {
     fetchBladeShapes();
   }, []);
 
-  const bladeShapeSelection = (shape: BladeShapeForCanvas) => {
+  const bladeShapeSelection = async (shape: BladeShapeForCanvas) => {
     console.log(shape);
+    let sheathModel: AppFile | undefined = undefined;
+    if (shape.sheathId && shape.sheathId !== "") {
+      const sheath = await sheathService.getById(shape.sheathId);
+      if (sheath && sheath.model) {
+        sheathModel = sheath.model;
+      }
+    }
     state.bladeShape = {
       ...state.bladeShape,
       id: shape.id,
       name: shape.name,
       bladeShapeModel: shape.bladeShapeModel,
-      sheathModel: shape.sheathModel,
+      sheathModel: sheathModel,
       sheathId: shape.sheathId,
     };
     state.invalidate();

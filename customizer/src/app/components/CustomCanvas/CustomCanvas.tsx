@@ -60,7 +60,8 @@ const Scene = () => {
               {...bladeSettings}
             />
           )}
-        {isValidAppFile(snap.bladeShape.sheathModel) &&
+        {snap.bladeShape.sheathModel &&
+          isValidAppFile(snap.bladeShape.sheathModel) &&
           validateModelUrl(snap.bladeShape.sheathModel.fileUrl) && (
             <ModelPart
               url={snap.bladeShape.sheathModel.fileUrl!}

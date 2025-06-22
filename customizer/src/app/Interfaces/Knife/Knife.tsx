@@ -17,7 +17,7 @@ export interface Knife {
   descriptions?: Record<string, string>;
   price: number;
   imageUrl: AppFile;
-  tags?: ProductTag[];
+  productTags?: ProductTag[];
   totalLength: number;
   bladeLength: number;
   bladeWidth: number;

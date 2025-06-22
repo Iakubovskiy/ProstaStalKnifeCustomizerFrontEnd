@@ -2,6 +2,7 @@ import APIService from "./ApiService";
 import type { BladeShape } from "@/app/Interfaces/BladeShape";
 import type { BladeShapeDTO } from "@/app/DTOs/BladeShapeDTO";
 import { BladeShapeForCanvas } from "../Interfaces/Knife/BladeShapeForCanvas";
+import { AppFile } from "../Interfaces/File";
 
 class BladeShapeService {
   private apiService: APIService;
@@ -27,7 +28,7 @@ class BladeShapeService {
     const fullObjects = await this.apiService.getAll<BladeShape>(
       `${this.resource}/active`
     );
-
+    console.log(fullObjects);
     const locale = new APIService().getCurrentLocale();
     const canvasObjects = fullObjects.map((item) => {
       const canvasObject: BladeShapeForCanvas = {
@@ -37,7 +38,8 @@ class BladeShapeService {
         bladeShapeImage: item.bladeShapeImage || null,
         name: item.names?.[locale] || item.name || "",
         bladeShapeModel: item.bladeShapeModel,
-        sheathModel: item.sheath?.model || null,
+        sheathModel: item.sheath?.model ?? ({} as AppFile),
+        sheathId: item.sheath?.id,
       };
       return canvasObject;
     });

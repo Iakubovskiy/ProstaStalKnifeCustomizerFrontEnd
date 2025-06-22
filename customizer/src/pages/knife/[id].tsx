@@ -11,13 +11,20 @@ import {
   Switch,
   Accordion,
   AccordionItem,
-  Textarea, // Використовуємо Textarea для описів
+  Textarea,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
 
 // --- Сервіси та Інтерфейси ---
 import KnifeService from "@/app/services/KnifeService";
+import ProductTagService from "@/app/services/ProductTagService";
+import FileService from "@/app/services/FileService";
+import EngravingService from "@/app/services/EngravingService";
 import { Knife } from "@/app/Interfaces/Knife/Knife";
 import { KnifeDTO } from "@/app/DTOs/KnifeDTO";
+import { EngravingDTO } from "@/app/DTOs/EngravingDTO";
+import { AppFile } from "@/app/Interfaces/File";
 
 // --- Наші кастомні компоненти ---
 import CustomizationPanel from "@/app/components/CustomizationPanel/CustomizationPanel";
@@ -28,9 +35,6 @@ import LocalizedContentEditor from "@/app/components/LocalizedContentEditor/Loca
 // --- Стан для 3D ---
 import { useCanvasState } from "@/app/state/canvasState";
 import { useSnapshot } from "valtio";
-import { EngravingDTO } from "@/app/DTOs/EngravingDTO";
-import { AppFile } from "@/app/Interfaces/File";
-import FileService from "./../../app/services/FileService";
 
 const initialData: Partial<Knife> = {
   isActive: true,
@@ -51,48 +55,59 @@ const initialData: Partial<Knife> = {
   bladeWeight: 0,
   sharpeningAngle: 0,
   rockwellHardnessUnits: 0,
+  productTags: [],
 };
 
 const KnifeEditPage = () => {
   const router = useRouter();
   const { id } = router.query;
 
+  // --- Стани компонента ---
   const [knifeData, setKnifeData] = useState<Partial<Knife>>(initialData);
+  const [allTags, setAllTags] = useState<ProductTag[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [isSaving, setSaving] = useState(false);
-  const fileService = new FileService();
-  // Отримуємо доступ до стану 3D-сцени для збереження
+
+  const fileService = useMemo(() => new FileService(), []);
+  const knifeService = useMemo(() => new KnifeService(), []);
+  const tagService = useMemo(() => new ProductTagService(), []);
+  const engravingService = useMemo(() => new EngravingService(), []);
   const canvasState = useCanvasState();
   const snap = useSnapshot(canvasState);
-
   const isCreating = id === "0";
-  const knifeService = useMemo(() => new KnifeService(), []);
 
+  // --- Завантаження даних ---
   useEffect(() => {
     if (!router.isReady) return;
 
-    if (isCreating) {
-      setKnifeData(initialData);
-      setLoading(false);
-      return;
-    }
-
-    if (id) {
+    const loadInitialData = async () => {
       setLoading(true);
-      knifeService
-        .getById(id as string)
-        .then((data) => {
-          setKnifeData(data);
-          console.log("data: ", data);
-        })
-        .catch((err) => {
-          console.error("Failed to fetch knife, redirecting...", err);
-          router.push("/knife/0");
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [id, router.isReady]);
+      try {
+        // Завантажуємо теги в будь-якому випадку
+        const tags = await tagService.getAll();
+        setAllTags(tags);
 
+        // Якщо редагуємо існуючий ніж - завантажуємо його дані
+        if (!isCreating && id) {
+          const data = await knifeService.getById(id as string);
+          setKnifeData(data);
+        } else {
+          // Інакше - використовуємо початкові дані
+          setKnifeData(initialData);
+        }
+      } catch (err) {
+        console.error("Failed to load data:", err);
+        alert("Помилка завантаження даних.");
+        router.push("/knife"); // Повертаємо на список у разі помилки
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, [id, router.isReady, knifeService, tagService, router]);
+
+  // --- Обробники змін у формі ---
   const handleFieldChange = <K extends keyof Knife>(
     field: K,
     value: Knife[K]
@@ -100,43 +115,71 @@ const KnifeEditPage = () => {
     setKnifeData((prev) => ({ ...prev, [field]: value }));
   };
 
+  const handleTagsChange = (keys: any) => {
+    const selectedIds = new Set(Array.from(keys));
+    const selectedTags = allTags.filter((tag) => selectedIds.has(tag.id));
+    handleFieldChange("productTags", selectedTags);
+  };
+
+  // --- Логіка збереження ---
   const handleSave = async () => {
     setSaving(true);
     try {
+      // 1. Обробка гравіювань
       const newEngravingsDto: EngravingDTO[] = [];
-      const existingEngravingIds: string[] = snap.engravings
-        .filter((eng) => "id" in eng && eng.id)
-        .map((eng) => eng.id!);
+      const engravingsToUpdate = snap.engravings.filter(
+        (eng) => eng.id && eng.id != ""
+      );
 
+      const existingEngravingIds: string[] = snap.engravings
+        .filter((eng) => "id" in eng && eng.id && eng.id != "")
+        .map((eng) => eng.id!);
       const engravingsToCreate = snap.engravings.filter(
         (eng) => !("id" in eng) || !eng.id
-      ); // Беремо тільки нові
+      );
+
+      await Promise.all(
+        engravingsToUpdate.map(async (engraving) => {
+          let pictureId: string | null = engraving.picture?.id || null;
+          if (engraving.fileObject) {
+            // Якщо до існуючого додали новий файл
+            const uploadedFile = await fileService.upload(engraving.fileObject);
+            pictureId = uploadedFile.id;
+          }
+
+          const engravingDto: EngravingDTO = {
+            pictureId,
+            side: engraving.side,
+            text: engraving.text,
+            font: engraving.font,
+            locationX: engraving.locationX,
+            locationY: engraving.locationY,
+            locationZ: engraving.locationZ,
+            rotationX: engraving.rotationX,
+            rotationY: engraving.rotationY,
+            rotationZ: engraving.rotationZ,
+            scaleX: engraving.scaleX,
+            scaleY: engraving.scaleY,
+            scaleZ: engraving.scaleZ,
+            names: {
+              ua: engraving.text || "Гравіювання",
+              en: engraving.text || "Engraving",
+            },
+            descriptions: { ua: "-", en: "-" },
+            tagsIds: [],
+          };
+          await engravingService.update(engraving.id!, engravingDto);
+        })
+      );
 
       for (const engraving of engravingsToCreate) {
-        let pictureId: string | null = null;
-
-        // Якщо у гравіювання вже є завантажене зображення, використовуємо його ID
-        if (engraving.picture) {
-          pictureId = engraving.picture.id;
+        let pictureId: string | null = engraving.picture?.id || null;
+        if (engraving.fileObject) {
+          const uploadedFile = await fileService.upload(engraving.fileObject);
+          pictureId = uploadedFile.id;
         }
-
-        // Якщо є новий файл для завантаження (fileObject), завантажуємо його
-        const uploadable = engraving.fileObject;
-        if (uploadable) {
-          try {
-            console.log("Engraving file to upload:", uploadable);
-            const uploadedFile: AppFile = await fileService.upload(uploadable);
-            console.log("Uploaded engraving file:", uploadedFile);
-            pictureId = uploadedFile.id; // Перезаписуємо pictureId новим ID
-          } catch (error) {
-            console.error("Failed to upload engraving file:", error);
-            alert("Не вдалося завантажити файл гравіювання. Спробуйте ще раз.");
-            throw error;
-          }
-        }
-
         newEngravingsDto.push({
-          pictureId: pictureId,
+          pictureId,
           side: engraving.side,
           text: engraving.text,
           font: engraving.font,
@@ -149,7 +192,6 @@ const KnifeEditPage = () => {
           scaleX: engraving.scaleX,
           scaleY: engraving.scaleY,
           scaleZ: engraving.scaleZ,
-          // Додайте names, descriptions, tagsIds, якщо вони є у вашому EngravingDTO
           names: {
             ua: engraving.text || "Гравіювання",
             en: engraving.text || "Engraving",
@@ -158,78 +200,61 @@ const KnifeEditPage = () => {
           tagsIds: [],
         });
       }
+
+      // 2. Збір даних з 3D-сцени
       const canvasData = {
         shapeId: snap.bladeShape.id,
         bladeCoatingColorId: snap.bladeCoatingColor.id,
         handleId: snap.handleColor?.id ?? null,
-        sheathId: snap.bladeShape.sheathModel?.id ?? null,
+        sheathId: snap.bladeShape.sheathId ?? null,
         sheathColorId: snap.sheathColor?.id ?? null,
-        newEngravings: snap.engravings.map((eng) => ({
-          pictureId: eng.picture.id,
-          side: eng.side,
-          text: eng.text,
-          font: eng.font,
-          locationX: eng.locationX,
-          locationY: eng.locationY,
-          locationZ: eng.locationZ,
-          rotationX: eng.rotationX,
-          rotationY: eng.rotationY,
-          rotationZ: eng.rotationZ,
-          scaleX: eng.scaleX,
-          scaleY: eng.scaleY,
-          scaleZ: eng.scaleZ,
-        })),
-
-        existingEngravingIds: [], // Логіка для існуючих гравіювань
-        existingAttachmentIds: [], // Логіка для існуючих додатків
+        newEngravings: newEngravingsDto,
+        existingEngravingIds: existingEngravingIds,
+        existingAttachmentIds:
+          snap.attachment && "id" in snap.attachment
+            ? [snap.attachment.id!]
+            : [],
       };
-      console.log("image: ", knifeData.imageUrl);
       const formData = {
         isActive: knifeData.isActive ?? false,
-        imageFileId: knifeData.imageUrl?.id || "",
-        names: Object.fromEntries(
-          Object.entries(
-            knifeData.names || { ua: knifeData.name, en: knifeData.name }
-          ).map(([k, v]) => [k, v ?? ""])
-        ),
-        titles: Object.fromEntries(
-          Object.entries(
-            knifeData.titles || { ua: knifeData.title, en: knifeData.title }
-          ).map(([k, v]) => [k, v ?? ""])
-        ),
-        descriptions: Object.fromEntries(
-          Object.entries(
-            knifeData.descriptions || {
-              ua: knifeData.description,
-              en: knifeData.description,
-            }
-          ).map(([k, v]) => [k, v ?? ""])
-        ),
-        metaTitles: Object.fromEntries(
-          Object.entries(
-            knifeData.metaTitles || {
-              ua: knifeData.metaTitle,
-              en: knifeData.metaTitle,
-            }
-          ).map(([k, v]) => [k, v ?? ""])
-        ),
-        metaDescriptions: Object.fromEntries(
-          Object.entries(
-            knifeData.metaDescriptions || {
-              ua: knifeData.metaDescription,
-              en: knifeData.metaDescription,
-            }
-          ).map(([k, v]) => [k, v ?? ""])
-        ),
-        tagsIds: [],
+        imageFileId:
+          knifeData.imageUrl?.id || "06331a76-e8ea-4a0d-8eb3-ede166d1d0d2",
+        names: {
+          ua: (knifeData.names?.ua ?? knifeData.name ?? "") as string,
+          en: (knifeData.names?.en ?? knifeData.name ?? "") as string,
+        },
+        titles: {
+          ua: (knifeData.titles?.ua ?? knifeData.title ?? "") as string,
+          en: (knifeData.titles?.en ?? knifeData.title ?? "") as string,
+        },
+        descriptions: {
+          ua: (knifeData.descriptions?.ua ??
+            knifeData.description ??
+            "") as string,
+          en: (knifeData.descriptions?.en ??
+            knifeData.description ??
+            "") as string,
+        },
+        metaTitles: {
+          ua: (knifeData.metaTitles?.ua ?? knifeData.metaTitle ?? "") as string,
+          en: (knifeData.metaTitles?.en ?? knifeData.metaTitle ?? "") as string,
+        },
+        metaDescriptions: {
+          ua: (knifeData.metaDescriptions?.ua ??
+            knifeData.metaDescription ??
+            "") as string,
+          en: (knifeData.metaDescriptions?.en ??
+            knifeData.metaDescription ??
+            "") as string,
+        },
+        tagsIds: knifeData.productTags?.map((tag) => tag.id) || [],
+        price: knifeData.price,
       };
 
-      // 3. Комбінуємо все в один DTO
-      const finalDto: KnifeDTO = {
-        ...formData,
-        ...canvasData,
-      };
-
+      // 4. Комбінування в фінальний DTO
+      const finalDto: KnifeDTO = { ...formData, ...canvasData };
+      console.log("FinalDTO: ", finalDto);
+      // 5. Відправка на сервер
       if (isCreating) {
         await knifeService.create(finalDto);
         alert("Ніж успішно створено!");
@@ -252,7 +277,7 @@ const KnifeEditPage = () => {
   if (isLoading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <Spinner size="lg" label="Завантаження даних ножа..." />
+        <Spinner size="lg" label="Завантаження..." />
       </div>
     );
   }
@@ -265,9 +290,9 @@ const KnifeEditPage = () => {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* --- Ліва колонка: 3D Візуалізація --- */}
-          <div className="flex flex-col gap-4 h-[80vh] lg:h-auto">
-            <div className="flex-grow aspect-square bg-gray-200 rounded-lg overflow-hidden shadow-lg">
+          {/* --- Ліва колонка: 3D Візуалізація та Кастомізація --- */}
+          <div className="flex flex-col gap-4 h-[80vh] lg:h-auto sticky top-8">
+            <div className="flex-grow aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden shadow-lg">
               <KnifeConfigurator
                 productId={isCreating ? null : (id as string)}
               />
@@ -299,6 +324,25 @@ const KnifeEditPage = () => {
                   }
                   startContent={<span>₴</span>}
                 />
+
+                <div className="md:col-span-2">
+                  <Select
+                    label="Теги продукту"
+                    placeholder="Виберіть теги"
+                    selectionMode="multiple"
+                    selectedKeys={
+                      new Set(knifeData.productTags?.map((tag) => tag.id) || [])
+                    }
+                    onSelectionChange={handleTagsChange}
+                  >
+                    {allTags.map((tag) => (
+                      <SelectItem key={tag.id} value={tag.id}>
+                        {tag.names?.["ua"] || tag.name}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
+
                 <div className="flex items-center pt-2">
                   <Switch
                     isSelected={!!knifeData.isActive}
@@ -307,15 +351,7 @@ const KnifeEditPage = () => {
                     Активний
                   </Switch>
                 </div>
-                <div className="md:col-span-2">
-                  <Textarea
-                    label="Короткий опис (для адмінки)"
-                    value={knifeData.description || ""}
-                    onChange={(e) =>
-                      handleFieldChange("description", e.target.value)
-                    }
-                  />
-                </div>
+
                 <div className="md:col-span-2">
                   <FileUpload
                     label="Головне зображення (для каталогу)"
@@ -328,7 +364,7 @@ const KnifeEditPage = () => {
               </div>
             </div>
 
-            <Accordion selectionMode="multiple" defaultExpandedKeys={[]}>
+            <Accordion selectionMode="multiple">
               <AccordionItem
                 key="tech"
                 aria-label="Технічні характеристики"
@@ -415,7 +451,7 @@ const KnifeEditPage = () => {
                     onContentChange={(c) => handleFieldChange("names", c)}
                   />
                   <LocalizedContentEditor
-                    label="Публічні описи"
+                    label="Публічні описи (для сторінки товару)"
                     content={knifeData.descriptions}
                     onContentChange={(c) =>
                       handleFieldChange("descriptions", c)
