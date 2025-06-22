@@ -52,6 +52,12 @@ const AttachmentCustomizationComponent: React.FC = () => {
     state.invalidate();
   };
 
+  const removeAttachment = () => {
+    state.attachment = null;
+    console.log("Attachment removed:", state);
+    state.invalidate();
+  };
+
   return (
     <>
       <div
@@ -62,6 +68,14 @@ const AttachmentCustomizationComponent: React.FC = () => {
           position: "relative",
         }}
       >
+        {/* Пуста картка для видалення attachment */}
+        <CardComponent
+          backgroundPicture="#f9fafb"
+          tooltipText="Без доповнень"
+          onClick={removeAttachment}
+        />
+
+        {/* Картки з attachments */}
         {fastenings.map((attachment) => (
           <React.Fragment key={attachment.id}>
             <CardComponent
@@ -71,7 +85,7 @@ const AttachmentCustomizationComponent: React.FC = () => {
             />
             {!previews[attachment.id] && (
               <PreviewGenerator
-                modelUrl={attachment.model.fileUrl}
+                modelUrl={attachment.model?.fileUrl}
                 onPreviewGenerated={(preview) =>
                   handlePreviewGenerated(attachment.id, preview)
                 }
@@ -80,17 +94,7 @@ const AttachmentCustomizationComponent: React.FC = () => {
           </React.Fragment>
         ))}
       </div>
-      {/* <div style={{ marginTop: "16px" }}>
-        {snap.attachment && (
-          <Characteristics
-            data={snap.attachment}
-            isReadOnly1={true}
-            currentBladeCoatingColor={""}
-            onChange={() => {}}
-            type="AttachmentForCanvas"
-          />
-        )}
-      </div> */}
+
       <div className="p-3">
         <ModalFormButton component="bladeShape"></ModalFormButton>
       </div>
