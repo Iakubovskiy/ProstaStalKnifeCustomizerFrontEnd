@@ -18,5 +18,4 @@ export interface KnifeDTO {
   existingEngravingIds: string[];
   newEngravings: EngravingDTO[];
   existingAttachmentIds: string[];
-  newAttachments: AttachmentDTO[];
 }

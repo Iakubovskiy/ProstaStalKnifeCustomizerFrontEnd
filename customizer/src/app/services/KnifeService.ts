@@ -65,9 +65,6 @@ class KnifeService {
     if (!data.newEngravings) {
       data.newEngravings = [];
     }
-    if (!data.newAttachments) {
-      data.newAttachments = [];
-    }
     if (!data.isActive) {
       data.isActive = false;
     }

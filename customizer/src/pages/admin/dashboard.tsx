@@ -55,11 +55,11 @@ const DashboardPage = () => {
       description: "Управління цінами",
     },
     {
-      title: "Кріплення",
-      href: "/fasteningPage",
+      title: "Аксесуари",
+      href: "/attachment",
       icon: <Link2 className="w-6 h-6" />,
       color: "secondary",
-      description: "Типи кріплення",
+      description: "Аксесуари",
     },
     {
       title: "Кольори руків'я",

@@ -48,6 +48,7 @@ const AttachmentCustomizationComponent: React.FC = () => {
 
   const fasteningOptionClick = (attachment: AttachmentForCanvas) => {
     state.attachment = attachment;
+    console.log(state);
     state.invalidate();
   };
 
