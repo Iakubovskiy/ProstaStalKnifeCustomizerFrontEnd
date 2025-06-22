@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Canvas } from "@react-three/fiber";
 import { useSnapshot } from "valtio";
 import { useCanvasState } from "@/app/state/canvasState";
@@ -6,16 +6,28 @@ import Lighting from "./Lighting";
 import Controls from "./Controls";
 import Background from "@/app/components/CustomCanvas/Background";
 import ModelPart from "./ModelPart";
-import { Suspense } from "react";
 import CustomLoader from "./CustomLoader";
-import { Perf } from "r3f-perf";
 import { AppFile } from "@/app/Interfaces/File";
 
-const KnifeConfigurator = () => {
+import KnifeService from "@/app/services/KnifeService";
+import InitialDataService from "@/app/services/InitialDataService";
+import { Knife } from "@/app/Interfaces/Knife/Knife";
+import { KnifeForCanvas } from "@/app/Interfaces/Knife/KnifeForCanvas";
+import { BladeCoatingColorForCanvas } from "@/app/Interfaces/Knife/BladeCoatingColorForCanvas";
+import { BladeShapeForCanvas } from "@/app/Interfaces/Knife/BladeShapeForCanvas";
+import { HandleColorForCanvas } from "@/app/Interfaces/Knife/HandleColorForCanvas";
+import { SheathColorForCanvas } from "@/app/Interfaces/Knife/SheathColorForCanvas";
+
+interface Props {
+  productId?: string | null;
+}
+
+// 1. Створюємо внутрішній компонент для сцени
+const Scene = () => {
   const state = useCanvasState();
   const snap = useSnapshot(state);
-  console.log("KnifeConfigurator snap", snap);
-  const validateModelUrl = (url: string): boolean => {
+
+  const validateModelUrl = (url: string | null | undefined): boolean => {
     return Boolean(
       url &&
         (url.endsWith(".glb") ||
@@ -23,87 +35,149 @@ const KnifeConfigurator = () => {
           url.startsWith("blob:"))
     );
   };
-  const isValidAppFile = (file: AppFile | null): file is AppFile => {
-    console.log("isValidAppFile", file);
 
+  const isValidAppFile = (file: AppFile | null): file is AppFile => {
     return file !== null && file.fileUrl !== null && file.fileUrl !== undefined;
   };
+
   const bladeSettings = {
-    materialProps: {
-      default: {
-        color: snap.bladeCoatingColor.colorCode,
-      },
-    },
+    materialProps: { default: { color: snap.bladeCoatingColor.colorCode } },
   };
-
   const sheathSettings = {
-    materialProps: {
-      default: {
-        color: snap.sheathColor.colorCode,
-      },
-    },
+    materialProps: { default: { color: snap.sheathColor.colorCode } },
   };
-
-  if (!isValidAppFile(snap.bladeShape.bladeShapeModel)) {
-    return (
-      <Canvas>
-        <Lighting />
-        <Controls />
-      </Canvas>
-    );
-  }
 
   return (
     <>
-      <Canvas
-        frameloop="always"
-        gl={{
-          powerPreference: "high-performance",
-          antialias: true,
-          preserveDrawingBuffer: false,
-        }}
-        // onCreated={({ invalidate }) => {
-        //     state.invalidate = invalidate;
-        // }}
-      >
-        <Suspense fallback={<CustomLoader />}>
-          <Lighting />
-          <Controls />
-          <Background />
-          {/*@ts-ignore*/}
-          <group position={[0, 0, 0]} rotation={[0, 0, 0]} scale={1}>
-            {isValidAppFile(snap.bladeShape.bladeShapeModel) &&
-              validateModelUrl(snap.bladeShape.bladeShapeModel.fileUrl) && (
-                <ModelPart
-                  url={snap.bladeShape.bladeShapeModel.fileUrl}
-                  {...bladeSettings}
-                />
-              )}
-            {isValidAppFile(snap.bladeShape.sheathModel) &&
-              validateModelUrl(snap.bladeShape.sheathModel.fileUrl) && (
-                <ModelPart
-                  url={snap.bladeShape.sheathModel.fileUrl}
-                  {...sheathSettings}
-                  position={[0, -10, 0]}
-                  rotation={[0, 0, 0]}
-                />
-              )}
-
-            {snap.attachment &&
-              snap.attachment.model &&
-              validateModelUrl(snap.attachment?.model.fileUrl) && (
-                <ModelPart
-                  url={snap.attachment.model.fileUrl}
-                  {...sheathSettings}
-                  position={[-1, -10, -1]}
-                  rotation={[0, 0, Math.PI / 2]}
-                />
-              )}
-            {/*@ts-ignore*/}
-          </group>
-        </Suspense>
-      </Canvas>
+      <Lighting />
+      <Controls />
+      <Background />
+      <group position={[0, 0, 0]} rotation={[0, 0, 0]} scale={1}>
+        {isValidAppFile(snap.bladeShape.bladeShapeModel) &&
+          validateModelUrl(snap.bladeShape.bladeShapeModel.fileUrl) && (
+            <ModelPart
+              url={snap.bladeShape.bladeShapeModel.fileUrl!}
+              {...bladeSettings}
+            />
+          )}
+        {isValidAppFile(snap.bladeShape.sheathModel) &&
+          validateModelUrl(snap.bladeShape.sheathModel.fileUrl) && (
+            <ModelPart
+              url={snap.bladeShape.sheathModel.fileUrl!}
+              {...sheathSettings}
+              position={[0, -10, 0]}
+              rotation={[0, 0, 0]}
+            />
+          )}
+        {snap.attachment &&
+          isValidAppFile(snap.attachment.model) &&
+          validateModelUrl(snap.attachment.model.fileUrl) && (
+            <ModelPart
+              url={snap.attachment.model.fileUrl!}
+              {...sheathSettings}
+              position={[-1, -10, -1]}
+              rotation={[0, 0, Math.PI / 2]}
+            />
+          )}
+      </group>
     </>
+  );
+};
+
+const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
+  const state = useCanvasState();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const knifeService = new KnifeService();
+    const initialDataService = new InitialDataService();
+
+    const populateState = (data: KnifeForCanvas) => {
+      state.bladeShape = data.bladeShape;
+      state.bladeCoatingColor = data.bladeCoatingColor;
+      state.handleColor = data.handleColor || state.handleColor;
+      state.sheathColor = data.sheathColor || state.sheathColor;
+      // @ts-ignore
+      state.attachment =
+        data.attachment && data.attachment.length > 0
+          ? data.attachment[0]
+          : null;
+      state.engravings = data.engravings || [];
+    };
+    const SelectByDefault = (
+      shape: BladeShapeForCanvas,
+      coatingColor: BladeCoatingColorForCanvas,
+      sheath: SheathColorForCanvas,
+      handleColor: HandleColorForCanvas
+    ) => {
+      let changed = false;
+      if (state.bladeShape.id !== shape.id) {
+        state.bladeShape = { ...shape };
+        state.bladeShape.sheathId = shape.sheathId;
+        changed = true;
+      }
+      if (state.bladeCoatingColor.id !== coatingColor.id) {
+        state.bladeCoatingColor = coatingColor;
+        changed = true;
+      }
+      if (state.handleColor.id !== handleColor.id) {
+        state.handleColor = handleColor;
+        changed = true;
+      }
+      if (state.sheathColor.id !== sheath.id) {
+        state.sheathColor = sheath;
+        changed = true;
+      }
+      if (changed) state.invalidate();
+    };
+    const loadData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        if (productId) {
+          const knifeData = await knifeService.getById(productId);
+          populateState(knifeData.knifeForCanvas);
+        } else {
+          const initialData = await initialDataService.getData();
+          console.log("Initial data fetched:", initialData);
+          SelectByDefault(
+            initialData.knifeForCanvas.bladeShape,
+            initialData.knifeForCanvas.bladeCoatingColor,
+            initialData.knifeForCanvas.sheathColor,
+            initialData.knifeForCanvas.handleColor
+          );
+        }
+      } catch (err) {
+        console.error("Failed to load knife data:", err);
+        setError("Не вдалося завантажити дані для конфігуратора.");
+      } finally {
+        // Завершуємо завантаження
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, [productId, state]); // Додали state, щоб ESLint не сварився
+
+  // 2. Тепер ми завжди рендеримо <Canvas>
+  return (
+    <Canvas
+      frameloop="always"
+      gl={{
+        powerPreference: "high-performance",
+        antialias: true,
+        preserveDrawingBuffer: false,
+      }}
+    >
+      <Suspense fallback={<CustomLoader />}>
+        {/* 3. Логіку рендерингу переносимо всередину */}
+        {isLoading ? null : error ? null : ( // Але для простоти, можна вивести помилку в консоль, а тут нічого не показувати // Можна залишити завантажувач, він тепер у правильному контексті // Обробка помилок також може бути всередині за допомогою <Html> // Або просто нічого не рендерити, поки Suspense показує fallback
+          // Коли все добре, рендеримо сцену
+          <Scene />
+        )}
+      </Suspense>
+    </Canvas>
   );
 };
 

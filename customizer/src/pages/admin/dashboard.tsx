@@ -132,6 +132,13 @@ const DashboardPage = () => {
       description: "Управління валютами",
     },
     {
+      title: "Ножі",
+      href: "/knife",
+      icon: <Palette className="w-6 h-6" />,
+      color: "secondary",
+      description: "Управління ножами",
+    },
+    {
       title: "Користувачі",
       href: "/user-management",
       icon: <Palette className="w-6 h-6" />,

@@ -43,26 +43,6 @@ const CustomizationPanel = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const initialData = await initialDataService.getData();
-        console.log("Initial data fetched:", initialData);
-        SelectByDefault(
-          initialData.knifeForCanvas.bladeShape,
-          initialData.knifeForCanvas.bladeCoatingColor,
-          initialData.knifeForCanvas.sheathColor,
-          initialData.knifeForCanvas.handleColor
-        );
-      } catch (error) {
-        console.error("Error fetching initial data:", error);
-      }
-    };
-    if (!state.bladeShape.id) {
-      fetchInitialData();
-    }
-  }, []);
-
   const getCardsPerPage = (width: number): number => {
     if (width <= 0) return 1;
     if (width >= 480) return 2;
@@ -99,7 +79,7 @@ const CustomizationPanel = () => {
     let changed = false;
     if (state.bladeShape.id !== shape.id) {
       state.bladeShape = { ...shape };
-      state.bladeShape.sheathId = shape.sheathId; // Простіше присвоєння, якщо структура однакова
+      state.bladeShape.sheathId = shape.sheathId;
       changed = true;
     }
     if (state.bladeCoatingColor.id !== coatingColor.id) {
