@@ -1,0 +1,99 @@
+{
+  "loginButton": "Вхід",
+  "shopLink": "Магазин",
+  "customizerLink": "Конструктор",
+  "loginPage": {
+    "title": "Вхід",
+    "subtitle": "Введіть свої дані для доступу",
+    "usernameLabel": "Ім'я користувача або Email",
+    "passwordLabel": "Пароль",
+    "submitButton": "Увійти",
+    "submitButtonLoading": "Вхід...",
+    "noAccount": "Немає акаунту? ",
+    "registerLink": "Зареєструватися",
+    "errorFillFields": "Будь ласка, заповніть усі поля.",
+    "errorInvalidCredentials": "Невірний логін або пароль.",
+    "errorUnknown": "Сталася невідома помилка. Спробуйте ще раз."
+  },
+  "registerPage": {
+    "title": "Реєстрація",
+    "subtitle": "Створіть свій обліковий запис",
+    "emailLabel": "Email",
+    "passwordLabel": "Пароль",
+    "passwordConfirmationLabel": "Підтвердження пароля",
+    "submitButton": "Зареєструватися",
+    "submitButtonLoading": "Реєстрація...",
+    "alreadyHaveAccount": "Вже є акаунт? ",
+    "loginLink": "Увійти",
+    "errorFillFields": "Будь ласка, заповніть усі обов'язкові поля.",
+    "errorPasswordsDoNotMatch": "Паролі не співпадають.",
+    "errorUserExists": "Користувач з таким email вже існує або дані некоректні.",
+    "errorUnknown": "Сталася невідома помилка. Спробуйте ще раз."
+  },
+  "profilePage": {
+    "title": "Ваш профіль",
+    "contactDetailsTitle": "Контактні дані",
+    "emailLabel": "Email",
+    "fullNameLabel": "Ім'я та Прізвище",
+    "phoneLabel": "Номер телефону",
+    "countryLabel": "Країна",
+    "cityLabel": "Місто",
+    "addressLabel": "Адреса доставки",
+    "zipCodeLabel": "Поштовий індекс",
+    "passwordChangeTitle": "Зміна пароля",
+    "passwordChangeSubtitle": "Залиште поля порожніми, якщо не хочете змінювати пароль.",
+    "newPasswordLabel": "Новий пароль",
+    "confirmNewPasswordLabel": "Підтвердження нового пароля",
+    "myOrdersTitle": "Мої замовлення",
+    "orderNumberPrefix": "Замовлення №",
+    "statusPrefix": "Статус:",
+    "detailsButton": "Детальніше",
+    "noOrdersText": "У вас ще немає замовлень.",
+    "backButton": "Повернутися",
+    "saveButtonLoading": "Збереження...",
+    "saveButton": "Зберегти зміни",
+    "errorPasswordsDoNotMatch": "Нові паролі не співпадають.",
+    "errorUnknown": "Сталася невідома помилка.",
+    "successUpdate": "Профіль успішно оновлено!"
+  },
+  "shopPage": {
+    "tabs.all": "Всі товари",
+    "tabs.knives": "Ножі",
+    "tabs.fastenings": "Кріплення",
+    "tabs.attachments": "Доповнення",
+    "sort.nameAsc": "За назвою (А-Я)",
+    "sort.nameDesc": "За назвою (Я-А)",
+    "sort.priceAsc": "За ціною (дешеві спочатку)",
+    "sort.priceDesc": "За ціною (дорогі спочатку)",
+    "sort.newest": "Найновіші",
+    "filters.category": "Категорія",
+    "filters.price": "Ціна",
+    "filters.color": "Колір",
+    "filters.bladeLength": "Довжина леза",
+    "filters.weight": "Вага",
+    "search.placeholder": "Пошук товарів...",
+    "buttons.filters": "Фільтри",
+    "buttons.clearAll": "Очистити все",
+    "activeFilters.title": "Активні фільтри:",
+    "results.found": "Знайдено {count} товарів",
+    "results.forQuery": "за запитом",
+    "noResults.title": "Товари не знайдено",
+    "noResults.description": "Спробуйте змінити фільтри або пошуковий запит",
+    "noResults.button": "Очистити всі фільтри"
+  },
+  "sortDropdown" : {
+    "sort": "Сортувати"
+  },
+  "filterPanel": {
+    "range": "Діапазон"
+  },
+  "filterSelect": {
+    "placeholder" : "Виберіть...",
+    "noOptionsMessage": "Немає варіантів",
+    "formatGroupLabel": "Група"
+  },
+  "rangeFilter": {
+    "min_text": "Мін : ",
+    "max_text": "Макс : "
+  }
+}

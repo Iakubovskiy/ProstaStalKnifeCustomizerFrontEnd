@@ -1,0 +1,99 @@
+{
+  "loginButton": "Login",
+  "shopLink": "Shop",
+  "customizerLink": "Customizer",
+  "loginPage": {
+    "title": "Login",
+    "subtitle": "Enter your credentials to access",
+    "usernameLabel": "Username or Email",
+    "passwordLabel": "Password",
+    "submitButton": "Sign In",
+    "submitButtonLoading": "Signing In...",
+    "noAccount": "Don't have an account? ",
+    "registerLink": "Register",
+    "errorFillFields": "Please fill in all fields.",
+    "errorInvalidCredentials": "Invalid login or password.",
+    "errorUnknown": "An unknown error occurred. Please try again."
+  },
+  "registerPage": {
+    "title": "Register",
+    "subtitle": "Create your account",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "passwordConfirmationLabel": "Confirm Password",
+    "submitButton": "Register",
+    "submitButtonLoading": "Registering...",
+    "alreadyHaveAccount": "Already have an account? ",
+    "loginLink": "Log In",
+    "errorFillFields": "Please fill in all required fields.",
+    "errorPasswordsDoNotMatch": "Passwords do not match.",
+    "errorUserExists": "A user with this email already exists or the data is incorrect.",
+    "errorUnknown": "An unknown error occurred. Please try again."
+  },
+  "profilePage": {
+    "title": "Your Profile",
+    "contactDetailsTitle": "Contact Details",
+    "emailLabel": "Email",
+    "fullNameLabel": "Full Name",
+    "phoneLabel": "Phone Number",
+    "countryLabel": "Country",
+    "cityLabel": "City",
+    "addressLabel": "Shipping Address",
+    "zipCodeLabel": "Zip Code",
+    "passwordChangeTitle": "Change Password",
+    "passwordChangeSubtitle": "Leave fields empty if you don't want to change the password.",
+    "newPasswordLabel": "New Password",
+    "confirmNewPasswordLabel": "Confirm New Password",
+    "myOrdersTitle": "My Orders",
+    "orderNumberPrefix": "Order #",
+    "statusPrefix": "Status:",
+    "detailsButton": "Details",
+    "noOrdersText": "You have no orders yet.",
+    "backButton": "Back",
+    "saveButtonLoading": "Saving...",
+    "saveButton": "Save Changes",
+    "errorPasswordsDoNotMatch": "New passwords do not match.",
+    "errorUnknown": "An unknown error occurred.",
+    "successUpdate": "Profile updated successfully!"
+  },
+  "shopPage": {
+    "tabs.all": "All Products",
+    "tabs.knives": "Knives",
+    "tabs.fastenings": "Mounts",
+    "tabs.attachments": "Accessories",
+    "sort.nameAsc": "By name (A-Z)",
+    "sort.nameDesc": "By name (Z-A)",
+    "sort.priceAsc": "By price (low to high)",
+    "sort.priceDesc": "By price (high to low)",
+    "sort.newest": "Newest",
+    "filters.category": "Category",
+    "filters.price": "Price",
+    "filters.color": "Color",
+    "filters.bladeLength": "Blade Length",
+    "filters.weight": "Weight",
+    "search.placeholder": "Search products...",
+    "buttons.filters": "Filters",
+    "buttons.clearAll": "Clear All",
+    "activeFilters.title": "Active Filters:",
+    "results.found": "Found {count} products",
+    "results.forQuery": "for query",
+    "noResults.title": "No Products Found",
+    "noResults.description": "Try changing the filters or search query",
+    "noResults.button": "Clear All Filters"
+  },
+  "sortDropdown" : {
+    "sort": "Sort"
+  },
+  "filterPanel": {
+    "range": "Range"
+  },
+  "filterSelect": {
+    "placeholder" : "Choose...",
+    "noOptionsMessage": "No options",
+    "formatGroupLabel": "Group"
+  },
+  "rangeFilter": {
+    "min_text": "Min : ",
+    "max_text": "Max : "
+  }
+}

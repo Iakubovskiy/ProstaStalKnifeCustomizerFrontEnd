@@ -2,7 +2,7 @@
 import "../../styles/globals.css";
 
 import Card from "@/app/components/Shop/Card/Card";
-import { ProductType, ProductSpecs } from "@/app/components/Shop/Card/Card";
+import { ProductType } from "@/app/components/Shop/Card/Card";
 import FilterPanel from "@/app/components/Shop/Filter/FiltersPanel";
 import SearchBar from "@/app/components/Shop/SearchBar.tsx/SearchBar";
 import SortDropdown from "@/app/components/Shop/Sort/Sort";
@@ -10,8 +10,10 @@ import ShopTabs from "@/app/components/Shop/Tabs/Tabs";
 import { Pagination } from "@nextui-org/react";
 import { Filter, Grid, List, X } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 const ShopPage: React.FC = () => {
+  const { t } = useTranslation();
   const [mockProducts] = useState<ProductType[]>(() => {
     const knifeNames = [
       "Складний ніж Buck 110 Hunter",
@@ -98,14 +100,12 @@ const ShopPage: React.FC = () => {
       switch (category) {
         case "Ножі":
           name = knifeNames[i % knifeNames.length] || `Ніж ${i + 1}`;
-          // Циклічно використовуємо 26 фото ножів
           const knifeImageNumber = (i % 26) + 1;
           imageUrl = `/knives/${knifeImageNumber}.jpg`;
           break;
         case "Кріплення":
           name =
             fastenersNames[i % fastenersNames.length] || `Кріплення ${i + 1}`;
-          // Для кріплень також використовуємо фото ножів (можна створити окрему папку)
           const holsterImageNumber = (i % 26) + 1;
           imageUrl = `/knives/${holsterImageNumber}.jpg`;
           break;
@@ -113,7 +113,6 @@ const ShopPage: React.FC = () => {
           name =
             attachmentsNames[i % attachmentsNames.length] ||
             `Доповнення ${i + 1}`;
-          // Для доповнень також використовуємо фото ножів
           const toolsImageNumber = (i % 26) + 1;
           imageUrl = `/knives/${toolsImageNumber}.jpg`;
           break;
@@ -129,11 +128,9 @@ const ShopPage: React.FC = () => {
         category: category,
         price: Math.floor(Math.random() * 10000) + 100,
         image_url: imageUrl,
-        // Додаємо випадковий колір
         color: colors[Math.floor(Math.random() * colors.length)],
       };
 
-      // Додаємо специфікації тільки для ножів
       if (category === "Ножі") {
         return {
           ...baseProduct,
@@ -153,44 +150,56 @@ const ShopPage: React.FC = () => {
   });
 
   const tabs = [
-    { id: "all", label: "Всі товари", count: mockProducts.length },
+    { id: "all", label: t("shopPage.tabs.all"), count: mockProducts.length },
     {
       id: "knives",
-      label: "Ножі",
+      label: t("shopPage.tabs.knives"),
       count: mockProducts.filter((p) => p.category === "Ножі").length,
     },
     {
       id: "fastenings",
-      label: "Кріплення",
+      label: t("shopPage.tabs.fastenings"),
       count: mockProducts.filter((p) => p.category === "Кріплення").length,
     },
     {
       id: "attachments",
-      label: "Доповнення",
+      label: t("shopPage.tabs.attachments"),
       count: mockProducts.filter((p) => p.category === "Доповнення").length,
     },
   ];
 
   const sortOptions = [
-    { value: "name-asc", label: "За назвою (А-Я)" },
-    { value: "name-desc", label: "За назвою (Я-А)" },
-    { value: "price-asc", label: "За ціною (дешеві спочатку)" },
-    { value: "price-desc", label: "За ціною (дорогі спочатку)" },
-    { value: "newest", label: "Найновіші" },
+    { value: "name-asc", label: t("shopPage.sort.nameAsc") },
+    { value: "name-desc", label: t("shopPage.sort.nameDesc") },
+    { value: "price-asc", label: t("shopPage.sort.priceAsc") },
+    { value: "price-desc", label: t("shopPage.sort.priceDesc") },
+    { value: "newest", label: t("shopPage.sort.newest") },
   ];
 
-  // Фільтри з додаванням кольору
   const mockFilters = [
-    { name: "Категорія", data: ["Ножі", "Кріплення", "Доповнення"] },
-    { name: "Ціна", min: 100, max: 10100 },
-    // Фільтр по кольору - отримуємо унікальні кольори з продуктів
+    { 
+      name: t("shopPage.filters.category"), 
+      data: ["Ножі", "Кріплення", "Доповнення"] 
+    },
+    { 
+      name: t("shopPage.filters.price"), 
+      min: 100, 
+      max: 10100 
+    },
     {
-      name: "Колір",
+      name: t("shopPage.filters.color"),
       data: Array.from(new Set(mockProducts.map((p) => p.color))).sort(),
     },
-    // Додаткові фільтри для ножів
-    { name: "Довжина леза", min: 10, max: 20 },
-    { name: "Вага", min: 100, max: 300 },
+    { 
+      name: t("shopPage.filters.bladeLength"), 
+      min: 10, 
+      max: 20 
+    },
+    { 
+      name: t("shopPage.filters.weight"), 
+      min: 100, 
+      max: 300 
+    },
   ];
 
   // State
@@ -204,11 +213,9 @@ const ShopPage: React.FC = () => {
 
   const itemsPerPage = 20;
 
-  // Filter and sort products
   const filteredProducts = useMemo(() => {
     let filtered = mockProducts;
 
-    // Filter by tab - виправлена логіка
     if (activeTab !== "all") {
       const categoryMap: Record<string, string> = {
         knives: "Ножі",
@@ -232,7 +239,7 @@ const ShopPage: React.FC = () => {
       if (!filterValue) return;
 
       if (
-        filterName === "Ціна" &&
+        filterName === t("shopPage.filters.price") &&
         filterValue.min !== undefined &&
         filterValue.max !== undefined
       ) {
@@ -241,7 +248,7 @@ const ShopPage: React.FC = () => {
             product.price >= filterValue.min && product.price <= filterValue.max
         );
       } else if (
-        filterName === "Довжина леза" &&
+        filterName === t("shopPage.filters.bladeLength") &&
         filterValue.min !== undefined &&
         filterValue.max !== undefined
       ) {
@@ -255,7 +262,7 @@ const ShopPage: React.FC = () => {
           return false;
         });
       } else if (
-        filterName === "Вага" &&
+        filterName === t("shopPage.filters.weight") &&
         filterValue.min !== undefined &&
         filterValue.max !== undefined
       ) {
@@ -269,12 +276,11 @@ const ShopPage: React.FC = () => {
           return false;
         });
       } else if (Array.isArray(filterValue) && filterValue.length > 0) {
-        if (filterName === "Категорія") {
+        if (filterName === t("shopPage.filters.category")) {
           filtered = filtered.filter((product) =>
             filterValue.includes(product.category)
           );
-        } else if (filterName === "Колір") {
-          // Додаємо фільтрацію по кольору
+        } else if (filterName === t("shopPage.filters.color")) {
           filtered = filtered.filter((product) =>
             filterValue.includes(product.color)
           );
@@ -302,7 +308,7 @@ const ShopPage: React.FC = () => {
     }
 
     return filtered;
-  }, [mockProducts, activeTab, searchQuery, activeFilters, sortBy]);
+  }, [mockProducts, activeTab, searchQuery, activeFilters, sortBy, t]);
 
   // Calculate pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -327,6 +333,18 @@ const ShopPage: React.FC = () => {
     setActiveTab("all");
   };
 
+  const [isClient, setIsClient] = useState(false);
+  
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  if (!isClient) {
+    return <div className="min-h-screen bg-gray-50 p-6 flex justify-center items-center">
+      <div className="animate-pulse text-lg">Завантаження...</div>
+    </div>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header with Tabs */}
@@ -338,15 +356,12 @@ const ShopPage: React.FC = () => {
         />
       </div>
 
-      {/* Main Content */}
       <div className="max-w-8xl mx-auto px-4 py-6">
-        {/* Search and Controls Bar */}
         <div className="bg-white rounded-lg shadow-sm p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
-            {/* Left side - Search and Filter toggle */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center flex-1">
               <SearchBar
-                placeholder="Пошук товарів..."
+                placeholder={t("shopPage.search.placeholder")}
                 onSearch={setSearchQuery}
                 defaultValue={searchQuery}
               />
@@ -356,7 +371,7 @@ const ShopPage: React.FC = () => {
                 className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200 lg:hidden"
               >
                 <Filter className="w-4 h-4" />
-                Фільтри
+                {t("shopPage.buttons.filters")}
                 {Object.keys(activeFilters).length > 0 && (
                   <span className="bg-[#d8a878] text-white text-xs rounded-full px-2 py-0.5 ml-1">
                     {Object.keys(activeFilters).length}
@@ -405,7 +420,7 @@ const ShopPage: React.FC = () => {
             <div className="mt-4 pt-4 border-t border-gray-100">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="text-sm text-gray-600 font-medium">
-                  Активні фільтри:
+                  {t("shopPage.activeFilters.title")}
                 </span>
                 {Object.entries(activeFilters).map(
                   ([filterName, filterValue]) => (
@@ -460,7 +475,7 @@ const ShopPage: React.FC = () => {
                   onClick={clearAllFilters}
                   className="text-sm text-gray-500 hover:text-gray-700 underline ml-2"
                 >
-                  Очистити все
+                  {t("shopPage.buttons.clearAll")}
                 </button>
               </div>
             </div>
@@ -469,15 +484,11 @@ const ShopPage: React.FC = () => {
           {/* Results Summary */}
           <div className="mt-4 pt-4 border-t border-gray-100">
             <p className="text-sm text-gray-600">
-              Знайдено{" "}
-              <span className="font-medium text-gray-900">
-                {filteredProducts.length}
-              </span>{" "}
-              товарів
+              {t("shopPage.results.found", { count: filteredProducts.length })}{" "}
               {searchQuery && (
                 <span>
                   {" "}
-                  за запитом "<span className="font-medium">{searchQuery}</span>
+                  {t("shopPage.results.forQuery")} "<span className="font-medium">{searchQuery}</span>
                   "
                 </span>
               )}
@@ -510,7 +521,7 @@ const ShopPage: React.FC = () => {
                 <div className="p-4 border-b border-gray-100">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-medium text-gray-900">
-                      Фільтри
+                      {t("shopPage.buttons.filters")}
                     </h3>
                     <button
                       onClick={() => setShowFilters(false)}
@@ -541,8 +552,9 @@ const ShopPage: React.FC = () => {
                     <div className="flex justify-center">
                       <div className="grid gap-[50px] grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-6 max-w-fit">
                         {paginatedProducts.map((product, index) => (
-                          <div key={product.id || index} className="w-full">
+                          <div key={`product-${product.id}-${index}`} className="w-full">
                             <Card
+                              key={`card-${product.id}-${index}`}
                               product={product}
                               viewMode="grid"
                               onAddToCart={() => {
@@ -560,7 +572,7 @@ const ShopPage: React.FC = () => {
                     <div className="space-y-4">
                       {paginatedProducts.map((product, index) => (
                         <Card
-                          key={product.id || index}
+                          key={`card-${product.id}-${index}`}
                           product={product}
                           viewMode="list"
                           onAddToCart={() => {
@@ -593,16 +605,16 @@ const ShopPage: React.FC = () => {
                 <div className="text-center py-12">
                   <div className="text-gray-400 text-6xl mb-4">🔍</div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    Товари не знайдено
+                    {t("shopPage.noResults.title")}
                   </h3>
                   <p className="text-gray-600 mb-4">
-                    Спробуйте змінити фільтри або пошуковий запит
+                    {t("shopPage.noResults.description")}
                   </p>
                   <button
                     onClick={clearAllFilters}
                     className="px-4 py-2 bg-[#d8a878] hover:bg-[#c4a574] text-white font-medium rounded transition-colors"
                   >
-                    Очистити всі фільтри
+                    {t("shopPage.noResults.button")}
                   </button>
                 </div>
               )}

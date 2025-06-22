@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Select from "react-select";
+import {useTranslation} from "react-i18next";
 
 interface Option {
   value: string;
@@ -21,19 +22,18 @@ const FilterSelect: React.FC<MultiSelectFilterProps> = ({
   onFilterChange,
   defaultValue,
 }) => {
-  // Convert string array to options format required by React Select
   const options: Option[] = data.map((item) => ({
     value: item,
     label: item,
   }));
 
+  const { t } = useTranslation();
   const [selectedOptions, setSelectedOptions] = useState<Option[]>([]);
 
   const handleChange = (selected: readonly Option[] | null) => {
     const selectedItems = selected ? [...selected] : [];
     setSelectedOptions(selectedItems);
 
-    // Extract just the values to pass to the parent component
     const selectedValues = selectedItems.map((item) => item.value);
 
     if (selectedValues.length === 0) {
@@ -76,11 +76,11 @@ const FilterSelect: React.FC<MultiSelectFilterProps> = ({
         options={options}
         value={selectedOptions}
         onChange={handleChange}
-        placeholder="Виберіть..."
+        placeholder={t("filterSelect.placeholder")}
         classNamePrefix="select"
         className="text-sm"
-        noOptionsMessage={() => "Немає варіантів"}
-        formatGroupLabel={() => "Група"}
+        noOptionsMessage={() =>  t("filterSelect.noOptionsMessage")}
+        formatGroupLabel={() => t("filterSelect.formatGroupLabel")}
         isClearable={true}
         closeMenuOnSelect={false}
         hideSelectedOptions={false}
@@ -89,35 +89,35 @@ const FilterSelect: React.FC<MultiSelectFilterProps> = ({
           borderRadius: 8,
           colors: {
             ...theme.colors,
-            primary: "#d8a878", // основний колір
-            primary75: "#e8d9c5", // трохи темніший відтінок
-            primary50: "#f5ede2", // світліший відтінок
-            primary25: "#faf6f1", // найсвітліший відтінок
+            primary: "#d8a878",
+            primary75: "#e8d9c5",
+            primary50: "#f5ede2",
+            primary25: "#faf6f1",
           },
         })}
         styles={{
           control: (base) => ({
             ...base,
             boxShadow: "none",
-            borderColor: "#e5d8c5", // темніший відтінок для рамки
+            borderColor: "#e5d8c5",
             "&:hover": {
-              borderColor: "#d9c8b0", // ще темніший відтінок при наведенні
+              borderColor: "#d9c8b0",
             },
           }),
           multiValue: (base) => ({
             ...base,
-            backgroundColor: "#f5ede2", // світлий відтінок для тегів
+            backgroundColor: "#f5ede2",
           }),
           multiValueLabel: (base) => ({
             ...base,
-            color: "#000000", // коричневий для тексту тегів
+            color: "#000000",
           }),
           multiValueRemove: (base) => ({
             ...base,
-            color: "#c4ad8c", // середній коричневий для кнопки видалення
+            color: "#c4ad8c",
             "&:hover": {
-              backgroundColor: "#e8d9c5", // світло-коричневий при наведенні
-              color: "#816b4b", // темно-коричневий для тексту
+              backgroundColor: "#e8d9c5",
+              color: "#816b4b",
             },
           }),
         }}

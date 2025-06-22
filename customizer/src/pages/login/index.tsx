@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 import "../../styles/globals.css";
+import { useTranslation } from "react-i18next";
 
 import { Input, Button } from "@nextui-org/react";
 import { User, Lock } from "lucide-react";
@@ -10,6 +11,7 @@ import { APIError } from "@/app/errors/APIError";
 import Link from "next/link";
 
 const LoginPage = () => {
+    const { t } = useTranslation();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setLoading] = useState(false);
@@ -21,7 +23,7 @@ const LoginPage = () => {
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!username || !password) {
-            setError("Будь ласка, заповніть усі поля.");
+            setError(t("loginPage.errorFillFields"));
             return;
         }
 
@@ -37,21 +39,25 @@ const LoginPage = () => {
             }
             const parseJwt = (token: string): any => {
                 try {
-                    const base64 = token.split('.')[1]
-                        .replace(/-/g, '+')
-                        .replace(/_/g, '/');
+                    const base64 = token
+                        .split(".")[1]
+                        .replace(/-/g, "+")
+                        .replace(/_/g, "/");
                     const json = decodeURIComponent(
                         atob(base64)
-                            .split('')
-                            .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
-                            .join('')
+                            .split("")
+                            .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+                            .join("")
                     );
                     return JSON.parse(json);
                 } catch {
                     return null;
                 }
             };
-            const role = parseJwt(token)?.["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+            const role =
+                parseJwt(token)?.[
+                    "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
+                    ];
 
             if (role === "Admin") {
                 router.push("/admin/dashboard");
@@ -59,18 +65,12 @@ const LoginPage = () => {
                 router.push("/shop");
             }
         } catch (err) {
-            console.log(err);
             console.error("Помилка входу:", err);
-
-            if (
-                err instanceof Error &&
-                (err as APIError).status === 401
-            ) {
-                setError("Невірний логін або пароль.");
+            if (err instanceof Error && (err as APIError).status === 401) {
+                setError(t("loginPage.errorInvalidCredentials"));
             } else {
-                setError("Сталася невідома помилка. Спробуйте ще раз.");
+                setError(t("loginPage.errorUnknown"));
             }
-
         } finally {
             setLoading(false);
         }
@@ -81,14 +81,16 @@ const LoginPage = () => {
             <div className="w-full max-w-md bg-white/80 backdrop-blur-sm rounded-2xl p-8 border border-[#b8845f]/20 shadow-lg">
                 <form onSubmit={handleLogin} className="space-y-6">
                     <div className="text-center">
-                        <h1 className="text-3xl font-bold text-[#2d3748]">Вхід</h1>
+                        <h1 className="text-3xl font-bold text-[#2d3748]">
+                            {t("loginPage.title")}
+                        </h1>
                         <p className="text-[#2d3748]/60 mt-2">
-                            Введіть свої дані для доступу
+                            {t("loginPage.subtitle")}
                         </p>
                     </div>
 
                     <Input
-                        label="Ім'я користувача або Email"
+                        label={t("loginPage.usernameLabel")}
                         value={username}
                         onValueChange={setUsername}
                         startContent={
@@ -98,7 +100,7 @@ const LoginPage = () => {
                         isRequired
                     />
                     <Input
-                        label="Пароль"
+                        label={t("loginPage.passwordLabel")}
                         value={password}
                         onValueChange={setPassword}
                         type="password"
@@ -122,15 +124,17 @@ const LoginPage = () => {
                         isLoading={isLoading}
                         className="bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white font-semibold"
                     >
-                        {isLoading ? "Вхід..." : "Увійти"}
+                        {isLoading
+                            ? t("loginPage.submitButtonLoading")
+                            : t("loginPage.submitButton")}
                     </Button>
                     <div className="text-center text-sm text-gray-600">
-                        <span>Немає акаунту? </span>
+                        <span>{t("loginPage.noAccount")}</span>
                         <Link
                             href="/register"
                             className="font-medium text-[#8b7258] hover:underline"
                         >
-                            Зареєструватися
+                            {t("loginPage.registerLink")}
                         </Link>
                     </div>
                 </form>

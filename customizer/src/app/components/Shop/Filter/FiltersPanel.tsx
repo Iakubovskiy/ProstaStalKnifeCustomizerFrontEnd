@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import FilterSelect from "./FilterSelect";
 import RangeFilter from "./RangeFilter";
+import { useTranslation } from "react-i18next";
 
 type FilterItem =
   | {
@@ -25,9 +26,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   filters,
   activeFilters,
   onFiltersChange,
-  onClearAll, // New prop
+  onClearAll,
   storageKey = "filter-state",
 }) => {
+  const { t } = useTranslation();
   useEffect(() => {
     const saved = localStorage.getItem(storageKey);
     if (saved) {
@@ -38,7 +40,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     }
   }, [storageKey, onFiltersChange]);
 
-  // ⚙️ Зміна будь-якого фільтра
   const handleFilterChange = (name: string, value: any) => {
     const updated = {
       ...activeFilters,
@@ -78,7 +79,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
               max={filter.max}
               onFilterChange={handleFilterChange}
               defaultValue={activeFilters[filter.name]}
-              title={filter.name || "Діапазон"}
+              title={filter.name || t("filterPanel.range")}
             />
           );
         }

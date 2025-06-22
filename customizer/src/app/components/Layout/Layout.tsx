@@ -1,5 +1,4 @@
 import Head from "next/head";
-import { useRouter } from "next/router";
 import CustomNavbar from "../CustomNavbar/CustomNavbar";
 import Footer from "../Footer/Footer";
 
@@ -28,42 +27,38 @@ const Layout: React.FC<LayoutProps> = ({
   structuredData,
   breadcrumbs,
 }) => {
-  const router = useRouter();
 
   // Базові налаштування SEO
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com";
   const siteName = "Ваш магазин";
   const defaultOgImage = `${siteUrl}/images/og-default.jpg`;
 
-  // Формування повного URL
-  const fullUrl = canonicalUrl || `${siteUrl}${router.asPath}`;
+  // const fullUrl = canonicalUrl || `${siteUrl}${router.asPath}`;
   const finalOgImage = ogImage || defaultOgImage;
 
-  // Автоматичне формування keywords на основі сторінки
-  const generateKeywords = (): string => {
-    if (keywords) return keywords;
+  // const generateKeywords = (): string => {
+  //   if (keywords) return keywords;
+  //
+  //   const baseKeywords = [
+  //     "ножі",
+  //     "мисливські ножі",
+  //     "тактичні ножі",
+  //     "купити ніж",
+  //   ];
+  //   const pathKeywords: { [key: string]: string[] } = {
+  //     "/shop": ["магазин ножів", "купити онлайн"],
+  //     "/products": ["каталог товарів", "всі ножі"],
+  //     "/customizer": ["кастомний ніж", "персоналізація"],
+  //   };
+  //
+  //   const currentPathKeywords =
+  //     Object.entries(pathKeywords).find(([path]) =>
+  //       router.pathname.startsWith(path)
+  //     )?.[1] || [];
+  //
+  //   return [...baseKeywords, ...currentPathKeywords].join(", ");
+  // };
 
-    const baseKeywords = [
-      "ножі",
-      "мисливські ножі",
-      "тактичні ножі",
-      "купити ніж",
-    ];
-    const pathKeywords: { [key: string]: string[] } = {
-      "/shop": ["магазин ножів", "купити онлайн"],
-      "/products": ["каталог товарів", "всі ножі"],
-      "/customizer": ["кастомний ніж", "персоналізація"],
-    };
-
-    const currentPathKeywords =
-      Object.entries(pathKeywords).find(([path]) =>
-        router.pathname.startsWith(path)
-      )?.[1] || [];
-
-    return [...baseKeywords, ...currentPathKeywords].join(", ");
-  };
-
-  // Structured Data для хлібних крошок
   const breadcrumbStructuredData = breadcrumbs
     ? {
         "@context": "https://schema.org",
@@ -119,7 +114,7 @@ const Layout: React.FC<LayoutProps> = ({
         {/* Базові SEO теги */}
         <title>{title}</title>
         <meta name="description" content={description} />
-        <meta name="keywords" content={generateKeywords()} />
+        {/*<meta name="keywords" content={generateKeywords()} />*/}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         {/* Robots meta */}
@@ -133,7 +128,7 @@ const Layout: React.FC<LayoutProps> = ({
         )}
 
         {/* Canonical URL */}
-        <link rel="canonical" href={fullUrl} />
+        {/*<link rel="canonical" href={fullUrl} />*/}
 
         {/* Language and Region */}
         <meta httpEquiv="content-language" content="uk-UA" />
@@ -144,7 +139,7 @@ const Layout: React.FC<LayoutProps> = ({
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content={ogType} />
-        <meta property="og:url" content={fullUrl} />
+        {/*<meta property="og:url" content={fullUrl} />*/}
         <meta property="og:image" content={finalOgImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -234,9 +229,8 @@ const Layout: React.FC<LayoutProps> = ({
           />
         )}
 
-        {/* Альтернативні мови (якщо є) */}
-        <link rel="alternate" hrefLang="uk" href={fullUrl} />
-        <link rel="alternate" hrefLang="x-default" href={fullUrl} />
+        {/*<link rel="alternate" hrefLang="uk" href={fullUrl} />*/}
+        {/*<link rel="alternate" hrefLang="x-default" href={fullUrl} />*/}
 
         {/* Security Headers */}
         <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
