@@ -20,13 +20,6 @@ const DashboardPage = () => {
   const router = useRouter();
   const menuItems = [
     {
-      title: "Замовлення",
-      href: "/orderPage",
-      icon: <ShoppingBag className="w-6 h-6" />,
-      color: "primary",
-      description: "Керування замовленнями",
-    },
-    {
       title: "Покриття клинка",
       href: "/blade-coating-color",
       icon: <Shield className="w-6 h-6" />,

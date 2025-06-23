@@ -154,15 +154,6 @@ export default function ProductCard({
                 </div>
               </div>
 
-              {onAddToCart && (
-                <button
-                  onClick={handleAddToCart}
-                  className="w-full py-2 px-3 bg-gray-200 hover:bg-gray-300 text-gray-900 font-medium rounded transition-colors text-sm"
-                >
-                  Додати до кошика
-                </button>
-              )}
-
               {onBuyNow && (
                 <button
                   onClick={handleBuyNow}
