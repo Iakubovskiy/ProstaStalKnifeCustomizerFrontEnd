@@ -30,6 +30,20 @@ const SheathCustomizationComponent: React.FC = () => {
     });
   };
 
+  const castSheathColorFromSnap = (): SheathColorForCanvas => {
+    const sheathColorForCanvas : SheathColorForCanvas = {
+      id : snap.sheathColor.id,
+      color : snap.sheathColor.color,
+      colorCode : snap.sheathColor.colorCode,
+      colorMap : snap.sheathColor.colorMap,
+      normalMap : snap.sheathColor.normalMap,
+      roughnessMap : snap.sheathColor.roughnessMap,
+      engravingColorCode : snap.sheathColor.engravingColorCode,
+      prices : state.sheathColor.prices,
+    }
+    return sheathColorForCanvas;
+  }
+
   return (
     <>
       <div className="grid grid-cols-3 gap-4">
@@ -42,15 +56,15 @@ const SheathCustomizationComponent: React.FC = () => {
           />
         ))}
       </div>
-      {/* <div style={{ marginTop: "16px" }}>
+      <div style={{ marginTop: "16px" }}>
         <Characteristics
-          data={snap.sheathColor}
+          data={castSheathColorFromSnap()}
           isReadOnly1={true}
           currentBladeCoatingColor={""}
           onChange={() => {}}
           type="SheathColorForCanvas"
         />
-      </div> */}
+      </div>
       <div className="p-3">
         <ModalFormButton></ModalFormButton>
       </div>

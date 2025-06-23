@@ -36,6 +36,7 @@ class SheathColorService {
         colorMap: item.colorMap,
         normalMap: item.texture?.normalMap || null,
         roughnessMap: item.texture?.roughnessMap || null,
+        color: item.color,
       };
       return canvasObject;
     });

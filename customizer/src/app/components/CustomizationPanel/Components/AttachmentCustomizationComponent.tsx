@@ -68,7 +68,6 @@ const AttachmentCustomizationComponent: React.FC = () => {
           position: "relative",
         }}
       >
-        {/* Пуста картка для видалення attachment */}
         <CardComponent
           backgroundPicture="#f9fafb"
           tooltipText="Без доповнень"
@@ -79,8 +78,8 @@ const AttachmentCustomizationComponent: React.FC = () => {
         {fastenings.map((attachment) => (
           <React.Fragment key={attachment.id}>
             <CardComponent
-              backgroundPicture={previews[attachment.id] || "#ffffff"}
-              tooltipText={"Доповнення"}
+              backgroundPicture={attachment.image.fileUrl || "#ffffff"}
+              tooltipText={attachment.name + " " + attachment.color}
               onClick={() => fasteningOptionClick(attachment)}
             />
             {!previews[attachment.id] && (
@@ -93,6 +92,18 @@ const AttachmentCustomizationComponent: React.FC = () => {
             )}
           </React.Fragment>
         ))}
+      </div>
+      <div style={{ marginTop: "16px" }}>
+        <Characteristics
+            key={snap.attachment?.id}
+            data={
+              snap.attachment
+            }
+            isReadOnly1={true}
+            currentBladeCoatingColor={""}
+            onChange={() => {}}
+            type="AttachmentForCanvas"
+        />
       </div>
 
       <div className="p-3">

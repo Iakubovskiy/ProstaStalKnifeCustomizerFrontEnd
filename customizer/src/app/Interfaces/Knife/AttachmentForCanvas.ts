@@ -7,4 +7,6 @@ export interface AttachmentForCanvas {
   image: AppFile;
   model: AppFile;
   typeId?: string | null;
+  color: string;
+  material: string;
 }

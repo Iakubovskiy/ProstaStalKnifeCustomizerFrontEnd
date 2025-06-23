@@ -6,6 +6,7 @@ import Characteristics from "@/app/components/Characteristics/Characteristics";
 import { useSnapshot } from "valtio";
 import ModalFormButton from "../../ModalButton/ModalButton";
 import { BladeCoatingColorForCanvas } from "@/app/Interfaces/Knife/BladeCoatingColorForCanvas";
+import { BladeCoatingColor } from "@/app/Interfaces/BladeCoatingColor";
 
 const BladeCoatingCustomizationComponent: React.FC = () => {
   const [bladeCoatingColors, setBladeCoatingColors] = useState<
@@ -25,6 +26,7 @@ const BladeCoatingCustomizationComponent: React.FC = () => {
   }, []);
 
   const bladeCoatingColorClick = (color: BladeCoatingColorForCanvas) => {
+    console.log("color = ", color);
     state.bladeCoatingColor = color;
     requestAnimationFrame(() => {
       state.invalidate();
@@ -43,15 +45,16 @@ const BladeCoatingCustomizationComponent: React.FC = () => {
           />
         ))}
       </div>
-      {/* <div style={{ marginTop: "16px" }}>
+      <div style={{ marginTop: "16px" }}>
         <Characteristics
+          key={snap.bladeCoatingColor.id}
           data={snap.bladeCoatingColor}
           isReadOnly1={true}
           currentBladeCoatingColor={""}
           onChange={() => {}}
-          type="BladeCoatingColorForCanvas "
+          type="BladeCoatingColorForCanvas"
         />
-      </div> */}
+      </div>
       <div className="p-3">
         <ModalFormButton></ModalFormButton>
       </div>

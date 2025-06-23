@@ -50,6 +50,7 @@ const BladeShapeCustomizationComponent: React.FC = () => {
       bladeShapeModel: shape.bladeShapeModel,
       sheathModel: sheathModel,
       sheathId: shape.sheathId,
+      bladeCharacteristicsModel: shape.bladeCharacteristicsModel,
     };
     state.invalidate();
   };
@@ -66,11 +67,23 @@ const BladeShapeCustomizationComponent: React.FC = () => {
         {bladeShapes.map((shape) => (
           <CardComponent
             key={shape.id}
-            backgroundPicture="/icons/blade-shape.svg"
+            backgroundPicture={shape.bladeShapeImage?.fileUrl || "/icons/blade-shape.svg"}
             tooltipText={shape.name}
             onClick={() => bladeShapeSelection(shape)}
           />
         ))}
+      </div>
+      <div style={{ marginTop: "16px" }}>
+        <Characteristics
+            key={snap.bladeShape.id}
+            data={
+              snap.bladeShape
+            }
+            isReadOnly1={true}
+            currentBladeCoatingColor={""}
+            onChange={() => {}}
+            type="BladeShapeForCanvas"
+        />
       </div>
     </div>
   );

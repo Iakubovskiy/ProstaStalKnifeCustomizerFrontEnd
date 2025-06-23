@@ -1,4 +1,5 @@
 import { AppFile } from "@/app/Interfaces/File";
+import {BladeCharacteristics} from "@/app/Interfaces/BladeCharacteristics";
 
 export interface BladeShapeForCanvas {
   id: string;
@@ -9,4 +10,5 @@ export interface BladeShapeForCanvas {
   bladeShapeModel: AppFile;
   sheathModel?: AppFile;
   sheathId?: string;
+  bladeCharacteristicsModel : BladeCharacteristics;
 }
