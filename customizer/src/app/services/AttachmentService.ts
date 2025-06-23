@@ -56,18 +56,18 @@ class AttachmentService {
       `${this.resource}/active`
     );
 
-    // 2. Фільтруємо ті, що не мають моделі, і перетворюємо їх
     return fullObjects
-      .filter((item) => item.model) // Залишаємо тільки ті, де є модель
+      .filter((item) => item.model)
       .map((item) => ({
         id: item.id,
         model: item.model,
         image: item.image,
         name: item.name,
         price: item.price,
+        color: item.color,
+        material: item.material,
       }));
   }
-  // --- КІНЕЦЬ НОВОГО МЕТОДУ ---
 
   // Метод getById також оптимізовано
   async getById(id: string): Promise<Attachment> {

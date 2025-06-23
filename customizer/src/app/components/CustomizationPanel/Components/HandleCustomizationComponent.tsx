@@ -41,9 +41,21 @@ const HandleCustomizationComponent: React.FC = () => {
           />
         ))}
       </div>
+      <div style={{ marginTop: "16px" }}>
+        <Characteristics
+            key = {snap.handleColor.id}
+            data={
+              snap.handleColor
+            }
+            isReadOnly1={true}
+            currentBladeCoatingColor={""}
+            onChange={() => {}}
+            type="HandleForCanvas"
+        />
+      </div>
 
       <div className="p-3">
-        <ModalFormButton component="bladeShape"></ModalFormButton>
+        <ModalFormButton component="handle"></ModalFormButton>
       </div>
     </>
   );

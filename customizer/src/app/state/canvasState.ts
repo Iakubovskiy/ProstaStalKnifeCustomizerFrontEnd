@@ -8,6 +8,7 @@ import { BladeShapeForCanvas } from "../Interfaces/Knife/BladeShapeForCanvas";
 import { EngravingForCanvas } from "../Interfaces/Knife/EngravingForCanvas";
 import { AttachmentForCanvas } from "../Interfaces/Knife/AttachmentForCanvas";
 import { AppFile } from "../Interfaces/File";
+import {BladeCharacteristics} from "@/app/Interfaces/BladeCharacteristics";
 
 interface State {
   invalidate: () => void;
@@ -26,6 +27,8 @@ const state = proxy<State>({
   handleColor: {
     id: "",
     price: 0,
+    color: "",
+    material: "",
     colorCode: "#d8a635",
     colorMap: null,
     normalMap: null,
@@ -40,10 +43,13 @@ const state = proxy<State>({
     roughnessMap: null,
     colorCode: "",
     engravingColorCode: "",
+    color: "",
   },
   bladeCoatingColor: {
     id: "",
     price: 0,
+    color: "",
+    type: "",
     colorCode: "#1810f3",
     engravingColorCode: "",
     colorMap: null,
@@ -55,6 +61,7 @@ const state = proxy<State>({
     id: "",
     name: "",
     sheathId: "",
+    bladeCharacteristicsModel : null as unknown as BladeCharacteristics,
     shapeType: null as unknown as BladeShapeType,
     price: 0,
     bladeShapeImage: null as unknown as AppFile,

@@ -1,21 +1,21 @@
 import React from "react";
 import styles from "./Characteristics.module.css";
-import BladeShape from "../../Models/BladeShape";
-import Fastening from "../../Models/Fastening";
-import HandleColor from "../../Models/HandleColor";
-import SheathColor from "../../Models/SheathColor";
-import BladeCoatingColor from "@/app/Models/BladeCoatingColor";
+import {BladeCoatingColorForCanvas} from "@/app/Interfaces/Knife/BladeCoatingColorForCanvas";
+import {BladeShapeForCanvas} from "@/app/Interfaces/Knife/BladeShapeForCanvas";
+import {HandleColorForCanvas} from "@/app/Interfaces/Knife/HandleColorForCanvas";
+import { SheathColorForCanvas } from "@/app/Interfaces/Knife/SheathColorForCanvas";
+import {AttachmentForCanvas} from "@/app/Interfaces/Knife/AttachmentForCanvas";
 
 interface CharacteristicsProps<T> {
   data: T;
   isReadOnly1: boolean;
   currentBladeCoatingColor: string;
   type:
-    | "BladeShape"
-    | "SheathColor"
-    | "HandleColor"
-    | "Fastening"
-    | "BladeCoatingColor";
+    | "BladeShapeForCanvas"
+    | "SheathColorForCanvas"
+    | "HandleForCanvas"
+    | "AttachmentForCanvas"
+    | "BladeCoatingColorForCanvas";
   onChange: (updatedData: T) => void;
 }
 
@@ -47,94 +47,87 @@ const CustomInput: React.FC<CustomInputProps> = ({
   </div>
 );
 
-// Custom Card Component
 const CustomCard: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className={styles.card}>{children}</div>
 );
 
 function Characteristics<
   T extends
-    | SheathColor
-    | HandleColor
-    | Fastening
-    | BladeShape
-    | BladeCoatingColor
+    | SheathColorForCanvas
+    | HandleColorForCanvas
+    | AttachmentForCanvas | null
+    | BladeShapeForCanvas
+    | BladeCoatingColorForCanvas
 >({ data, isReadOnly1, type, onChange }: CharacteristicsProps<T>) {
   const renderFields = () => {
     switch (type) {
-      case "SheathColor":
+      case "SheathColorForCanvas":
         return (
           <>
             <CustomInput
               label="Назва кольору"
-              value={(data as SheathColor).color}
+              value={(data as SheathColorForCanvas).color}
+              isReadOnly={isReadOnly1}
+              onChange={(e) => onChange({ ...data, color: e.target.value })}
+            />
+          </>
+        );
+
+      case "HandleForCanvas":
+        return (
+          <>
+            <CustomInput
+              label="Назва кольору"
+              value={(data as HandleColorForCanvas).color}
               isReadOnly={isReadOnly1}
               onChange={(e) => onChange({ ...data, color: e.target.value })}
             />
             <CustomInput
               label="Матеріал"
-              value={(data as SheathColor).material}
+              value={(data as HandleColorForCanvas).material}
               isReadOnly={isReadOnly1}
               onChange={(e) => onChange({ ...data, material: e.target.value })}
             />
           </>
         );
 
-      case "HandleColor":
-        return (
-          <>
-            <CustomInput
-              label="Назва кольору"
-              value={(data as HandleColor).colorName}
-              isReadOnly={isReadOnly1}
-              onChange={(e) => onChange({ ...data, colorName: e.target.value })}
-            />
-            <CustomInput
-              label="Матеріал"
-              value={(data as HandleColor).material}
-              isReadOnly={isReadOnly1}
-              onChange={(e) => onChange({ ...data, material: e.target.value })}
-            />
-          </>
-        );
-
-      case "Fastening":
+      case "AttachmentForCanvas":
         return (
           <>
             <CustomInput
               label="Назва"
-              value={(data as Fastening).name}
+              value={(data as AttachmentForCanvas)?.name || ""}
               isReadOnly={isReadOnly1}
               onChange={(e) => onChange({ ...data, name: e.target.value })}
             />
             <CustomInput
               label="Матеріал"
-              value={(data as Fastening).material}
+              value={(data as AttachmentForCanvas)?.material || ""}
               isReadOnly={isReadOnly1}
               onChange={(e) => onChange({ ...data, material: e.target.value })}
             />
             <CustomInput
               label="Назва кольору"
-              value={(data as Fastening).color}
+              value={(data as AttachmentForCanvas)?.color || ''}
               isReadOnly={isReadOnly1}
               onChange={(e) => onChange({ ...data, color: e.target.value })}
             />
           </>
         );
 
-      case "BladeShape":
+      case "BladeShapeForCanvas":
         return (
           <>
             <CustomInput
               label="Назва"
-              value={(data as BladeShape).name}
+              value={(data as BladeShapeForCanvas).name}
               isReadOnly={isReadOnly1}
               onChange={(e) => onChange({ ...data, name: e.target.value })}
             />
             <CustomInput
               label="Довжина загалом"
               type="number"
-              value={(data as BladeShape).totalLength.toString()}
+              value={(data as BladeShapeForCanvas).bladeCharacteristicsModel.totalLength.toString()}
               isReadOnly={isReadOnly1}
               onChange={(e) =>
                 onChange({ ...data, totalLength: e.target.value })
@@ -143,7 +136,7 @@ function Characteristics<
             <CustomInput
               label="Довжина клинка"
               type="number"
-              value={(data as BladeShape).bladeLength.toString()}
+              value={(data as BladeShapeForCanvas).bladeCharacteristicsModel.bladeLength.toString()}
               isReadOnly={isReadOnly1}
               onChange={(e) =>
                 onChange({ ...data, bladeLength: e.target.value })
@@ -152,7 +145,7 @@ function Characteristics<
             <CustomInput
               label="Ширина клинка"
               type="number"
-              value={(data as BladeShape).bladeWidth.toString()}
+              value={(data as BladeShapeForCanvas).bladeCharacteristicsModel.bladeWidth.toString()}
               isReadOnly={isReadOnly1}
               onChange={(e) =>
                 onChange({ ...data, bladeWidth: e.target.value })
@@ -161,7 +154,7 @@ function Characteristics<
             <CustomInput
               label="Вага клинка"
               type="number"
-              value={(data as BladeShape).bladeWeight.toString()}
+              value={(data as BladeShapeForCanvas).bladeCharacteristicsModel.bladeWeight.toString()}
               isReadOnly={isReadOnly1}
               onChange={(e) =>
                 onChange({ ...data, bladeWeight: e.target.value })
@@ -170,7 +163,7 @@ function Characteristics<
             <CustomInput
               label="Кут заточки"
               type="number"
-              value={(data as BladeShape).sharpeningAngle.toString()}
+              value={(data as BladeShapeForCanvas).bladeCharacteristicsModel.sharpeningAngle.toString()}
               isReadOnly={isReadOnly1}
               onChange={(e) =>
                 onChange({ ...data, sharpeningAngle: e.target.value })
@@ -179,7 +172,7 @@ function Characteristics<
             <CustomInput
               label="Твердість"
               type="number"
-              value={(data as BladeShape).rockwellHardnessUnits.toString()}
+              value={(data as BladeShapeForCanvas).bladeCharacteristicsModel.rockwellHardnessUnits.toString()}
               isReadOnly={isReadOnly1}
               onChange={(e) =>
                 onChange({ ...data, rockwellHardnessUnits: e.target.value })
@@ -188,25 +181,26 @@ function Characteristics<
           </>
         );
 
-      case "BladeCoatingColor":
+      case "BladeCoatingColorForCanvas":
+          console.log(data as BladeCoatingColorForCanvas);
         return (
           <>
             <CustomInput
               label="Тип"
-              value={(data as BladeCoatingColor).type}
+              value={(data as BladeCoatingColorForCanvas).type}
               isReadOnly={isReadOnly1}
               onChange={(e) => onChange({ ...data, type: e.target.value })}
             />
             <CustomInput
               label="Колір"
-              value={(data as BladeCoatingColor).color}
+              value={(data as BladeCoatingColorForCanvas).color}
               isReadOnly={isReadOnly1}
               onChange={(e) => onChange({ ...data, color: e.target.value })}
             />
             <CustomInput
               label="Ціна"
               type="number"
-              value={(data as BladeCoatingColor).price.toString()}
+              value={(data as BladeCoatingColorForCanvas).price.toString()}
               isReadOnly={isReadOnly1}
               onChange={(e) => onChange({ ...data, price: e.target.value })}
             />

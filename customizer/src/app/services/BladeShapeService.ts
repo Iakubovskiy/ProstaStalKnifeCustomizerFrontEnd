@@ -40,6 +40,7 @@ class BladeShapeService {
         bladeShapeModel: item.bladeShapeModel,
         sheathModel: item.sheath?.model ?? ({} as AppFile),
         sheathId: item.sheath?.id,
+        bladeCharacteristicsModel: item.bladeCharacteristicsModel,
       };
       return canvasObject;
     });
