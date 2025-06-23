@@ -33,15 +33,14 @@ const CartAndOrderPage = () => {
   const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);
   const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
 
-  // 2. Оновлюємо стан clientInfo, щоб він відповідав інтерфейсу ClientData
   const [clientInfo, setClientInfo] = useState<ClientData>({
     clientFullName: "",
     clientPhoneNumber: "",
     email: "",
     countryForDelivery: "",
     city: "",
-    address: "", // Нове поле
-    zipCode: "", // Нове поле
+    address: "",
+    zipCode: "",
   });
 
   const [selectedDeliveryType, setSelectedDeliveryType] = useState<string>("");
@@ -49,6 +48,10 @@ const CartAndOrderPage = () => {
     useState<string>("");
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  // Стан для валідації телефону
+  const [phoneError, setPhoneError] = useState<string>("");
+  const [isPhoneValid, setIsPhoneValid] = useState<boolean>(true);
 
   const orderService = new OrderService();
   const knifeService = new KnifeService();
@@ -58,6 +61,57 @@ const CartAndOrderPage = () => {
 
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
+
+  // Функція валідації номера телефону
+  const validatePhoneNumber = (
+    phone: string
+  ): { isValid: boolean; error: string } => {
+    if (!phone.trim()) {
+      return { isValid: false, error: "Номер телефону обов'язковий" };
+    }
+
+    // Видаляємо всі пробіли, дефіси та дужки для перевірки
+    const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
+
+    // Перевіряємо чи містить тільки цифри та символ +
+    if (!/^[\+]?[0-9]+$/.test(cleanPhone)) {
+      return {
+        isValid: false,
+        error: "Номер може містити тільки цифри, +, пробіли, дефіси та дужки",
+      };
+    }
+
+    // Перевіряємо довжину (від 10 до 15 цифр, враховуючи міжнародні номери)
+    const digitsOnly = cleanPhone.replace(/^\+/, "");
+    if (digitsOnly.length < 10 || digitsOnly.length > 15) {
+      return {
+        isValid: false,
+        error: "Номер повинен містити від 10 до 15 цифр",
+      };
+    }
+
+    // Українські номери (додаткова перевірка)
+    if (cleanPhone.startsWith("+380") || cleanPhone.startsWith("380")) {
+      const ukrainianDigits = cleanPhone.replace(/^(\+380|380)/, "");
+      if (ukrainianDigits.length !== 9) {
+        return {
+          isValid: false,
+          error: "Український номер повинен мати формат +380XXXXXXXXX",
+        };
+      }
+    }
+
+    return { isValid: true, error: "" };
+  };
+
+  // Обробник зміни номера телефону
+  const handlePhoneChange = (value: string) => {
+    setClientInfo((prev) => ({ ...prev, clientPhoneNumber: value }));
+
+    const validation = validatePhoneNumber(value);
+    setIsPhoneValid(validation.isValid);
+    setPhoneError(validation.error);
+  };
 
   useEffect(() => {
     const savedCart = localStorage.getItem("cart");
@@ -103,7 +157,16 @@ const CartAndOrderPage = () => {
   };
 
   const createOrder = async () => {
-    // 3. Оновлюємо перевірку валідації
+    const phoneValidation = validatePhoneNumber(
+      clientInfo.clientPhoneNumber || ""
+    );
+    if (!phoneValidation.isValid) {
+      setIsPhoneValid(false);
+      setPhoneError(phoneValidation.error);
+      alert("Будь ласка, введіть коректний номер телефону.");
+      return;
+    }
+
     if (
       !clientInfo.clientFullName ||
       !clientInfo.clientPhoneNumber ||
@@ -148,7 +211,6 @@ const CartAndOrderPage = () => {
         deliveryTypeId: selectedDeliveryType,
         paymentMethodId: selectedPaymentMethod,
         total: calculateTotal(),
-        // 4. Спрощуємо передачу даних - тепер можна передати об'єкт напряму
         clientData: clientInfo,
         comment: comment || null,
       };
@@ -199,7 +261,7 @@ const CartAndOrderPage = () => {
       />
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl font-bold mb-8">Кошик та Замовлення</h1>
-        {/* ... решта коду для таблиці ... */}
+
         <Card className="p-8 mb-8">
           <h2 className="text-xl font-semibold mb-4">Ваш кошик</h2>
           {cartItems.length > 0 ? (
@@ -242,7 +304,7 @@ const CartAndOrderPage = () => {
             <h2 className="text-xl font-semibold mb-4">
               Оформлення замовлення
             </h2>
-            {/* 5. Оновлюємо поля вводу */}
+
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
               <Input
                 label="Повне ім'я"
@@ -258,13 +320,13 @@ const CartAndOrderPage = () => {
               <Input
                 label="Номер телефону"
                 required
+                type="tel"
                 value={clientInfo.clientPhoneNumber || ""}
-                onChange={(e) =>
-                  setClientInfo((prev) => ({
-                    ...prev,
-                    clientPhoneNumber: e.target.value,
-                  }))
-                }
+                onChange={(e) => handlePhoneChange(e.target.value)}
+                isInvalid={!isPhoneValid}
+                errorMessage={phoneError}
+                placeholder="+380XXXXXXXXX"
+                color={!isPhoneValid ? "danger" : "default"}
               />
               <Input
                 label="Email"
@@ -294,7 +356,6 @@ const CartAndOrderPage = () => {
                   setClientInfo((prev) => ({ ...prev, city: e.target.value }))
                 }
               />
-              {/* Нові поля */}
               <Input
                 label="Адреса (опціонально)"
                 value={clientInfo.address || ""}
@@ -360,7 +421,7 @@ const CartAndOrderPage = () => {
               className="mt-4"
               color="primary"
               onClick={createOrder}
-              disabled={isLoading}
+              disabled={isLoading || !isPhoneValid}
             >
               {isLoading ? <Spinner color="white" /> : "Оформити замовлення"}
             </Button>

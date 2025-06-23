@@ -46,10 +46,10 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
     price += snap.attachment?.price || 0;
 
     const sheathPriceInfo = (
-        snap.sheathColor?.prices as SheathColorPriceByType[]
+      snap.sheathColor?.prices as SheathColorPriceByType[]
     )?.find(
-        (priceItem) =>
-            priceItem.bladeShapeType?.id === snap.bladeShape.shapeType.id
+      (priceItem) =>
+        priceItem.bladeShapeType?.id === snap.bladeShape.shapeType.id
     );
     price += sheathPriceInfo?.price || 0;
 
@@ -57,7 +57,10 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
       const engravingService = new EngravingPriceService();
       try {
         const engravingPriceData = await engravingService.get();
-        if (engravingPriceData && typeof engravingPriceData.price === "number") {
+        if (
+          engravingPriceData &&
+          typeof engravingPriceData.price === "number"
+        ) {
           const uniqueSides = new Set(engravings.map((eng) => eng.side)).size;
           price += uniqueSides * engravingPriceData.price;
         }
@@ -66,7 +69,14 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
       }
     }
     return price;
-  }, [sheathColor, bladeShape, bladeCoatingColor, handleColor, attachment, engravings]);
+  }, [
+    sheathColor,
+    bladeShape,
+    bladeCoatingColor,
+    handleColor,
+    attachment,
+    engravings,
+  ]);
 
   const updateDisplayPrice = useCallback(async () => {
     const singlePrice = await calculateSingleItemPrice();
@@ -121,7 +131,9 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
           let pictureId: string | null = null;
           if (engraving.fileObject) {
             try {
-              const uploadedFile: AppFile = await fileService.upload(engraving.fileObject);
+              const uploadedFile: AppFile = await fileService.upload(
+                engraving.fileObject
+              );
               pictureId = uploadedFile.id;
             } catch (error) {
               console.error("Failed to upload engraving file:", error);
@@ -146,14 +158,16 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
           });
         }
 
-        const processedAttachments: string[] = snap.attachment ? [snap.attachment.id] : [];
+        const processedAttachments: string[] = snap.attachment
+          ? [snap.attachment.id]
+          : [];
 
         const knifeToCreate: KnifeDTO = {
           isActive: true,
           imageFileId: state.bladeShape.bladeShapeImage?.id || "",
           names: {
-            ua: i18n.getFixedT('uk')('purchaseContainer.customKnifeName'),
-            en: i18n.getFixedT('en')('purchaseContainer.customKnifeName')
+            ua: i18n.getFixedT("uk")("purchaseContainer.customKnifeName"),
+            en: i18n.getFixedT("en")("purchaseContainer.customKnifeName"),
           },
           shapeId: state.bladeShape.id,
           bladeCoatingColorId: state.bladeCoatingColor.id,
@@ -178,10 +192,13 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
         };
       }
 
-      const existingCart: CartItem[] = JSON.parse(localStorage.getItem("cart") || "[]");
+      const existingCart: CartItem[] = JSON.parse(
+        localStorage.getItem("cart") || "[]"
+      );
       localStorage.setItem("cart", JSON.stringify([...existingCart, cartItem]));
 
       setShowToast(true);
+      window.dispatchEvent(new CustomEvent("cartUpdated"));
       await resetToDefaultSettings();
     } catch (error) {
       console.error("Could not add item to cart:", error);
@@ -191,20 +208,20 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   };
 
   return (
-      <div className="flex flex-col gap-4">
-        <PriceCalculator
-            price={totalPrice}
-            quantity={quantity}
-            onQuantityChange={setQuantity}
-            onClearCart={handleClearCart}
-            onAddToCart={handleAddToCart}
-        />
-        <OrderButton />
-        <Toast
-            message={t("purchaseContainer.addedToCartToast")}
-            isVisible={showToast}
-            onClose={handleCloseToast}
-        />
-      </div>
+    <div className="flex flex-col gap-4">
+      <PriceCalculator
+        price={totalPrice}
+        quantity={quantity}
+        onQuantityChange={setQuantity}
+        onClearCart={handleClearCart}
+        onAddToCart={handleAddToCart}
+      />
+      <OrderButton />
+      <Toast
+        message={t("purchaseContainer.addedToCartToast")}
+        isVisible={showToast}
+        onClose={handleCloseToast}
+      />
+    </div>
   );
 };

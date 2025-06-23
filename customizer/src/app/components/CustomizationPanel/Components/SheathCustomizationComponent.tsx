@@ -52,7 +52,7 @@ const SheathCustomizationComponent: React.FC = () => {
         />
       </div> */}
       <div className="p-3">
-        <ModalFormButton component="sheathColor"></ModalFormButton>
+        <ModalFormButton></ModalFormButton>
       </div>
     </>
   );

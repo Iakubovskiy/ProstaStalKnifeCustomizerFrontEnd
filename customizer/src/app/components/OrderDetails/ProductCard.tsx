@@ -2,7 +2,6 @@ import React, { Suspense, useEffect, useState } from "react";
 import { Card } from "@nextui-org/react";
 import CustomCanvas from "../CustomCanvas/CustomCanvas";
 import KnifeService from "@/app/services/KnifeService";
-import FasteningService from "@/app/services/FasteningService";
 import { useCanvasState } from "@/app/state/canvasState";
 
 interface ProductCardProps {

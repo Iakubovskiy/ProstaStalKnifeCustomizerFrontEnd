@@ -135,27 +135,29 @@ const ProductInfo: React.FC = () => {
           </span>
         </div>
         <div className="pt-4">
-          <Link href={`/customizer?id=${id}`} legacyBehavior>
-            <a className="group relative inline-flex items-center justify-center w-full md:w-auto px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="relative flex items-center space-x-2">
-                <span>{t("productDetailPage.customizeNow")}</span>
-                <svg
-                  className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
-              </span>
-            </a>
-          </Link>
+          {product.category == "Ножі" && (
+            <Link href={`/customizer?id=${id}`} legacyBehavior>
+              <a className="group relative inline-flex items-center justify-center w-full md:w-auto px-8 py-4 text-lg font-semibold text-white bg-gradient-to-r from-amber-600 to-orange-600 rounded-2xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-600 to-red-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                <span className="relative flex items-center space-x-2">
+                  <span>{t("productDetailPage.customizeNow")}</span>
+                  <svg
+                    className="w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M13 7l5 5m0 0l-5 5m5-5H6"
+                    />
+                  </svg>
+                </span>
+              </a>
+            </Link>
+          )}
         </div>
       </div>
     </div>

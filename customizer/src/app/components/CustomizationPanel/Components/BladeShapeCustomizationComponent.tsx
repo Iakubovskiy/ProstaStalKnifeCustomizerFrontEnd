@@ -59,7 +59,7 @@ const BladeShapeCustomizationComponent: React.FC = () => {
       {/* Header */}
       <div className={styles.header}>
         <h2 className={styles.title}>Форма клинка</h2>
-        <ModalFormButton component="bladeShape" />
+        <ModalFormButton />
       </div>
 
       <div className={styles.selectionGrid}>

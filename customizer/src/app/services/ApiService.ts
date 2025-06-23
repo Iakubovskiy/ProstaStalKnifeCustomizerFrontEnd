@@ -60,16 +60,16 @@ class APIService {
 
   private getLocaleFromCookies(): string {
     if (typeof window !== "undefined") {
-      const match = document.cookie.match(/locale=([^;]+)/);
-      return match ? match[1] : "ua";
+      const locale = localStorage.getItem("i18nextLng");
+      return locale || "ua";
     }
     return "ua";
   }
 
   private getCurrencyFromCookies(): string {
     if (typeof window !== "undefined") {
-      const match = document.cookie.match(/currency=([^;]+)/);
-      return match ? match[1] : "uah";
+      const currency = localStorage.getItem("currency");
+      return currency || "uah";
     }
     return "uah";
   }

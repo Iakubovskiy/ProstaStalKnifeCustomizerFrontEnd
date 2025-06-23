@@ -53,7 +53,7 @@ const BladeCoatingCustomizationComponent: React.FC = () => {
         />
       </div> */}
       <div className="p-3">
-        <ModalFormButton component="bladeShape"></ModalFormButton>
+        <ModalFormButton></ModalFormButton>
       </div>
     </>
   );
