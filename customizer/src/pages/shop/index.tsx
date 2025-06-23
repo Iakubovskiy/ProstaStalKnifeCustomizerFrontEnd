@@ -110,14 +110,10 @@ const transformApiFilters = (
     .filter((f): f is FilterItem => f !== null);
 };
 
-// =================================================================
-// ОСНОВНИЙ КОМПОНЕНТ
-// =================================================================
 const ShopPage: React.FC = () => {
   const { t } = useTranslation();
   const productCatalogService = useMemo(() => new ProductCatalogService(), []);
 
-  // ... (решта стану без змін) ...
   const [products, setProducts] = useState<ApiProduct[]>([]);
   const [availableFilters, setAvailableFilters] = useState<FilterItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -133,7 +129,6 @@ const ShopPage: React.FC = () => {
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const itemsPerPage = 20;
 
-  // 2. ВИПРАВЛЯЄМО `buildApiFilters`
   const buildApiFilters = useCallback(
     (filters: Record<string, any>): ProductFilters => {
       const apiFilters: ProductFilters = {};
@@ -196,7 +191,6 @@ const ShopPage: React.FC = () => {
         setTotalItems(result.products.totalItems || 0);
 
         if (result.filters) {
-          // 4. ВИПРАВЛЯЄМО ВИКЛИК, прибираємо `as unknown...`
           setAvailableFilters(transformApiFilters(result.filters, t));
         }
       } catch (err) {
@@ -220,11 +214,6 @@ const ShopPage: React.FC = () => {
     buildApiFilters,
   ]);
 
-  // ... (Решта коду компонента залишається без змін) ...
-
-  // ===== КЛІЄНТСЬКИЙ ПОШУК та СОРТУВАННЯ (застосовуються до даних, отриманих з API) =====
-
-  // 1. Спочатку пошук
   const searchedProducts = useMemo(() => {
     if (!searchQuery.trim()) {
       return products;
@@ -265,20 +254,9 @@ const ShopPage: React.FC = () => {
     [sortedProducts]
   );
 
-  // Скидання сторінки при зміні фільтрів або пошуку
   useEffect(() => {
-    // Не скидаємо, якщо змінилась тільки сторінка
     setCurrentPage(1);
   }, [searchQuery, activeFilters, sortBy]);
-
-  // Анімація переходу
-  useEffect(() => {
-    if (!isLoading) {
-      setIsTransitioning(true);
-      const timer = setTimeout(() => setIsTransitioning(false), 150);
-      return () => clearTimeout(timer);
-    }
-  }, [displayProducts, isLoading]);
 
   const handleFiltersChange = (newFilters: Record<string, any>) => {
     setActiveFilters(newFilters);
