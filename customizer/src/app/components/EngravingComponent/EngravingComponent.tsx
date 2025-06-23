@@ -365,8 +365,8 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     returnAsString: boolean = false
   ): string {
     const fontSize = 100;
-    const textWidth = text.length * fontSize * 0.6 + fontSize * 0.4;
-    const textHeight = fontSize * 1.2;
+    const textWidth = text.length * fontSize * 1;
+    const textHeight = text.length * fontSize * 1;
     const svg = `
       <svg 
         width="${textWidth}" 
