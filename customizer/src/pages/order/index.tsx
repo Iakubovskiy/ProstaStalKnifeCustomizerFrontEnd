@@ -195,7 +195,7 @@ const OrderListPage = () => {
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => router.push("/dashboard")}
+                onClick={() => router.push("/admin/dashboard")}
                 className="p-2 rounded-xl bg-gradient-to-r from-[#8b7258] to-[#b8845f] text-white hover:shadow-lg transition-all"
               >
                 <ArrowLeft />
