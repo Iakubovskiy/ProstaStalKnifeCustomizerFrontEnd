@@ -134,26 +134,6 @@ export default function ProductCard({
             </p>
 
             <div className="mt-3 space-y-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center border border-gray-300 rounded text-sm">
-                  <button
-                    onClick={decreaseQuantity}
-                    className="px-2 py-1 text-gray-600 hover:bg-gray-100"
-                  >
-                    <Minus size={14} />
-                  </button>
-                  <span className="px-2 py-1 text-center min-w-6">
-                    {quantity}
-                  </span>
-                  <button
-                    onClick={increaseQuantity}
-                    className="px-2 py-1 text-gray-600 hover:bg-gray-100"
-                  >
-                    <Plus size={14} />
-                  </button>
-                </div>
-              </div>
-
               {onBuyNow && (
                 <button
                   onClick={handleBuyNow}
