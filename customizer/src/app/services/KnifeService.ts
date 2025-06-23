@@ -74,10 +74,9 @@ class KnifeService {
     if (!data.imageFileId) {
       data.imageFileId = "06331a76-e8ea-4a0d-8eb3-ede166d1d0d2";
     }
+    data.isActive = false;
     for (const engraving of data.newEngravings) {
-      // Ми працюємо безпосередньо з об'єктом engraving
       if (!engraving.names) {
-        // Перевірка може бути зайвою, якщо ви впевнені у структурі
         engraving.names = {
           ua: "-",
           en: "-",
