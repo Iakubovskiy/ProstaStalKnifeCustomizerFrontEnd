@@ -10,8 +10,11 @@ import CustomLoader from "./CustomLoader";
 import { AppFile } from "@/app/Interfaces/File";
 
 import KnifeService from "@/app/services/KnifeService";
+import AttachmentService from "@/app/services/AttachmentService";
 import InitialDataService from "@/app/services/InitialDataService";
+import APIService from "@/app/services/ApiService";
 import { Knife } from "@/app/Interfaces/Knife/Knife";
+import { Attachment } from "@/app/Interfaces/Attachment";
 import { KnifeForCanvas } from "@/app/Interfaces/Knife/KnifeForCanvas";
 import { BladeCoatingColorForCanvas } from "@/app/Interfaces/Knife/BladeCoatingColorForCanvas";
 import { BladeShapeForCanvas } from "@/app/Interfaces/Knife/BladeShapeForCanvas";
@@ -92,10 +95,12 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const knifeService = new KnifeService();
+    const apiService = new APIService();
+    const knifeService = new KnifeService(apiService);
+    const attachmentService = new AttachmentService(apiService);
     const initialDataService = new InitialDataService();
 
-    const populateState = (data: KnifeForCanvas) => {
+    const populateKnifeState = (data: KnifeForCanvas) => {
       state.bladeShape = data.bladeShape;
       state.bladeCoatingColor = data.bladeCoatingColor;
       state.handleColor = data.handleColor || state.handleColor;
@@ -107,6 +112,23 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
           : null;
       state.engravings = data.engravings || [];
     };
+
+    const populateAttachmentState = (attachment: Attachment) => {
+      // Для attachment заповнюємо тільки поле attachment
+      // @ts-ignore
+      state.attachment = {
+        id: attachment.id,
+        name: attachment.name,
+        model: attachment.model,
+        // Додайте інші потрібні поля з attachment
+      };
+
+      // Можливо, потрібно очистити інші поля або встановити значення за замовчуванням
+      // state.bladeShape = defaultBladeShape;
+      // state.bladeCoatingColor = defaultBladeCoatingColor;
+      // і т.д.
+    };
+
     const SelectByDefault = (
       shape: BladeShapeForCanvas,
       coatingColor: BladeCoatingColorForCanvas,
@@ -133,14 +155,38 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
       }
       if (changed) state.invalidate();
     };
+
     const loadData = async () => {
       setIsLoading(true);
       setError(null);
+
       try {
         if (productId) {
-          const knifeData = await knifeService.getById(productId);
-          populateState(knifeData.knifeForCanvas);
+          // Спочатку пробуємо завантажити як knife
+          try {
+            const knifeData = await knifeService.getById(productId);
+            populateKnifeState(knifeData.knifeForCanvas);
+          } catch (knifeError: any) {
+            // Якщо не вдалося завантажити як knife, пробуємо як attachment
+            if (knifeError.status === 404) {
+              try {
+                const attachmentData = await attachmentService.getById(
+                  productId
+                );
+                populateAttachmentState(attachmentData);
+              } catch (attachmentError: any) {
+                console.error(
+                  "Failed to load attachment data:",
+                  attachmentError
+                );
+                throw new Error("Продукт не знайдено");
+              }
+            } else {
+              throw knifeError;
+            }
+          }
         } else {
+          // Якщо productId немає, завантажуємо початкові дані
           const initialData = await initialDataService.getData();
           console.log("Initial data fetched:", initialData);
           SelectByDefault(
@@ -151,16 +197,15 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
           );
         }
       } catch (err) {
-        console.error("Failed to load knife data:", err);
+        console.error("Failed to load product data:", err);
         setError("Не вдалося завантажити дані для конфігуратора.");
       } finally {
-        // Завершуємо завантаження
         setIsLoading(false);
       }
     };
 
     loadData();
-  }, [productId, state]); // Додали state, щоб ESLint не сварився
+  }, [productId, state]);
 
   // 2. Тепер ми завжди рендеримо <Canvas>
   return (
@@ -174,7 +219,7 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
     >
       <Suspense fallback={<CustomLoader />}>
         {/* 3. Логіку рендерингу переносимо всередину */}
-        {isLoading ? null : error ? null : ( // Але для простоти, можна вивести помилку в консоль, а тут нічого не показувати // Можна залишити завантажувач, він тепер у правильному контексті // Обробка помилок також може бути всередині за допомогою <Html> // Або просто нічого не рендерити, поки Suspense показує fallback
+        {isLoading ? null : error ? null : (
           // Коли все добре, рендеримо сцену
           <Scene />
         )}

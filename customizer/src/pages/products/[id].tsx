@@ -29,10 +29,36 @@ const ProductImage: React.FC = () => {
 
   return (
     <div className="w-full md:w-1/2 lg:w-2/5 p-4">
-      <div className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-white to-gray-50 hover:shadow-3xl transition-all duration-500 group">
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-50/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <KnifeConfigurator productId={product.id}></KnifeConfigurator>
-        <div className="absolute inset-0 ring-1 ring-black/5 rounded-2xl"></div>
+      <div
+        className="relative aspect-square rounded-2xl overflow-hidden shadow-2xl bg-gradient-to-br from-white to-gray-50 hover:shadow-3xl transition-all duration-500 group"
+        style={{
+          minHeight: "200px",
+          height: "400px",
+          position: "relative",
+        }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            width: "100%",
+            height: "100%",
+            pointerEvents: "auto",
+          }}
+        >
+          <KnifeConfigurator productId={product.id} />
+        </div>
+
+        {/* Цей div може блокувати взаємодію - видаляємо або змінюємо */}
+        {/* <div className="absolute inset-0 bg-gradient-to-br from-amber-50/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div> */}
+
+        {/* Цей ring може також заважати - робимо його неактивним для взаємодії */}
+        <div
+          className="absolute inset-0 ring-1 ring-black/5 rounded-2xl"
+          style={{ pointerEvents: "none" }} // Важливо!
+        ></div>
       </div>
     </div>
   );
@@ -46,7 +72,7 @@ const ProductInfo: React.FC = () => {
   const { name, description, price, id, reviews, averageRating } = product;
 
   return (
-    <div className="md:w-1/2 lg:w-3/5 p-4 flex flex-col justify-center">
+    <div className="md:w-1/2 lg:w-2/5 p-4 flex flex-col justify-center">
       <div className="space-y-6">
         <h1 className="text-4xl md:text-5xl font-bold leading-tight bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
           {name}
@@ -328,16 +354,19 @@ const mapAttachmentToProduct = (attachment: Attachment): Product => {
   const name = attachment.names?.[locale] || attachment.name;
   const description =
     attachment.descriptions?.[locale] || attachment.description;
+
+  // Fix the image URL extraction
+  const imageUrl = attachment.image?.fileUrl || "/placeholder-image.png";
+
   return {
     id: attachment.id,
     name,
     description,
     price: attachment.price,
-    // @ts-ignore
-    image_url: attachment.image?.fileUrl || "/placeholder-image.png",
+    image_url: imageUrl,
     category: "Доповнення",
-    reviews: null,
-    averageRating: null,
+    reviews: attachment.reviews || null,
+    averageRating: attachment.averageRating || null,
   };
 };
 
@@ -379,12 +408,16 @@ const ProductDetailPage: NextPage = () => {
           const knife = await knifeService.getById(id);
           setProduct(mapKnifeToProduct(knife));
         } catch (knifeError: any) {
-          if (knifeError?.response?.status !== 404) {
+          console.log(knifeError.status);
+          if (knifeError.status !== 404) {
+            console.log("123123");
             setErrorKey("productDetailPage.error.loadFailed");
           } else {
             try {
               const attachment = await attachmentService.getById(id);
+              console.log("attachment: ", attachment);
               setProduct(mapAttachmentToProduct(attachment));
+              console.log(product);
             } catch (attachmentError: any) {
               setErrorKey(
                 attachmentError?.response?.status === 404
@@ -487,10 +520,12 @@ const ProductDetailPage: NextPage = () => {
   if (!product) {
     return null;
   }
-
+  const productName = product.name || product.id || "Custom Knife";
+  console.log("Using product name:", productName);
   const pageTitle = t("productDetailPage.meta.title", {
-    productName: product.name,
+    productName: productName,
   });
+  console.log(product.name);
   const domain =
     typeof window !== "undefined"
       ? window.location.origin

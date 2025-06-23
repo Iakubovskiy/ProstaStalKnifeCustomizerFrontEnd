@@ -1,6 +1,9 @@
 import { AppFile } from "@/app/Interfaces/File";
+import { Review } from "./Review";
 
 export interface Attachment {
+  reviews: Review[] | null;
+  averageRating: number | null;
   id: string;
   isActive: boolean;
   image: AppFile;
