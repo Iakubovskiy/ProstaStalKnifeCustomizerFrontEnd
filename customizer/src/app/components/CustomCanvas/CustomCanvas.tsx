@@ -119,7 +119,7 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
       state.attachment = {
         id: attachment.id,
         name: attachment.name,
-        model: attachment.model,
+        model: attachment.model ?? { fileUrl: "", id: "" },
         // Додайте інші потрібні поля з attachment
       };
 

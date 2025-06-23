@@ -57,11 +57,11 @@ class AttachmentService {
     );
 
     return fullObjects
-      .filter((item) => item.model)
+      .filter((item) => item.model && item.image)
       .map((item) => ({
         id: item.id,
-        model: item.model,
-        image: item.image,
+        model: item.model!,
+        image: item.image!,
         name: item.name,
         price: item.price,
         color: item.color,

@@ -6,7 +6,7 @@ export interface Attachment {
   averageRating: number | null;
   id: string;
   isActive: boolean;
-  image: AppFile;
+  image: AppFile | null;
   name: string;
   names?: LocalizedContent;
   title: string;
@@ -24,5 +24,5 @@ export interface Attachment {
   price: number;
   material: string;
   materials?: LocalizedContent;
-  model: AppFile;
+  model: AppFile | null;
 }

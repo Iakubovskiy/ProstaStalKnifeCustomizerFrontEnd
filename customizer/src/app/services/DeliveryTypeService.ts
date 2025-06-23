@@ -1,4 +1,5 @@
 import { DeliveryTypeDTO } from "../DTOs/DeliveryTypeDTO";
+import { DeliveryType } from "../Interfaces/DeliveryType";
 import APIService from "./ApiService";
 
 class DeliveryTypeService {

@@ -1,10 +1,10 @@
-// /app/products/[productId]/error.tsx
-"use client"; // Error components must be Client Components
+// /app/products/error.tsx
+"use client";
 import "../../styles/globals.css";
 import { useEffect } from "react";
 import Link from "next/link";
 
-export default function ErrorProductDetail({
+export default function ProductsError({
   error,
   reset,
 }: {
@@ -12,9 +12,11 @@ export default function ErrorProductDetail({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
     console.error(error);
   }, [error]);
+
+  // Безпечне отримання повідомлення про помилку
+  const errorMessage = error?.message || "Невідома помилка";
 
   return (
     <div
@@ -25,8 +27,8 @@ export default function ErrorProductDetail({
       className="min-h-screen flex flex-col items-center justify-center text-center px-4"
     >
       <h2 className="text-3xl font-semibold mb-4">Ой, щось пішло не так!</h2>
-      <p className="mb-6 text-lg">Не вдалося завантажити деталі товару.</p>
-      <p className="mb-6 text-sm text-gray-600">Помилка: {error.message}</p>
+      <p className="mb-6 text-lg">Не вдалося завантажити сторінку товарів.</p>
+      <p className="mb-6 text-sm text-gray-600">Помилка: {errorMessage}</p>
       <div className="flex space-x-4">
         <button
           onClick={() => reset()}
@@ -41,7 +43,7 @@ export default function ErrorProductDetail({
         >
           Спробувати ще раз
         </button>
-        <Link href="/products" passHref legacyBehavior>
+        <Link href="/" passHref legacyBehavior>
           <a
             className="px-6 py-2 rounded-lg font-semibold transition-colors"
             style={{
@@ -50,7 +52,7 @@ export default function ErrorProductDetail({
               border: "1px solid #8b7258",
             }}
           >
-            До всіх товарів
+            На головну
           </a>
         </Link>
       </div>

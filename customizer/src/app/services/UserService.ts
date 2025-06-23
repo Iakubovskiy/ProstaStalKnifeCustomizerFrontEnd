@@ -4,107 +4,102 @@ import type { RegisterDTO } from "@/app/DTOs/RegisterDTO";
 import type { UpdateUserDTO } from "@/app/DTOs/UpdateUserDTO";
 import type { User } from "@/app/Interfaces/User";
 import type { ClientData } from "@/app/DTOs/ClientData";
-import {API_BASE_URL} from "@/app/config";
+import { API_BASE_URL } from "@/app/config";
 
 class UserService {
-    private apiService: APIService;
-    private resource: string = "users";
+  private apiService: APIService;
+  private resource: string = "users";
 
-    constructor(apiService: APIService = new APIService()) {
-        this.apiService = apiService;
+  constructor(apiService: APIService = new APIService()) {
+    this.apiService = apiService;
+  }
+
+  async login(data: LoginDTO): Promise<string> {
+    const response = await fetch(`${API_BASE_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (response.ok) {
+      const json = await response.json();
+      if (!json.token) {
+        throw new Error("Server returned an empty token.");
+      }
+      return json.token;
+    }
+    if (response.status === 401) {
+      throw new Error("Invalid credentials");
     }
 
-    async login(data: LoginDTO): Promise<string> {
-        const response = await fetch(`${API_BASE_URL}/login`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        });
+    throw new Error("An unexpected error occurred during login.");
+  }
 
-        if (response.ok) {
-            const json = await response.json();
-            if (!json.token) {
-                throw new Error("Server returned an empty token.");
-            }
-            return json.token;
-        }
-        if (response.status === 401) {
-            throw new Error("Invalid credentials");
-        }
+  async register(data: RegisterDTO): Promise<User> {
+    const createdUser = await this.apiService.create<User>(`/register`, data);
+    return createdUser;
+  }
 
-        throw new Error("An unexpected error occurred during login.");
-    }
+  async getCurrentUser(): Promise<User> {
+    const user = await this.apiService.get<User>(`${this.resource}/me`);
+    return user;
+  }
 
-    async register(data: RegisterDTO): Promise<User> {
-        const createdUser = await this.apiService.create<User>(
-            `/register`,
-            data
-        );
-        return createdUser;
-    }
+  async getAll(): Promise<User[]> {
+    const users = await this.apiService.getAll<User>(this.resource);
+    return users;
+  }
 
-    async getCurrentUser(): Promise<User> {
-        const user = await this.apiService.get<User>(
-            `${this.resource}/me`
-        );
-        return user;
-    }
+  async getById(id: string): Promise<User> {
+    const user = await this.apiService.getById<User>(this.resource, id);
+    return user;
+  }
 
-    async getAll(): Promise<User[]> {
-        const users = await this.apiService.getAll<User>(this.resource);
-        return users;
-    }
+  async update(id: string, data: UpdateUserDTO): Promise<User> {
+    const updatedUser = await this.apiService.update<User>(
+      this.resource,
+      id,
+      data
+    );
+    return updatedUser;
+  }
 
-    async getById(id: string): Promise<User> {
-        const user = await this.apiService.getById<User>(this.resource, id);
-        return user;
-    }
+  async delete(id: string): Promise<void> {
+    await this.apiService.delete<void>(this.resource, id);
+  }
 
-    async update(id: string, data: UpdateUserDTO): Promise<User> {
-        const updatedUser = await this.apiService.update<User>(
-            this.resource,
-            id,
-            data
-        );
-        return updatedUser;
-    }
+  async getCurrentUserData(): Promise<ClientData> {
+    const userData = await this.apiService.get<ClientData>(
+      `${this.resource}/user-data`
+    );
+    return userData;
+  }
 
-    async delete(id: string): Promise<void> {
-        await this.apiService.delete<void>(this.resource, id);
-    }
+  async updateCurrentUserData(data: UpdateUserDTO): Promise<User> {
+    const updatedUserData = await this.apiService.update<User>(
+      `${this.resource}/me`,
+      "",
+      data
+    );
+    return updatedUserData;
+  }
 
-    async getCurrentUserData(): Promise<ClientData> {
-        const userData = await this.apiService.get<ClientData>(
-            `${this.resource}/user-data`
-        );
-        return userData;
-    }
+  async getUserRoles(): Promise<string[]> {
+    const roles = await this.apiService.get<string[]>(
+      `${this.resource}/user-roles`
+    );
+    return roles;
+  }
 
-    async updateCurrentUserData(data: UpdateUserDTO): Promise<User> {
-        const updatedUserData = await this.apiService.update<User>(
-            `${this.resource}/me`,
-            "",
-            data
-        );
-        return updatedUserData;
-    }
-
-    async getUserRoles(): Promise<string[]> {
-        const roles = await this.apiService.get<string[]>(
-            `${this.resource}/user-roles`
-        );
-        return roles;
-    }
-
-    async registerAdmin(data: RegisterDTO): Promise<User> {
-        const createdAdmin = await this.apiService.create<User>(
-            "admin/register",
-            data
-        );
-        return createdAdmin;
-    }
+  async registerAdmin(data: RegisterDTO): Promise<User> {
+    const createdAdmin = await this.apiService.create<User>(
+      "admin/register",
+      data
+    );
+    return createdAdmin;
+  }
 }
 
 export default UserService;
