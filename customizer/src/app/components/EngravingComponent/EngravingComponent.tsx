@@ -367,8 +367,32 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     const fontSize = 100;
     const textWidth = text.length * fontSize * 0.6 + fontSize * 0.4;
     const textHeight = fontSize * 1.2;
-    const svg = `<svg width="${textWidth}" height="${textHeight}" viewBox="0 0 ${textWidth} ${textHeight}" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="none" /><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="${fontFamily}" font-size="${fontSize}" fill="${color}" font-weight="normal">${text}</text></svg>`;
-
+    const svg = `
+      <svg 
+        width="${textWidth}" 
+        height="${textHeight}"
+        viewBox="0 0 ${textWidth} ${textHeight}"
+        xmlns="http://www.w3.org/2000/svg"
+        
+      >
+        <rect 
+      width="100%" 
+      height="100%" 
+      fill="none" 
+    />
+        <text
+          x="50%"
+          y="50%"
+          dominant-baseline="middle"
+          text-anchor="middle"
+          font-family="${fontFamily}"
+          font-size="${fontSize}"
+          fill="${color}"
+        >
+          ${text}
+        </text>   
+      </svg>
+    `;
     if (returnAsString) {
       return svg;
     }
@@ -378,6 +402,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     });
     return URL.createObjectURL(blob);
   }
+
   const emptyImage =
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/ihGyysAAAAASUVORK5CYII=";
 

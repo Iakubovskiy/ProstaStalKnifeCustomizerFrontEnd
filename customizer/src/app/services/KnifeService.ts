@@ -59,9 +59,15 @@ class KnifeService {
     if (!data.existingEngravingIds) {
       data.existingEngravingIds = [];
     }
+
     if (!data.existingAttachmentIds) {
       data.existingAttachmentIds = [];
     }
+    data.existingAttachmentIds = data.existingAttachmentIds.filter(
+      (id) => id != null
+    );
+
+    console.log("data:", data.existingAttachmentIds);
     if (!data.newEngravings) {
       data.newEngravings = [];
     }
