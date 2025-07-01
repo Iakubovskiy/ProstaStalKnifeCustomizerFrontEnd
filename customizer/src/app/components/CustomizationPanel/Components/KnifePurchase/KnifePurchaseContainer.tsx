@@ -127,8 +127,9 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
         };
       } else {
         const processedEngravings: EngravingDTO[] = [];
-        for (const engraving of snap.engravings) {
+        for (const engraving of state.engravings) {
           let pictureId: string | null = null;
+          console.log("engraving picture", engraving.fileObject);
           if (engraving.fileObject) {
             try {
               const uploadedFile: AppFile = await fileService.upload(

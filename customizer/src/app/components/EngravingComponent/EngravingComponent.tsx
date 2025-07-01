@@ -423,7 +423,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
               const newUrl = textToSvgUrl(
                 item.text,
                 value,
-                customState.bladeCoatingColor.engravingColorCode || "#000000"
+                  customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000"
               );
               if (customState.engravings[id].picture) {
                 customState.engravings[id].picture.fileUrl = newUrl;
@@ -488,7 +488,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                 const newUrl = textToSvgUrl(
                   item.text,
                   item.font,
-                  customState.bladeCoatingColor.engravingColorCode || "#000000"
+                  customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000"
                 );
                 if (customState.engravings[id].picture) {
                   customState.engravings[id].picture.fileUrl = newUrl;
@@ -503,26 +503,29 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
       })
     );
   };
-  const blobUrlToFile = async (
-    blobUrl: string,
-    fileName: string = "image.png"
-  ): Promise<File> => {
-    try {
-      const response = await fetch(blobUrl);
-      const blob = await response.blob();
 
-      const file = new File([blob], fileName, { type: blob.type });
+  // const blobUrlToFile = async (
+  //   blobUrl: string,
+  //   fileName: string = "image.png"
+  // ): Promise<File> => {
+  //   try {
+  //     const response = await fetch(blobUrl);
+  //     const blob = await response.blob();
+  //
+  //     const file = new File([blob], fileName, { type: blob.type });
+  //
+  //     return file;
+  //   } catch (error) {
+  //     console.error("Error converting blob URL to file:", error);
+  //     throw error;
+  //   }
+  // };
 
-      return file;
-    } catch (error) {
-      console.error("Error converting blob URL to file:", error);
-      throw error;
-    }
-  };
   const updateEngravingState = (
     index: number,
     newProps: Partial<EngravingForCanvas>
   ) => {
+    console.log("updateEngravingState", index, newProps);
     const currentEngraving = customState.engravings[index];
     if (currentEngraving) {
       // Створюємо повністю новий об'єкт гравіювання
@@ -535,7 +538,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     }
   };
 
-  const handleTextChange = async (id: number, value: string) => {
+  const handleTextChange = (id: number, value: string) => {
     setItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, text: value } : item))
     );
@@ -546,10 +549,11 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
       const svgString = textToSvgUrl(
         value,
         item.font ?? "Montserrat",
-        customState.bladeCoatingColor.engravingColorCode || "#000000",
+          customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000",
         true
       );
       const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+      const file = new File([svgBlob], `engraving-${id}.svg`, { type: "image/svg+xml" });
       const localPreviewUrl = URL.createObjectURL(svgBlob);
       updateEngravingState(id, {
         text: value,
@@ -558,7 +562,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
           fileUrl: localPreviewUrl,
         },
         fileObject: ref(
-          await blobUrlToFile(localPreviewUrl, `engraving-${id}.svg`)
+          file
         ),
       });
     }

@@ -1,54 +1,54 @@
 "use client";
-import React, { useEffect, useState, useMemo, useCallback } from "react";
-import { useRouter } from "next/router";
+import React, {useCallback, useEffect, useMemo, useState} from "react";
+import {useRouter} from "next/router";
 import "../../styles/globals.css";
 
 // --- UI & Іконки ---
 import {
-  Input,
-  Spinner,
   Button,
-  Textarea,
   Card,
-  CardHeader,
   CardBody,
+  CardHeader,
   Divider,
   Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
   DropdownItem,
-  Chip,
+  DropdownMenu,
+  DropdownTrigger,
+  Input,
+  Spinner,
   Table,
-  TableHeader,
-  TableColumn,
   TableBody,
-  TableRow,
   TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Textarea,
 } from "@nextui-org/react";
 import {
   ArrowLeft,
   ChevronLeft,
   ChevronRight,
-  Edit2,
-  Save,
-  User,
-  Truck,
   CreditCard,
+  Edit2,
   Info,
-  Plus,
   Minus,
-  Trash2,
   Package,
+  Plus,
+  Save,
+  Trash2,
+  Truck,
+  User,
   X,
 } from "lucide-react";
 
 // --- Сервіси, Інтерфейси, Компоненти ---
 import OrderService from "@/app/services/OrderService";
 import OrderStatusesService from "@/app/services/OrderStatusesService";
-import { Order, OrderItemProduct } from "@/app/Interfaces/Order";
-import { ClientData } from "@/app/DTOs/ClientData";
+import {Order, OrderItemProduct} from "@/app/Interfaces/Order";
+import {ClientData} from "@/app/DTOs/ClientData";
 import KnifeConfigurator from "@/app/components/CustomCanvas/CustomCanvas";
-import { OrderItem } from "@/app/Interfaces/OrderItem";
+import {OrderItem} from "@/app/Interfaces/OrderItem";
+import KnifeService from "@/app/services/KnifeService";
 
 const OrderDetailPage = () => {
   const router = useRouter();
@@ -68,6 +68,7 @@ const OrderDetailPage = () => {
   // --- Сервіси ---
   const orderService = useMemo(() => new OrderService(), []);
   const orderStatusesService = useMemo(() => new OrderStatusesService(), []);
+  const knifeService = new KnifeService();
 
   // --- Завантаження даних ---
   const fetchOrder = useCallback(async () => {
@@ -79,6 +80,14 @@ const OrderDetailPage = () => {
       // Перевіряємо чи отримали валідні дані
       if (!orderData || !orderData.id) {
         throw new Error("Отримано некоректні дані замовлення");
+      }
+
+      for (const item of orderData.orderItems) {
+        const knife = await knifeService.getById(item.productId);
+        item.product = {
+          ...knife,
+          productType: "Knife"
+        };
       }
 
       setOrder(orderData);
