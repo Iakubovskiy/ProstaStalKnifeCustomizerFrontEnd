@@ -53,6 +53,12 @@ const CustomizationPanelMenu: React.FC<CustomizationPanelMenuProps> = ({
       tooltipKey: "customizationPanel.menu.engraving.tooltip",
       icon: "/icons/laser-pen.svg",
     },
+    {
+      id: "engravingLibrary",
+      nameKey: "customizationPanel.menu.engravingLibrary.name",
+      tooltipKey: "customizationPanel.menu.engravingLibrary.tooltip",
+      icon: "/icons/engravingLibrary.svg",
+    },
   ] as const;
 
   const getCardsPerPage = (width: number): number => {

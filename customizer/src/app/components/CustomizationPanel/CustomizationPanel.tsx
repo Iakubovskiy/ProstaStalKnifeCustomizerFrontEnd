@@ -13,6 +13,9 @@ import EngravingComponent, {
 import { useCanvasState } from "@/app/state/canvasState";
 import ArrowCard from "./Menu/ArrowCard";
 import { XCircle } from "lucide-react";
+import {Engraving} from "@/app/Interfaces/Engraving";
+import {EngravingForCanvas} from "@/app/Interfaces/Knife/EngravingForCanvas";
+import EngravingLibraryComponent from "@/app/components/CustomizationPanel/Components/EngravingLibraryComponent";
 
 const CustomizationPanel = () => {
   const { t } = useTranslation();
@@ -46,7 +49,7 @@ const CustomizationPanel = () => {
   };
 
   const cardsPerPage = getCardsPerPage(screenWidth);
-  const menuOptionsCount = 6;
+  const menuOptionsCount = 7;
 
   useEffect(() => {
     if (menuOptionsCount > 0 && cardsPerPage > 0) {
@@ -70,6 +73,33 @@ const CustomizationPanel = () => {
     setMobilePositioningTargetId((prevId) => (id === null || prevId === id ? null : id));
   };
 
+  const handleEngravingSelectedFromLibrary = (libraryEngraving: Engraving) => {
+    if (!libraryEngraving.picture) {
+      console.error("Selected engraving from library has no picture.");
+      return;
+    }
+    const newEngravingForCanvas: EngravingForCanvas = {
+      id: "",
+      picture: { ...libraryEngraving.picture },
+      side: 1,
+      text: null,
+      font: null,
+      locationX: libraryEngraving.position?.locationX ?? 0,
+      locationY: libraryEngraving.position?.locationY ?? 0,
+      locationZ: libraryEngraving.position?.locationZ ?? 0.01,
+      rotationX: libraryEngraving.rotation?.rotationX ?? 0,
+      rotationY: libraryEngraving.rotation?.rotationY ?? 0,
+      rotationZ: libraryEngraving.rotation?.rotationZ ?? 0,
+      scaleX: libraryEngraving.scale?.scaleX ?? 20,
+      scaleY: libraryEngraving.scale?.scaleY ?? 20,
+      scaleZ: libraryEngraving.scale?.scaleZ ?? 20,
+    };
+    state.engravings = [...state.engravings, newEngravingForCanvas];
+    console.log(state.engravings);
+    state.invalidate();
+    setSelectedOption("engraving");
+  };
+
   const renderContent = () => {
     switch (selectedOption) {
       case "bladeShape":
@@ -90,6 +120,8 @@ const CustomizationPanel = () => {
                 onToggleMobilePositioningTarget={toggleMobilePositioningTarget}
             />
         );
+      case "engravingLibrary":
+        return <EngravingLibraryComponent onSelect={handleEngravingSelectedFromLibrary} />;
       default:
         return (
             <div className="text-black text-center p-4 text-sm">

@@ -6,7 +6,7 @@ import {
   Settings2,
   Trash2,
   Paperclip,
-  XCircle, // Замінив LinkBreak2 назад на XCircle для кнопки "закріпити"
+  XCircle,
 } from "lucide-react";
 import ModalFormButton from "../ModalButton/ModalButton";
 import { DraggablePopup } from "./DraggablePopup";
@@ -14,7 +14,6 @@ import Select, { StylesConfig, SingleValue, GroupBase } from "react-select";
 import { EngravingForCanvas } from "@/app/Interfaces/Knife/EngravingForCanvas";
 import { ref } from "valtio";
 
-// PositioningControls залишається без змін
 export const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
   const customState = useCanvasState();
   const engraving =
@@ -301,7 +300,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     selectedSide: number;
     font?: string;
     text?: string;
-    isExpanded?: boolean; // Зберігаємо стан розгорнутості для кожної картки
+    isExpanded?: boolean;
     selectedFile?: File | null;
     isPositioningOpen?: boolean;
   }
@@ -318,7 +317,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
           const existingItem = items.find((it) => it.id === index);
           return {
             id: index,
-            type: engraving.text === "" ? "file" : ("text" as "text" | "file"),
+            type: (engraving.text === "" || engraving.text === null) ? "file" : ("text" as "text" | "file"),
             selectedSide: engraving.side,
             font: engraving.font || "Montserrat",
             text: engraving.text || "",
@@ -332,8 +331,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
       );
       setItems(newItems);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [customState.engravings]); // Залежність тільки від customState.engravings
+  }, [customState.engravings]);
 
   const removeCard = (idToRemove: number) => {
     if (isMobileContext && mobilePositioningTargetIdContext === idToRemove) {
@@ -504,23 +502,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     );
   };
 
-  // const blobUrlToFile = async (
-  //   blobUrl: string,
-  //   fileName: string = "image.png"
-  // ): Promise<File> => {
-  //   try {
-  //     const response = await fetch(blobUrl);
-  //     const blob = await response.blob();
-  //
-  //     const file = new File([blob], fileName, { type: blob.type });
-  //
-  //     return file;
-  //   } catch (error) {
-  //     console.error("Error converting blob URL to file:", error);
-  //     throw error;
-  //   }
-  // };
-
   const updateEngravingState = (
     index: number,
     newProps: Partial<EngravingForCanvas>
@@ -528,12 +509,9 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     console.log("updateEngravingState", index, newProps);
     const currentEngraving = customState.engravings[index];
     if (currentEngraving) {
-      // Створюємо повністю новий об'єкт гравіювання
       const updatedEngraving = { ...currentEngraving, ...newProps };
-      // Створюємо повністю новий масив
       const newEngravings = [...customState.engravings];
       newEngravings[index] = updatedEngraving;
-      // Замінюємо старий масив на новий. Це гарантовано викличе оновлення.
       customState.engravings = newEngravings;
     }
   };
@@ -584,7 +562,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
         fileObject: ref(file),
       });
     } else {
-      // Користувач скасував вибір
       updateEngravingState(id, {
         picture: { id: "empty", fileUrl: emptyImage },
         fileObject: null,
@@ -593,7 +570,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
   };
 
   const toggleExpand = (id: number) => {
-    // Користувач завжди може згорнути/розгорнути картку
     setItems((prev) =>
       prev.map((item) =>
         item.id === id ? { ...item, isExpanded: !item.isExpanded } : item
@@ -686,9 +662,9 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
               isMobileContext && mobilePositioningTargetIdContext === item.id;
 
             const showPositioningControlsInCard =
-              (!isMobileContext || !isPositioningDetachedForThisItem) && // Не показувати, якщо винесено
-              item.isExpanded && // Тільки якщо картка розгорнута
-              !item.isPositioningOpen; // І не активний DraggablePopup (для десктопу)
+              (!isMobileContext || !isPositioningDetachedForThisItem) &&
+              item.isExpanded &&
+              !item.isPositioningOpen;
 
             return (
               <div
@@ -713,7 +689,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                           }
                           className={`p-1.5 rounded-full transition-colors text-[#f8f4f0] ${
                             isPositioningDetachedForThisItem
-                              ? "bg-[#5a4a3a] hover:bg-[#6b5a4a]" // Темніший, якщо активно
+                              ? "bg-[#5a4a3a] hover:bg-[#6b5a4a]"
                               : "hover:bg-[#a08a73]"
                           }`}
                           title={
@@ -723,7 +699,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                           }
                         >
                           {isPositioningDetachedForThisItem ? (
-                            <XCircle size={18} /> // Іконка "закріпити" або "скасувати відкріплення"
+                            <XCircle size={18} />
                           ) : (
                             <Paperclip size={18} />
                           )}
@@ -739,7 +715,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                     </div>
                   </div>
 
-                  {/* Основні контролі показуються, якщо картка розгорнута */}
                   {item.isExpanded && (
                     <>
                       <div className="space-y-4">
@@ -818,71 +793,97 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                             </div>
                           </div>
                         ) : (
-                          <div className="space-y-3">
-                            <div>
-                              <label className="block text-sm font-medium mb-1">
-                                Завантажити файл:
-                              </label>
-                              <input
-                                type="file"
-                                accept="image/*, .svg"
-                                className="w-full text-sm rounded-md file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold hover:file:cursor-pointer"
-                                style={{
-                                  color: "#f8f4f0",
-                                  /* @ts-ignore */
-                                  "--file-button-bg": "rgb(143, 88, 48)",
-                                  "--file-button-text": "#f8f4f0",
-                                  "--file-button-hover-bg": "rgb(146, 116, 84)",
-                                }}
-                                onChange={(e) =>
-                                  handleFileChange(
-                                    item.id,
-                                    e.target.files ? e.target.files[0] : null
-                                  )
-                                }
-                              />
-                              <style jsx global>{`
+                            <div className="space-y-3">
+                              <div>
+                                <label className="block text-sm font-medium mb-1">
+                                  Завантажити файл:
+                                </label>
+
+                                {(() => {
+                                  const currentEngraving = customState.engravings[item.id];
+                                  const pictureUrl = currentEngraving?.picture?.fileUrl;
+
+                                  const isFromLibrary = pictureUrl && !pictureUrl.startsWith('blob:') && !pictureUrl.startsWith('data:image/png;base64');
+
+                                  if (isFromLibrary) {
+                                    const fileName = pictureUrl.split('/').pop() || 'невідомий файл';
+
+                                    return (
+                                        <div className="flex items-center justify-between p-2 rounded-md bg-f0e5d6 border border-b8845f">
+                                          <div className="flex items-center gap-2 overflow-hidden">
+                                            <Paperclip size={16} className="text-8b7258 flex-shrink-0" />
+                                            <span className="text-sm text-2d3748 font-medium truncate" title={fileName}>
+                                    {fileName}
+                                </span>
+                                          </div>
+                                          <label
+                                              htmlFor={`file-input-${item.id}`}
+                                              className="ml-4 px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer bg-8b7258 text-white hover:bg-a08a73"
+                                          >
+                                            Замінити
+                                          </label>
+                                          <input
+                                              id={`file-input-${item.id}`}
+                                              type="file"
+                                              accept="image/*, .svg"
+                                              className="hidden"
+                                              onChange={(e) => handleFileChange(item.id, e.target.files ? e.target.files[0] : null)}
+                                          />
+                                        </div>
+                                    );
+                                  } else {
+                                    return (
+                                        <div>
+                                          <input
+                                              type="file"
+                                              id={`file-input-${item.id}`}
+                                              accept="image/*, .svg"
+                                              className="w-full text-sm rounded-md file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold hover:file:cursor-pointer"
+                                              style={{
+                                                color: "#f8f4f0",
+                                                /* @ts-ignore */
+                                                '--file-button-bg': 'rgb(143, 88, 48)',
+                                                '--file-button-text': '#f8f4f0',
+                                                '--file-button-hover-bg': 'rgb(146, 116, 84)'
+                                              }}
+                                              onChange={(e) => handleFileChange(item.id, e.target.files ? e.target.files[0] : null)}
+                                          />
+                                          <style jsx global>{`
                                 input[type="file"]::file-selector-button {
-                                  background-color: var(
-                                    --file-button-bg,
-                                    rgb(231, 151, 94)
-                                  );
-                                  color: var(--file-button-text, #f8f4f0);
-                                  padding: 0.5rem 0.75rem;
-                                  border-radius: 0.375rem;
-                                  border: none;
-                                  font-weight: 600;
-                                  font-size: 0.875rem;
-                                  margin-right: 0.75rem;
-                                  cursor: pointer;
-                                  transition: background-color 0.2s ease-in-out;
+                                    background-color: var(--file-button-bg, rgb(231, 151, 94));
+                                    color: var(--file-button-text, #f8f4f0);
+                                    padding: 0.5rem 0.75rem;
+                                    border-radius: 0.375rem;
+                                    border: none;
+                                    font-weight: 600;
+                                    font-size: 0.875rem;
+                                    margin-right: 0.75rem;
+                                    cursor: pointer;
+                                    transition: background-color 0.2s ease-in-out;
                                 }
                                 input[type="file"]::file-selector-button:hover {
-                                  background-color: var(
-                                    --file-button-hover-bg,
-                                    #a08a73
-                                  );
+                                    background-color: var(--file-button-hover-bg, #a08a73);
                                 }
-                              `}</style>
+                            `}</style>
+                                        </div>
+                                    );
+                                  }
+                                })()}
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium mb-1">
+                                  Сторона:
+                                </label>
+                                <Select
+                                    options={sideOptions}
+                                    styles={customSelectStyles}
+                                    value={sideOptions.find((opt) => opt.value === item.selectedSide)}
+                                    onChange={(selectedOption) => handleSideChange(item.id, selectedOption)}
+                                    placeholder="Виберіть сторону..."
+                                    isSearchable={false}
+                                />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-sm font-medium mb-1">
-                                Сторона:
-                              </label>
-                              <Select
-                                options={sideOptions}
-                                styles={customSelectStyles}
-                                value={sideOptions.find(
-                                  (opt) => opt.value === item.selectedSide
-                                )}
-                                onChange={(selectedOption) =>
-                                  handleSideChange(item.id, selectedOption)
-                                }
-                                placeholder="Виберіть сторону..."
-                                isSearchable={false}
-                              />
-                            </div>
-                          </div>
                         )}
                       </div>
 
@@ -926,14 +927,12 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                         </DraggablePopup>
                       )}
 
-                      {/* PositioningControls всередині картки */}
                       {showPositioningControlsInCard && (
                         <PositioningControls id={item.id} />
                       )}
                     </>
                   )}
                 </div>
-                {/* Кнопка згорнути/розгорнути картку */}
                 <button
                   onClick={() => toggleExpand(item.id)}
                   className="w-full p-3 transition-colors flex items-center justify-center gap-2 rounded-b-lg text-[#f8f4f0] hover:bg-[#b8845f] active:bg-[#8b7258]"

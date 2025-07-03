@@ -224,6 +224,10 @@
       "engraving": {
         "name": "Engraving",
         "tooltip": "Engraving"
+      },
+      "engravingLibrary": {
+        "name": "Engraving library",
+        "tooltip": "Engraving library"
       }
     }
   },

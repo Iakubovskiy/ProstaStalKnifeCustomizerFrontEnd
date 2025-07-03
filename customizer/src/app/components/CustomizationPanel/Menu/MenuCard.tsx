@@ -42,7 +42,6 @@ const MenuCard: React.FC<MenuCardProps> = ({
             border: "1px solid rgba(0,0,0,0.05)",
           }}
         >
-          {/* Icon Container */}
           <div
             className="flex-shrink-0"
             style={{
@@ -67,7 +66,6 @@ const MenuCard: React.FC<MenuCardProps> = ({
             />
           </div>
 
-          {/* Text Container */}
           <div className="flex-1 min-w-0">
             <h3
               className={`font-semibold text-gray-700 leading-tight ${getTextSizeClass(
