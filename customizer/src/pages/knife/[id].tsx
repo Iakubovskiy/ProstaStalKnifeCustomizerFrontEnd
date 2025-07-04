@@ -3,7 +3,6 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/router";
 import "../../styles/globals.css";
 
-// --- UI Компоненти ---
 import {
   Input,
   Spinner,
@@ -11,12 +10,10 @@ import {
   Switch,
   Accordion,
   AccordionItem,
-  Textarea,
   Select,
   SelectItem,
 } from "@nextui-org/react";
 
-// --- Сервіси та Інтерфейси ---
 import KnifeService from "@/app/services/KnifeService";
 import ProductTagService from "@/app/services/ProductTagService";
 import FileService from "@/app/services/FileService";
@@ -24,15 +21,12 @@ import EngravingService from "@/app/services/EngravingService";
 import { Knife } from "@/app/Interfaces/Knife/Knife";
 import { KnifeDTO } from "@/app/DTOs/KnifeDTO";
 import { EngravingDTO } from "@/app/DTOs/EngravingDTO";
-import { AppFile } from "@/app/Interfaces/File";
 
-// --- Наші кастомні компоненти ---
 import CustomizationPanel from "@/app/components/CustomizationPanel/CustomizationPanel";
 import KnifeConfigurator from "@/app/components/CustomCanvas/CustomCanvas";
 import FileUpload from "@/app/components/FileUpload/FileUpload";
 import LocalizedContentEditor from "@/app/components/LocalizedContentEditor/LocalizedContentEditor";
 
-// --- Стан для 3D ---
 import { useCanvasState } from "@/app/state/canvasState";
 import { useSnapshot } from "valtio";
 
@@ -62,7 +56,6 @@ const KnifeEditPage = () => {
   const router = useRouter();
   const { id } = router.query;
 
-  // --- Стани компонента ---
   const [knifeData, setKnifeData] = useState<Partial<Knife>>(initialData);
   const [allTags, setAllTags] = useState<ProductTag[]>([]);
   const [isLoading, setLoading] = useState(true);
@@ -76,29 +69,25 @@ const KnifeEditPage = () => {
   const snap = useSnapshot(canvasState);
   const isCreating = id === "0";
 
-  // --- Завантаження даних ---
   useEffect(() => {
     if (!router.isReady) return;
 
     const loadInitialData = async () => {
       setLoading(true);
       try {
-        // Завантажуємо теги в будь-якому випадку
         const tags = await tagService.getAll();
         setAllTags(tags);
 
-        // Якщо редагуємо існуючий ніж - завантажуємо його дані
         if (!isCreating && id) {
           const data = await knifeService.getById(id as string);
           setKnifeData(data);
         } else {
-          // Інакше - використовуємо початкові дані
           setKnifeData(initialData);
         }
       } catch (err) {
         console.error("Failed to load data:", err);
         alert("Помилка завантаження даних.");
-        router.push("/knife"); // Повертаємо на список у разі помилки
+        router.push("/knife");
       } finally {
         setLoading(false);
       }
@@ -107,7 +96,6 @@ const KnifeEditPage = () => {
     loadInitialData();
   }, [id, router.isReady, knifeService, tagService, router]);
 
-  // --- Обробники змін у формі ---
   const handleFieldChange = <K extends keyof Knife>(
     field: K,
     value: Knife[K]
@@ -121,11 +109,9 @@ const KnifeEditPage = () => {
     handleFieldChange("productTags", selectedTags);
   };
 
-  // --- Логіка збереження ---
   const handleSave = async () => {
     setSaving(true);
     try {
-      // 1. Обробка гравіювань
       const newEngravingsDto: EngravingDTO[] = [];
       const engravingsToUpdate = snap.engravings.filter(
         (eng) => eng.id && eng.id != ""
@@ -142,7 +128,6 @@ const KnifeEditPage = () => {
         engravingsToUpdate.map(async (engraving) => {
           let pictureId: string | null = engraving.picture?.id || null;
           if (engraving.fileObject) {
-            // Якщо до існуючого додали новий файл
             const uploadedFile = await fileService.upload(engraving.fileObject);
             pictureId = uploadedFile.id;
           }
@@ -167,6 +152,7 @@ const KnifeEditPage = () => {
             },
             descriptions: { ua: "-", en: "-" },
             tagsIds: [],
+            isActive: false,
           };
           await engravingService.update(engraving.id!, engravingDto);
         })
@@ -198,10 +184,10 @@ const KnifeEditPage = () => {
           },
           descriptions: { ua: "-", en: "-" },
           tagsIds: [],
+          isActive: false,
         });
       }
 
-      // 2. Збір даних з 3D-сцени
       const canvasData = {
         shapeId: snap.bladeShape.id,
         bladeCoatingColorId: snap.bladeCoatingColor.id,
@@ -251,10 +237,8 @@ const KnifeEditPage = () => {
         price: knifeData.price,
       };
 
-      // 4. Комбінування в фінальний DTO
       const finalDto: KnifeDTO = { ...formData, ...canvasData };
       console.log("FinalDTO: ", finalDto);
-      // 5. Відправка на сервер
       if (isCreating) {
         await knifeService.create(finalDto);
         alert("Ніж успішно створено!");
@@ -290,7 +274,6 @@ const KnifeEditPage = () => {
         </h1>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* --- Ліва колонка: 3D Візуалізація та Кастомізація --- */}
           <div className="flex flex-col gap-4 h-[80vh] lg:h-auto sticky top-8">
             <div className="flex-grow aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden shadow-lg">
               <KnifeConfigurator
@@ -302,7 +285,6 @@ const KnifeEditPage = () => {
             </div>
           </div>
 
-          {/* --- Права колонка: Поля для вводу даних --- */}
           <div className="space-y-6">
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h2 className="text-xl font-semibold mb-4 text-gray-700">
@@ -479,7 +461,6 @@ const KnifeEditPage = () => {
           </div>
         </div>
 
-        {/* Панель кастомізації для мобільних пристроїв */}
         <div className="lg:hidden mt-8">
           <CustomizationPanel />
         </div>

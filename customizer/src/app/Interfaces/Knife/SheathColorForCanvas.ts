@@ -10,4 +10,5 @@ export interface SheathColorForCanvas {
   roughnessMap: AppFile | null;
   colorCode: string;
   engravingColorCode: string;
+  basePrice?:number;
 }

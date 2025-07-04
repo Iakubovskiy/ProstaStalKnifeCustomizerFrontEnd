@@ -44,6 +44,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
     price += snap.bladeCoatingColor?.price || 0;
     price += snap.handleColor?.price || 0;
     price += snap.attachment?.price || 0;
+    price += snap.sheathColor.basePrice || 0;
 
     const sheathPriceInfo = (
       snap.sheathColor?.prices as SheathColorPriceByType[]
@@ -158,6 +159,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
             scaleX: engraving.scaleX,
             scaleY: engraving.scaleY,
             scaleZ: engraving.scaleZ,
+            isActive: false,
           });
         }
 
