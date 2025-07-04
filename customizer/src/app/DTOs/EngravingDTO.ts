@@ -16,4 +16,5 @@ export interface EngravingDTO {
   scaleY: number;
   scaleZ: number;
   tagsIds?: string[] | null;
+  isActive: boolean;
 }
