@@ -207,7 +207,6 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
     loadData();
   }, [productId, state]);
 
-  // 2. Тепер ми завжди рендеримо <Canvas>
   return (
     <Canvas
       frameloop="always"
@@ -218,9 +217,7 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
       }}
     >
       <Suspense fallback={<CustomLoader />}>
-        {/* 3. Логіку рендерингу переносимо всередину */}
         {isLoading ? null : error ? null : (
-          // Коли все добре, рендеримо сцену
           <Scene />
         )}
       </Suspense>

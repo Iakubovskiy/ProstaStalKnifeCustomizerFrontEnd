@@ -15,8 +15,8 @@ const Background: React.FC = () => {
         scene.background = formattedTexture.texture;
 
         return () => {
-            scene.background = null; // Встановлюємо фон на null
-            formattedTexture.dispose(); // Очищуємо ресурси
+            scene.background = null;
+            formattedTexture.dispose();
         };
     }, [scene, gl, texture]);
 
