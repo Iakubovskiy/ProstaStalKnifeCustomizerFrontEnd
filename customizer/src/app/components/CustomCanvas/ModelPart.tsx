@@ -67,16 +67,16 @@ const ModelPart: React.FC<ModelPartProps> = ({
       if (props.color) {
         material.color.set(props.color);
       }
-      // if (props.colorMapUrl && isUrlResettable(props.colorMapUrl)) {
-      //     const map = textureLoader.load(props.colorMapUrl, (texture) => {
-      //         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-      //         texture.repeat.set(1, 1);
-      //     });
-      //     material.color.set(0xffffff);
-      //     material.map = map;
-      // } else{
-      //     material.map = null;
-      // }
+      if (props.colorMapUrl && isUrlResettable(props.colorMapUrl)) {
+          const map = textureLoader.load(props.colorMapUrl, (texture) => {
+              texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+              texture.repeat.set(1, 1);
+          });
+          material.color.set(0xffffff);
+          material.map = map;
+      } else{
+          material.map = null;
+      }
       // if ( props.normalMapUrl && isUrlResettable(props.normalMapUrl)) {
       //     material.normalMap = textureLoader.load(props.normalMapUrl, (texture) => {
       //         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
@@ -119,6 +119,7 @@ const ModelPart: React.FC<ModelPartProps> = ({
           case "handle":
             updateMaterial(child.material, materialName, {
               color: snap.handleColor.colorCode,
+              colorMapUrl: snap.handleColor.colorMap?.fileUrl || null,
             });
             break;
         }

@@ -1,6 +1,5 @@
 import React from "react";
 import { RectAreaLight } from 'three';
-import { useThree } from '@react-three/fiber';
 import {RectAreaLightHelper, RectAreaLightUniformsLib} from 'three-stdlib';
 import {useHelper} from "@react-three/drei";
 import * as THREE from 'three';
