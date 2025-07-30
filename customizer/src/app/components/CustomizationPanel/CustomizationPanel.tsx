@@ -16,6 +16,13 @@ import { XCircle } from "lucide-react";
 import {Engraving} from "@/app/Interfaces/Engraving";
 import {EngravingForCanvas} from "@/app/Interfaces/Knife/EngravingForCanvas";
 import EngravingLibraryComponent from "@/app/components/CustomizationPanel/Components/EngravingLibraryComponent";
+import {ref} from "valtio";
+
+enum Side {
+  Right = 1,
+  Left = 2,
+  Axillary = 3,
+}
 
 const CustomizationPanel = () => {
   const { t } = useTranslation();
@@ -73,12 +80,18 @@ const CustomizationPanel = () => {
     setMobilePositioningTargetId((prevId) => (id === null || prevId === id ? null : id));
   };
 
-  const handleEngravingSelectedFromLibrary = (libraryEngraving: Engraving) => {
+  const replaceStrokeColor = (svgText: string, newColor: string): string => {
+    return svgText.replace(
+        /(<(path|g|svg)[^>]*style="[^"]*)stroke\s*:\s*#[0-9a-fA-F]{3,6}([^"]*)"/gi,
+        (match, p1, tag, p3) => `${p1}stroke:${newColor}${p3}"`
+    );
+  };
+
+  const createEngravingForCanvas = (libraryEngraving: Engraving): EngravingForCanvas => {
     if (!libraryEngraving.picture) {
-      console.error("Selected engraving from library has no picture.");
-      return;
+      throw("Selected engraving from library has no picture.");
     }
-    const newEngravingForCanvas: EngravingForCanvas = {
+    return {
       id: "",
       picture: { ...libraryEngraving.picture },
       side: 1,
@@ -94,8 +107,45 @@ const CustomizationPanel = () => {
       scaleY: libraryEngraving.scale?.scaleY ?? 20,
       scaleZ: libraryEngraving.scale?.scaleZ ?? 20,
     };
+  };
+
+  const processSVG = (fileUrl: string, engravingColor: string, engraving: EngravingForCanvas) => {
+    fetch(fileUrl)
+        .then(response => response.text())
+        .then(svgText => {
+          try {
+            const coloredSvgText = replaceStrokeColor(svgText, engravingColor);
+
+            const blob = new Blob([coloredSvgText], { type: "image/svg+xml" });
+            const svgUrl = URL.createObjectURL(blob);
+
+            engraving.picture.fileUrl = svgUrl;
+          } catch (error) {
+            console.error("Failed to process SVG:", error);
+          }
+        })
+        .catch(error => {
+          console.error("Failed to fetch SVG file:", error);
+        });
+  };
+
+  const handleEngravingSelectedFromLibrary = (libraryEngraving: Engraving) => {
+    if (!libraryEngraving.picture) {
+      console.error("Selected engraving from library has no picture.");
+      return;
+    }
+
+    const newEngravingForCanvas = createEngravingForCanvas(libraryEngraving);
+
+    const { fileUrl } = libraryEngraving.picture;
+    const isSVG = fileUrl.endsWith(".svg");
+
+    if (isSVG) {
+      const engravingColor = state.bladeCoatingColor.engravingColorCode;
+      processSVG(fileUrl, engravingColor, newEngravingForCanvas);
+    }
+
     state.engravings = [...state.engravings, newEngravingForCanvas];
-    console.log(state.engravings);
     state.invalidate();
     setSelectedOption("engraving");
   };

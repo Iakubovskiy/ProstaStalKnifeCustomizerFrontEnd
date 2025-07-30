@@ -447,6 +447,51 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
       prev.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, selectedSide: value };
+          if(item.type === "file" && item.selectedFile){
+            const file = item.selectedFile;
+            const isSVG = file.type === "image/svg+xml";
+            const engravingColor = value === Side.Axillary? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000";
+            if (isSVG) {
+              const reader = new FileReader();
+              reader.onload = () => {
+                let svgText = reader.result as string;
+
+                svgText = replaceStrokeColor(svgText, engravingColor);
+                console.log("svgText", svgText);
+
+                const blob = new Blob([svgText], { type: "image/svg+xml" });
+                const svgUrl = URL.createObjectURL(blob);
+
+                updateEngravingState(id, {
+                  picture: {
+                    id: "",
+                    fileUrl: svgUrl,
+                  },
+                  fileObject: ref(file),
+                });
+              };
+              reader.readAsText(file);
+            } else {
+              updateEngravingState(id, {
+                picture: {
+                  id: "",
+                  fileUrl: URL.createObjectURL(file),
+                },
+                fileObject: ref(file),
+              });
+            }
+          }
+          else if (item.type === "text" && item.text && item.font) {
+            const newUrl = textToSvgUrl(
+                item.text,
+                item.font,
+                value === Side.Axillary? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000",
+            );
+            if (customState.engravings[id].picture) {
+              customState.engravings[id].picture.fileUrl = newUrl;
+            }
+            customState.invalidate();
+          }
           if (customState.engravings[id]) {
             customState.engravings[id].side = value;
             customState.engravings[id].rotationY =
@@ -546,6 +591,25 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     }
   };
 
+  const replaceStrokeColor = (svgText: string, newColor: string): string => {
+    return svgText.replace(/(<(path|g|svg)[^>]*style="[^"]*)stroke\s*:\s*#[0-9a-fA-F]{3,6}([^"]*)"/gi,
+        (match, p1, tag, p3) => {
+          return `${p1}stroke:${newColor}${p3}"`;
+        }
+    );
+  }
+
+  const getEngravingColor = (id: number) : string => {
+    let engravingColor: string;
+    if(customState.engravings[id].side === Side.Axillary) {
+      engravingColor = customState.sheathColor.engravingColorCode;
+    }
+    else {
+      engravingColor = customState.bladeCoatingColor.engravingColorCode;
+    }
+    return engravingColor;
+  }
+
   const handleFileChange = (id: number, file: File | null) => {
     setItems((prev) =>
       prev.map((item) =>
@@ -554,13 +618,37 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     );
     console.log("Selected file:", file);
     if (file) {
-      updateEngravingState(id, {
-        picture: {
-          id: "",
-          fileUrl: URL.createObjectURL(file),
-        },
-        fileObject: ref(file),
-      });
+      const isSVG = file.type === "image/svg+xml";
+      const engravingColor = getEngravingColor(id);
+      if (isSVG) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          let svgText = reader.result as string;
+
+          svgText = replaceStrokeColor(svgText, engravingColor);
+          console.log("svgText", svgText);
+
+          const blob = new Blob([svgText], { type: "image/svg+xml" });
+          const svgUrl = URL.createObjectURL(blob);
+
+          updateEngravingState(id, {
+            picture: {
+              id: "",
+              fileUrl: svgUrl,
+            },
+            fileObject: ref(file),
+          });
+        };
+        reader.readAsText(file);
+      } else {
+        updateEngravingState(id, {
+          picture: {
+            id: "",
+            fileUrl: URL.createObjectURL(file),
+          },
+          fileObject: ref(file),
+        });
+      }
     } else {
       updateEngravingState(id, {
         picture: { id: "empty", fileUrl: emptyImage },
