@@ -35,8 +35,8 @@ const HandleCustomizationComponent: React.FC = () => {
         {handleColors.map((color) => (
           <CardComponent
             key={color.id}
-            backgroundPicture={color.colorCode}
-            tooltipText={""}
+            backgroundPicture={color.colorMap? color.colorMap.fileUrl : color.colorCode}
+            tooltipText={color.color}
             onClick={() => handleColorClick(color)}
           />
         ))}
