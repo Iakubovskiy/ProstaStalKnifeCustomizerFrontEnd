@@ -35,13 +35,16 @@ const DecalMaterial: React.FC<DecalMaterialProps> = ({
     const snap = useSnapshot(state);
 
 
-    const isSVG = useMemo(() => pictureUrl.endsWith('.svg') || pictureUrl.startsWith('blob:'), [pictureUrl]);
+    const isSVG = useMemo(() => pictureUrl.endsWith('.svg'), [pictureUrl]);
 
     useEffect(() => {
-        // Коли initialTexture готова, запускаємо обробку
-        if (!initialTexture) return;
+        if (!initialTexture) {
+            console.log('Texture not found');
+            return;
+        }
 
         let isMounted = true;
+        console.log('IsSVG = ', isSVG);
 
         if (isSVG) {
             const engravingColor = engravingSide === Side.Axillary
@@ -64,6 +67,7 @@ const DecalMaterial: React.FC<DecalMaterialProps> = ({
                     });
                 });
         } else {
+            console.log('Texture is not SVG');
             setProcessedTexture(initialTexture);
         }
 
