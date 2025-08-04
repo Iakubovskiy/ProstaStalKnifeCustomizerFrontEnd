@@ -52,6 +52,7 @@ const EngravedMesh: React.FC<EngravedMeshProps> = ({
                 key={`${eng.id}-${index}-${meshKey}`}
                 meshRef={meshRef}
                 engraving={eng}
+                arrayPosition={index}
                 offsetFactor={index * -0.1}
               />
             )

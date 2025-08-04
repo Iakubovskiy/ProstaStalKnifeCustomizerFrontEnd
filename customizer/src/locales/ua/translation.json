@@ -229,7 +229,8 @@
         "name": "Бібліотека гравіювань",
         "tooltip": "Бібліотека гравіювань"
       }
-    }
+    },
+    "shareButton" : "Поділитися дизайном"
   },
   "orderButtons":
   {
@@ -262,5 +263,12 @@
     "messageLabel": "Повідомлення",
     "messagePlaceholder": "Введіть ваше повідомлення...",
     "submitButton": "Відправити"
+  },
+  "shareDesign": {
+    "savingToast": "Обробка макету!",
+    "successTitle": "Макет збережено, перегляньте за посиланням:",
+    "copiedToast": "Копіювати",
+    "copyTooltip": "Тиць ;)",
+    "errorToast": "Виникла помилка :("
   }
 }

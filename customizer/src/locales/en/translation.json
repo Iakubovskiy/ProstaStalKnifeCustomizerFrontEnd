@@ -229,7 +229,8 @@
         "name": "Engraving library",
         "tooltip": "Engraving library"
       }
-    }
+    },
+    "shareButton" : "Поділитися дизайном"
   },
   "orderButtons":
   {
@@ -262,5 +263,12 @@
     "messageLabel": "Message",
     "messagePlaceholder": "Enter your message...",
     "submitButton": "Send"
+  },
+  "shareDesign": {
+    "savingToast": "Template processing!",
+    "successTitle": "The template is done, check it via the link:",
+    "copiedToast": "Copy",
+    "copyTooltip": "Here ;)",
+    "errorToast": "Error :("
   }
 }

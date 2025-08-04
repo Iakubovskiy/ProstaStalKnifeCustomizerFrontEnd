@@ -1,13 +1,9 @@
-import React, { Suspense } from "react"; // 1. Імпортуємо Suspense
+import React, { Suspense } from "react";
 import { Decal } from "@react-three/drei";
 import DecalMaterial from "./DecalMaterial";
 
 // @ts-ignore
-const SingleDecal = ({ meshRef, engraving, offsetFactor }) => {
-    // 2. Цей код для примусового оновлення через key більше НЕ ПОТРІБЕН.
-    // Його можна сміливо видалити, бо Suspense - це правильний інструмент.
-    // const [decalKey, setDecalKey] = useState(0);
-    // useEffect(() => { ... }, []);
+const SingleDecal = ({ meshRef, engraving, arrayPosition, offsetFactor }) => {
 
     if (!meshRef.current || !engraving?.picture || !engraving?.picture.fileUrl) {
         return null;
@@ -28,15 +24,10 @@ const SingleDecal = ({ meshRef, engraving, offsetFactor }) => {
             ]}
             scale={engraving.scaleX || 20}
         >
-            {/*
-        3. ОСЬ РІШЕННЯ:
-        Обгортаємо компонент, який містить асинхронний хук useTexture,
-        в компонент Suspense. fallback={null} означає, що поки йде
-        завантаження, на цьому місці нічого не буде рендеритись.
-      */}
             <Suspense fallback={null}>
                 <DecalMaterial
                     pictureUrl={engraving.picture.fileUrl}
+                    engravingSide={engraving.side}
                     offsetFactor={offsetFactor}
                 />
             </Suspense>
