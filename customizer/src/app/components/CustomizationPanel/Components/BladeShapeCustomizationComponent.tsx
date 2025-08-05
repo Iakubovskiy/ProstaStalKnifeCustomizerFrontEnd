@@ -35,7 +35,6 @@ const BladeShapeCustomizationComponent: React.FC = () => {
   }, []);
 
   const bladeShapeSelection = async (shape: BladeShapeForCanvas) => {
-    console.log(shape);
     let sheathModel: AppFile | undefined = undefined;
     if (shape.sheathId && shape.sheathId !== "") {
       const sheath = await sheathService.getById(shape.sheathId);
@@ -57,7 +56,6 @@ const BladeShapeCustomizationComponent: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <div className={styles.header}>
         <h2 className={styles.title}>Форма клинка</h2>
         <ModalFormButton />

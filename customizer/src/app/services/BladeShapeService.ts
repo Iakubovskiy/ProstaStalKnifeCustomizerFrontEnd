@@ -24,18 +24,17 @@ class BladeShapeService {
     return res;
   }
   async getAllActiveForCanvas(): Promise<BladeShapeForCanvas[]> {
-    // 1. Отримуємо повні об'єкти з API
     const fullObjects = await this.apiService.getAll<BladeShape>(
       `${this.resource}/active`
     );
-    console.log(fullObjects);
+    console.log("getAllActiveForCanvas: ", fullObjects);
     const locale = new APIService().getCurrentLocale();
     const canvasObjects = fullObjects.map((item) => {
       const canvasObject: BladeShapeForCanvas = {
         id: item.id,
         shapeType: item.shapeType,
         price: item.price || 0,
-        bladeShapeImage: item.bladeShapeImage || null,
+        bladeShapeImage: item.bladeShapePhoto || null,
         name: item.names?.[locale] || item.name || "",
         bladeShapeModel: item.bladeShapeModel,
         sheathModel: item.sheath?.model ?? ({} as AppFile),
@@ -45,6 +44,7 @@ class BladeShapeService {
       return canvasObject;
     });
 
+    console.log("canvasObjects: ", canvasObjects);
     return canvasObjects;
   }
 

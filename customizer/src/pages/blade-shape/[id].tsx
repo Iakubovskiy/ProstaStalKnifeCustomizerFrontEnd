@@ -26,7 +26,7 @@ const initialBladeShapeData: Partial<BladeShape> = {
   isActive: true,
   shapeType: undefined,
   sheath: undefined,
-  bladeShapeImage: undefined,
+  bladeShapePhoto: undefined,
   bladeShapeModel: undefined,
   bladeCharacteristicsModel: {
     totalLength: 0,
@@ -120,7 +120,7 @@ const BladeShapePage = () => {
     if (
         !bladeShape.shapeType ||
         !bladeShape.names?.["ua"] ||
-        !bladeShape.bladeShapeImage ||
+        !bladeShape.bladeShapePhoto ||
         !bladeShape.bladeShapeModel
     ) {
       alert(
@@ -137,7 +137,7 @@ const BladeShapePage = () => {
       price: bladeShape.price ?? 0,
       typeId: bladeShape.shapeType.id,
       sheathId: bladeShape.sheath?.id || null,
-      bladeShapePhotoId: bladeShape.bladeShapeImage.id,
+      bladeShapePhotoId: bladeShape.bladeShapePhoto.id,
       bladeShapeModelId: bladeShape.bladeShapeModel.id,
       totalLength: bladeShape.bladeCharacteristicsModel?.totalLength ?? 0,
       bladeLength: bladeShape.bladeCharacteristicsModel?.bladeLength ?? 0,
@@ -325,8 +325,8 @@ const BladeShapePage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t">
             <FileUpload
                 label="Фото форми леза"
-                currentFile={bladeShape.bladeShapeImage as AppFile}
-                onFileChange={(f) => handleFieldChange("bladeShapeImage", f!)}
+                currentFile={bladeShape.bladeShapePhoto as AppFile}
+                onFileChange={(f) => handleFieldChange("bladeShapePhoto", f!)}
                 isRequired
             />
             <FileUpload

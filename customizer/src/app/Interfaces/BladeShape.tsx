@@ -9,7 +9,7 @@ export interface BladeShape {
   names?: LocalizedContent;
   price: number;
   bladeCharacteristicsModel: BladeCharacteristics;
-  bladeShapeImage: AppFile;
+  bladeShapePhoto: AppFile;
   bladeShapeModel: AppFile;
   isActive: boolean;
   sheath: Sheath | null;

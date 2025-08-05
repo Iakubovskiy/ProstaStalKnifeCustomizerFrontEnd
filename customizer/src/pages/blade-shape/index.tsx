@@ -310,7 +310,7 @@ const BladeShapeListPage = () => {
                   >
                     <td className="p-2">
                       <Image
-                        src={item.bladeShapeImage?.fileUrl}
+                        src={item.bladeShapePhoto?.fileUrl}
                         width={50}
                         height={50}
                         alt={item.name}
