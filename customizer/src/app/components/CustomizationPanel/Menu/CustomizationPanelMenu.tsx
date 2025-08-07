@@ -8,6 +8,51 @@ interface CustomizationPanelMenuProps {
   setCurrentPage: (page: number) => void;
 }
 
+export const menuOptions = [
+  {
+    id: "bladeShape",
+    nameKey: "customizationPanel.menu.bladeShape.name",
+    tooltipKey: "customizationPanel.menu.bladeShape.tooltip",
+    icon: "/icons/blade-shape.svg",
+  },
+  {
+    id: "bladeCoating",
+    nameKey: "customizationPanel.menu.bladeCoating.name",
+    tooltipKey: "customizationPanel.menu.bladeCoating.tooltip",
+    icon: "/icons/blade-coating.svg",
+  },
+  {
+    id: "handleColor",
+    nameKey: "customizationPanel.menu.handleColor.name",
+    tooltipKey: "customizationPanel.menu.handleColor.tooltip",
+    icon: "/icons/handle.svg",
+  },
+  {
+    id: "scabbardColor",
+    nameKey: "customizationPanel.menu.scabbardColor.name",
+    tooltipKey: "customizationPanel.menu.scabbardColor.tooltip",
+    icon: "/icons/sheath.svg",
+  },
+  {
+    id: "attachments",
+    nameKey: "customizationPanel.menu.attachments.name",
+    tooltipKey: "customizationPanel.menu.attachments.tooltip",
+    icon: "/icons/fastening.svg",
+  },
+  {
+    id: "engraving",
+    nameKey: "customizationPanel.menu.engraving.name",
+    tooltipKey: "customizationPanel.menu.engraving.tooltip",
+    icon: "/icons/laser-pen.svg",
+  },
+  {
+    id: "engravingLibrary",
+    nameKey: "customizationPanel.menu.engravingLibrary.name",
+    tooltipKey: "customizationPanel.menu.engravingLibrary.tooltip",
+    icon: "/icons/engravingLibrary.svg",
+  },
+] as const;
+
 const CustomizationPanelMenu: React.FC<CustomizationPanelMenuProps> = ({
                                                                          setSelectedOption,
                                                                          currentPage,
@@ -15,51 +60,6 @@ const CustomizationPanelMenu: React.FC<CustomizationPanelMenuProps> = ({
                                                                        }) => {
   const { t } = useTranslation();
   const [screenWidth, setScreenWidth] = useState<number>(0);
-
-  const menuOptions = [
-    {
-      id: "bladeShape",
-      nameKey: "customizationPanel.menu.bladeShape.name",
-      tooltipKey: "customizationPanel.menu.bladeShape.tooltip",
-      icon: "/icons/blade-shape.svg",
-    },
-    {
-      id: "bladeCoating",
-      nameKey: "customizationPanel.menu.bladeCoating.name",
-      tooltipKey: "customizationPanel.menu.bladeCoating.tooltip",
-      icon: "/icons/blade-coating.svg",
-    },
-    {
-      id: "handleColor",
-      nameKey: "customizationPanel.menu.handleColor.name",
-      tooltipKey: "customizationPanel.menu.handleColor.tooltip",
-      icon: "/icons/handle.svg",
-    },
-    {
-      id: "scabbardColor",
-      nameKey: "customizationPanel.menu.scabbardColor.name",
-      tooltipKey: "customizationPanel.menu.scabbardColor.tooltip",
-      icon: "/icons/sheath.svg",
-    },
-    {
-      id: "attachments",
-      nameKey: "customizationPanel.menu.attachments.name",
-      tooltipKey: "customizationPanel.menu.attachments.tooltip",
-      icon: "/icons/fastening.svg",
-    },
-    {
-      id: "engraving",
-      nameKey: "customizationPanel.menu.engraving.name",
-      tooltipKey: "customizationPanel.menu.engraving.tooltip",
-      icon: "/icons/laser-pen.svg",
-    },
-    {
-      id: "engravingLibrary",
-      nameKey: "customizationPanel.menu.engravingLibrary.name",
-      tooltipKey: "customizationPanel.menu.engravingLibrary.tooltip",
-      icon: "/icons/engravingLibrary.svg",
-    },
-  ] as const;
 
   const getCardsPerPage = (width: number): number => {
     if (width >= 480) return 2;

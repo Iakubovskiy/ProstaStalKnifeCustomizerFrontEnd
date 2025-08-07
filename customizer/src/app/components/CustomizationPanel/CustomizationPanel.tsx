@@ -16,18 +16,13 @@ import { XCircle } from "lucide-react";
 import {Engraving} from "@/app/Interfaces/Engraving";
 import {EngravingForCanvas} from "@/app/Interfaces/Knife/EngravingForCanvas";
 import EngravingLibraryComponent from "@/app/components/CustomizationPanel/Components/EngravingLibraryComponent";
-import {ref} from "valtio";
+import { menuOptions } from "./Menu/CustomizationPanelMenu";
 
-enum Side {
-  Right = 1,
-  Left = 2,
-  Axillary = 3,
-}
 
 const CustomizationPanel = () => {
   const { t } = useTranslation();
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState<number>(0);
   const [screenWidth, setScreenWidth] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
 
@@ -71,10 +66,27 @@ const CustomizationPanel = () => {
     }
   }, [cardsPerPage, currentPage, menuOptionsCount]);
 
-  const goToPreviousPage = () =>
-      setCurrentPage((prev) => Math.max(0, prev - 1));
-  const goToNextPage = () =>
-      setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
+  const openCurrentOption = (optionId: number) => {
+    const currentOption = menuOptions[optionId];
+    if (currentOption) {
+      setSelectedOption(currentOption.id);
+    }
+  }
+
+  const goToPreviousPage = () => {
+    setCurrentPage((prev) => Math.max(0, prev - 1));
+    if (isMobile && cardsPerPage === 1) {
+      openCurrentOption(currentPage-1);
+    }
+  };
+  const goToNextPage = () => {
+    setCurrentPage((prev) => Math.min(totalPages - 1, prev + 1));
+    if (isMobile) {
+      if (isMobile && cardsPerPage === 1) {
+        openCurrentOption(currentPage+1);
+      }
+    }
+  };
 
   const toggleMobilePositioningTarget = (id: number | null) => {
     setMobilePositioningTargetId((prevId) => (id === null || prevId === id ? null : id));
