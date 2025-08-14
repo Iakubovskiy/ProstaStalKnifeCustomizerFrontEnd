@@ -238,7 +238,7 @@
   },
   "customizationPanel2": {
     "selectOptionPrompt": "Виберіть опцію для кастомізації",
-    "positioningTitle": "Позиціонування: Грав. {id}",
+    "positioningTitle": "Позиціонування: Грав. {{id}}",
     "closePositioningPanelTooltip": "Закрити панель позиціонування",
     "engravingNotFoundError": "Помилка: Гравіювання для налаштування не знайдено.",
     "previousPageTooltip": "Попередня сторінка",

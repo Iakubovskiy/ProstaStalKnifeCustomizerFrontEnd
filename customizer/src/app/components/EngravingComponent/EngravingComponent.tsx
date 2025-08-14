@@ -708,6 +708,14 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
       )
     );
   };
+  const handleTogglePositioning = (id: number) => {
+    if (isMobileContext) {
+      const targetId = mobilePositioningTargetIdContext === id ? null : id;
+      onToggleMobilePositioningTarget(targetId);
+    } else {
+      handleOpenDraggablePopup(id);
+    }
+  };
 
   const typeOptions: OptionType[] = [
     { value: "text", label: "Текст" },
@@ -725,329 +733,310 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
   ];
 
   return (
-    <div className="w-full">
-      <div className="p-0 sm:p-0 w-full max-w-2xl mx-auto">
-        <div className="mb-4">
-          <ModalFormButton></ModalFormButton>
-        </div>
-        <button
-          className="p-3 w-full rounded-lg transition font-medium mb-6 shadow-sm hover:shadow-md active:shadow-inner"
-          style={{ backgroundColor: "rgb(143, 88, 48)", color: "#f8f4f0" }}
-          onMouseEnter={(e) =>
-            (e.currentTarget.style.backgroundColor = "rgb(184, 132, 95)")
-          }
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.backgroundColor = "rgb(143, 88, 48)")
-          }
-          onClick={addCard}
-        >
-          Додати гравіювання
-        </button>
+      <div className="w-full">
+        <div className="p-0 sm:p-0 w-full max-w-2xl mx-auto">
+          <div className="mb-4">
+            <ModalFormButton></ModalFormButton>
+          </div>
+          <button
+              className="p-3 w-full rounded-lg transition font-medium mb-6 shadow-sm hover:shadow-md active:shadow-inner"
+              style={{ backgroundColor: "rgb(143, 88, 48)", color: "#f8f4f0" }}
+              onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "rgb(184, 132, 95)")
+              }
+              onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "rgb(143, 88, 48)")
+              }
+              onClick={addCard}
+          >
+            Додати гравіювання
+          </button>
 
-        <div className="space-y-4">
-          {items.map((item) => {
-            const isPositioningDetachedForThisItem =
-              isMobileContext && mobilePositioningTargetIdContext === item.id;
+          <div className="space-y-4">
+            {items.map((item) => {
+              const isPositioningDetachedForThisItem =
+                  isMobileContext && mobilePositioningTargetIdContext === item.id;
 
-            const showPositioningControlsInCard =
-              (!isMobileContext || !isPositioningDetachedForThisItem) &&
-              item.isExpanded &&
-              !item.isPositioningOpen;
+              const showPositioningControlsInCard =
+                  item.isExpanded && !isPositioningDetachedForThisItem && !item.isPositioningOpen;
 
-            return (
-              <div
-                key={item.id}
-                className="rounded-lg shadow-md"
-                style={{
-                  background:
-                    "linear-gradient(to bottom right, #b8845f, #8b7258)",
-                  color: "#f8f4f0",
-                }}
-              >
-                <div className="p-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-semibold">
-                      Гравіювання {item.id + 1}
-                    </h3>
-                    <div className="flex items-center space-x-2">
-                      {isMobileContext && (
-                        <button
-                          onClick={() =>
-                            onToggleMobilePositioningTarget(item.id)
-                          }
-                          className={`p-1.5 rounded-full transition-colors text-[#f8f4f0] ${
-                            isPositioningDetachedForThisItem
-                              ? "bg-[#5a4a3a] hover:bg-[#6b5a4a]"
-                              : "hover:bg-[#a08a73]"
-                          }`}
-                          title={
-                            isPositioningDetachedForThisItem
-                              ? "Приховати панель позиціонування"
-                              : "Показати панель позиціонування"
-                          }
-                        >
-                          {isPositioningDetachedForThisItem ? (
-                            <XCircle size={18} />
-                          ) : (
-                            <Paperclip size={18} />
-                          )}
-                        </button>
-                      )}
-                      <button
-                        className="p-1.5 rounded-full transition-colors hover:bg-[#a08a73] active:bg-[#8b7258]"
-                        onClick={() => removeCard(item.id)}
-                        title="Видалити гравіювання"
-                      >
-                        <Trash2 size={18} className="text-[#f8f4f0]" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {item.isExpanded && (
-                    <>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm font-medium mb-1">
-                            Тип:
-                          </label>
-                          <Select<OptionType, false, GroupBase<OptionType>>
-                            options={typeOptions}
-                            styles={customSelectStyles}
-                            value={typeOptions.find(
-                              (opt) => opt.value === item.type
+              return (
+                  <div
+                      key={item.id}
+                      className="rounded-lg shadow-md"
+                      style={{
+                        background:
+                            "linear-gradient(to bottom right, #b8845f, #8b7258)",
+                        color: "#f8f4f0",
+                      }}
+                  >
+                    <div className="p-4">
+                      <div className="flex justify-between items-center mb-4 space-x-2">
+                        <h3 className="font-semibold lg:text-lg text-sm whitespace-nowrap whitespace-nowrap">
+                          Гравіювання {item.id + 1}
+                        </h3>
+                        <div className="flex items-center space-x-1">
+                          <button
+                              onClick={() => toggleExpand(item.id)}
+                              className="px-2.5 py-1.5 transition-colors flex items-center justify-center gap-1.5 rounded-md text-sm text-[#f8f4f0] hover:bg-[#a08a73] active:bg-[#8b7258]"
+                          >
+                            {item.isExpanded ? (
+                                <>
+                                  <ChevronUp size={16} />
+                                  <span>Згорнути</span>
+                                </>
+                            ) : (
+                                <>
+                                  <ChevronDown size={16} />
+                                  <span>Розгорнути</span>
+                                </>
                             )}
-                            onChange={(selectedOption) =>
-                              handleTypeChange(item.id, selectedOption)
-                            }
-                            placeholder="Виберіть тип..."
-                            isSearchable={false}
-                          />
+                          </button>
+                          <button
+                              className="p-1.5 rounded-full transition-colors hover:bg-[#a08a73] active:bg-[#8b7258]"
+                              onClick={() => removeCard(item.id)}
+                              title="Видалити гравіювання"
+                          >
+                            <Trash2 size={18} className="text-[#f8f4f0]" />
+                          </button>
                         </div>
-                        {item.type === "text" ? (
-                          <div className="space-y-3">
-                            <div>
-                              <label className="block text-sm font-medium mb-1">
-                                Текст:
-                              </label>
-                              <input
-                                type="text"
-                                className="rounded p-2 w-full border focus:ring-1 focus:outline-none"
-                                style={{
-                                  backgroundColor: "#f8f4f0",
-                                  color: "#2d3748",
-                                  borderColor: "#b8845f",
-                                  /* @ts-ignore */
-                                  "--tw-ring-color": "#8b7258",
-                                }}
-                                value={item.text || ""}
-                                onChange={(e) =>
-                                  handleTextChange(item.id, e.target.value)
-                                }
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium mb-1">
-                                Шрифт:
-                              </label>
-                              <Select
-                                options={fontOptions}
-                                styles={customSelectStyles}
-                                value={fontOptions.find(
-                                  (opt) => opt.value === item.font
-                                )}
-                                onChange={(selectedOption) =>
-                                  handleFontChange(item.id, selectedOption)
-                                }
-                                placeholder="Виберіть шрифт..."
-                                isSearchable={false}
-                              />
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium mb-1">
-                                Сторона:
-                              </label>
-                              <Select
-                                options={sideOptions}
-                                styles={customSelectStyles}
-                                value={sideOptions.find(
-                                  (opt) => opt.value === item.selectedSide
-                                )}
-                                onChange={(selectedOption) =>
-                                  handleSideChange(item.id, selectedOption)
-                                }
-                                placeholder="Виберіть сторону..."
-                                isSearchable={false}
-                              />
-                            </div>
-                          </div>
-                        ) : (
-                            <div className="space-y-3">
+                      </div>
+
+                      {item.isExpanded && (
+                          <>
+                            <div className="space-y-4">
                               <div>
                                 <label className="block text-sm font-medium mb-1">
-                                  Завантажити файл:
+                                  Тип:
                                 </label>
-
-                                {(() => {
-                                  const currentEngraving = customState.engravings[item.id];
-                                  const pictureUrl = currentEngraving?.picture?.fileUrl;
-
-                                  const isFromLibrary = pictureUrl && !pictureUrl.startsWith('blob:') && !pictureUrl.startsWith('data:image/png;base64');
-
-                                  if (isFromLibrary) {
-                                    const fileName = pictureUrl.split('/').pop() || 'невідомий файл';
-
-                                    return (
-                                        <div className="flex items-center justify-between p-2 rounded-md bg-f0e5d6 border border-b8845f">
-                                          <div className="flex items-center gap-2 overflow-hidden">
-                                            <Paperclip size={16} className="text-8b7258 flex-shrink-0" />
-                                            <span className="text-sm text-2d3748 font-medium truncate" title={fileName}>
-                                    {fileName}
-                                </span>
-                                          </div>
-                                          <label
-                                              htmlFor={`file-input-${item.id}`}
-                                              className="ml-4 px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer bg-8b7258 text-white hover:bg-a08a73"
-                                          >
-                                            Замінити
-                                          </label>
-                                          <input
-                                              id={`file-input-${item.id}`}
-                                              type="file"
-                                              accept="image/*, .svg"
-                                              className="hidden"
-                                              onChange={(e) => handleFileChange(item.id, e.target.files ? e.target.files[0] : null)}
-                                          />
-                                        </div>
-                                    );
-                                  } else {
-                                    return (
-                                        <div>
-                                          <input
-                                              type="file"
-                                              id={`file-input-${item.id}`}
-                                              accept="image/*, .svg"
-                                              className="w-full text-sm rounded-md file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold hover:file:cursor-pointer"
-                                              style={{
-                                                color: "#f8f4f0",
-                                                /* @ts-ignore */
-                                                '--file-button-bg': 'rgb(143, 88, 48)',
-                                                '--file-button-text': '#f8f4f0',
-                                                '--file-button-hover-bg': 'rgb(146, 116, 84)'
-                                              }}
-                                              onChange={(e) => handleFileChange(item.id, e.target.files ? e.target.files[0] : null)}
-                                          />
-                                          <style jsx global>{`
-                                input[type="file"]::file-selector-button {
-                                    background-color: var(--file-button-bg, rgb(231, 151, 94));
-                                    color: var(--file-button-text, #f8f4f0);
-                                    padding: 0.5rem 0.75rem;
-                                    border-radius: 0.375rem;
-                                    border: none;
-                                    font-weight: 600;
-                                    font-size: 0.875rem;
-                                    margin-right: 0.75rem;
-                                    cursor: pointer;
-                                    transition: background-color 0.2s ease-in-out;
-                                }
-                                input[type="file"]::file-selector-button:hover {
-                                    background-color: var(--file-button-hover-bg, #a08a73);
-                                }
-                            `}</style>
-                                        </div>
-                                    );
-                                  }
-                                })()}
-                              </div>
-                              <div>
-                                <label className="block text-sm font-medium mb-1">
-                                  Сторона:
-                                </label>
-                                <Select
-                                    options={sideOptions}
+                                <Select<OptionType, false, GroupBase<OptionType>>
+                                    options={typeOptions}
                                     styles={customSelectStyles}
-                                    value={sideOptions.find((opt) => opt.value === item.selectedSide)}
-                                    onChange={(selectedOption) => handleSideChange(item.id, selectedOption)}
-                                    placeholder="Виберіть сторону..."
+                                    value={typeOptions.find(
+                                        (opt) => opt.value === item.type
+                                    )}
+                                    onChange={(selectedOption) =>
+                                        handleTypeChange(item.id, selectedOption)
+                                    }
+                                    placeholder="Виберіть тип..."
                                     isSearchable={false}
                                 />
                               </div>
+                              {item.type === "text" ? (
+                                  <div className="space-y-3">
+                                    <div>
+                                      <label className="block text-sm font-medium mb-1">
+                                        Текст:
+                                      </label>
+                                      <input
+                                          type="text"
+                                          className="rounded p-2 w-full border focus:ring-1 focus:outline-none"
+                                          style={{
+                                            backgroundColor: "#f8f4f0",
+                                            color: "#2d3748",
+                                            borderColor: "#b8845f",
+                                            /* @ts-ignore */
+                                            "--tw-ring-color": "#8b7258",
+                                          }}
+                                          value={item.text || ""}
+                                          onChange={(e) =>
+                                              handleTextChange(item.id, e.target.value)
+                                          }
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium mb-1">
+                                        Шрифт:
+                                      </label>
+                                      <Select
+                                          options={fontOptions}
+                                          styles={customSelectStyles}
+                                          value={fontOptions.find(
+                                              (opt) => opt.value === item.font
+                                          )}
+                                          onChange={(selectedOption) =>
+                                              handleFontChange(item.id, selectedOption)
+                                          }
+                                          placeholder="Виберіть шрифт..."
+                                          isSearchable={false}
+                                      />
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium mb-1">
+                                        Сторона:
+                                      </label>
+                                      <Select
+                                          options={sideOptions}
+                                          styles={customSelectStyles}
+                                          value={sideOptions.find(
+                                              (opt) => opt.value === item.selectedSide
+                                          )}
+                                          onChange={(selectedOption) =>
+                                              handleSideChange(item.id, selectedOption)
+                                          }
+                                          placeholder="Виберіть сторону..."
+                                          isSearchable={false}
+                                      />
+                                    </div>
+                                  </div>
+                              ) : (
+                                  <div className="space-y-3">
+                                    <div>
+                                      <label className="block text-sm font-medium mb-1">
+                                        Завантажити файл:
+                                      </label>
+
+                                      {(() => {
+                                        const currentEngraving =
+                                            customState.engravings[item.id];
+                                        const pictureUrl =
+                                            currentEngraving?.picture?.fileUrl;
+
+                                        const isFromLibrary =
+                                            pictureUrl &&
+                                            !pictureUrl.startsWith("blob:") &&
+                                            !pictureUrl.startsWith("data:image/png;base64");
+
+                                        if (isFromLibrary) {
+                                          const fileName =
+                                              pictureUrl.split("/").pop() ||
+                                              "невідомий файл";
+
+                                          return (
+                                              <div className="flex items-center justify-between p-2 rounded-md bg-f0e5d6 border border-b8845f">
+                                                <div className="flex items-center gap-2 overflow-hidden">
+                                                  <Paperclip
+                                                      size={16}
+                                                      className="text-8b7258 flex-shrink-0"
+                                                  />
+                                                  <span
+                                                      className="text-sm text-2d3748 font-medium truncate"
+                                                      title={fileName}
+                                                  >
+                                          {fileName}
+                                        </span>
+                                                </div>
+                                                <label
+                                                    htmlFor={`file-input-${item.id}`}
+                                                    className="ml-4 px-3 py-1.5 text-xs font-semibold rounded-md transition-colors cursor-pointer bg-8b7258 text-white hover:bg-a08a73"
+                                                >
+                                                  Замінити
+                                                </label>
+                                                <input
+                                                    id={`file-input-${item.id}`}
+                                                    type="file"
+                                                    accept="image/*, .svg"
+                                                    className="hidden"
+                                                    onChange={(e) =>
+                                                        handleFileChange(
+                                                            item.id,
+                                                            e.target.files
+                                                                ? e.target.files[0]
+                                                                : null
+                                                        )
+                                                    }
+                                                />
+                                              </div>
+                                          );
+                                        } else {
+                                          return (
+                                              <div>
+                                                <input
+                                                    type="file"
+                                                    id={`file-input-${item.id}`}
+                                                    accept="image/*, .svg"
+                                                    className="w-full text-sm rounded-md file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold hover:file:cursor-pointer"
+                                                    style={{
+                                                      color: "#f8f4f0",
+                                                      /* @ts-ignore */
+                                                      "--file-button-bg": "rgb(143, 88, 48)",
+                                                      "--file-button-text": "#f8f4f0",
+                                                      "--file-button-hover-bg":
+                                                          "rgb(146, 116, 84)",
+                                                    }}
+                                                    onChange={(e) =>
+                                                        handleFileChange(
+                                                            item.id,
+                                                            e.target.files
+                                                                ? e.target.files[0]
+                                                                : null
+                                                        )
+                                                    }
+                                                />
+                                              </div>
+                                          );
+                                        }
+                                      })()}
+                                    </div>
+                                    <div>
+                                      <label className="block text-sm font-medium mb-1">
+                                        Сторона:
+                                      </label>
+                                      <Select
+                                          options={sideOptions}
+                                          styles={customSelectStyles}
+                                          value={sideOptions.find(
+                                              (opt) => opt.value === item.selectedSide
+                                          )}
+                                          onChange={(selectedOption) =>
+                                              handleSideChange(item.id, selectedOption)
+                                          }
+                                          placeholder="Виберіть сторону..."
+                                          isSearchable={false}
+                                      />
+                                    </div>
+                                  </div>
+                              )}
                             </div>
-                        )}
-                      </div>
 
-                      {!isMobileContext && (
-                        <button
-                          className="mt-4 px-4 py-2.5 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 text-sm font-medium flex items-center justify-center gap-2 group w-full"
-                          style={{
-                            background:
-                              "linear-gradient(135deg, #f8f4f0 0%, #f0e5d6 100%)",
-                            border: "1px solid #b8845f",
-                            color: "#2d3748",
-                          }}
-                          onMouseEnter={(e) => {
-                            e.currentTarget.style.background =
-                              "linear-gradient(135deg, #b8845f 0%, #8b7258 100%)";
-                            e.currentTarget.style.color = "#f8f4f0";
-                          }}
-                          onMouseLeave={(e) => {
-                            e.currentTarget.style.background =
-                              "linear-gradient(135deg, #f8f4f0 0%, #f0e5d6 100%)";
-                            e.currentTarget.style.color = "#2d3748";
-                          }}
-                          onClick={() => handleOpenDraggablePopup(item.id)}
-                        >
-                          <Settings2
-                            size={16}
-                            className="transition-transform group-hover:rotate-12"
-                          />
-                          {item.isPositioningOpen
-                            ? "Закрити позиціонування"
-                            : "Налаштувати позицію"}
-                        </button>
-                      )}
+                            <button
+                                className="mt-4 px-4 py-2.5 rounded-lg shadow-sm hover:shadow-md transition-all duration-200 text-sm font-medium flex items-center justify-center gap-2 group w-full"
+                                style={{
+                                  background:
+                                      "linear-gradient(135deg, #f8f4f0 0%, #f0e5d6 100%)",
+                                  border: "1px solid #b8845f",
+                                  color: "#2d3748",
+                                }}
+                                onMouseEnter={(e) => {
+                                  e.currentTarget.style.background =
+                                      "linear-gradient(135deg, #b8845f 0%, #8b7258 100%)";
+                                  e.currentTarget.style.color = "#f8f4f0";
+                                }}
+                                onMouseLeave={(e) => {
+                                  e.currentTarget.style.background =
+                                      "linear-gradient(135deg, #f8f4f0 0%, #f0e5d6 100%)";
+                                  e.currentTarget.style.color = "#2d3748";
+                                }}
+                                onClick={() => handleTogglePositioning(item.id)}
+                            >
+                              <Settings2
+                                  size={16}
+                                  className="transition-transform group-hover:rotate-12"
+                              />
+                              Закріпити панель розташування
+                            </button>
 
-                      {!isMobileContext && item.isPositioningOpen && (
-                        <DraggablePopup
-                          title={`Позиціонування #${item.id + 1}`}
-                          onClose={() => handleOpenDraggablePopup(item.id)}
-                        >
-                          <PositioningControls id={item.id} />
-                        </DraggablePopup>
-                      )}
+                            {!isMobileContext && item.isPositioningOpen && (
+                                <DraggablePopup
+                                    title={`Позиціонування #${item.id + 1}`}
+                                    onClose={() => handleOpenDraggablePopup(item.id)}
+                                >
+                                  <PositioningControls id={item.id} />
+                                </DraggablePopup>
+                            )}
 
-                      {showPositioningControlsInCard && (
-                        <PositioningControls id={item.id} />
+                            {showPositioningControlsInCard && !isMobileContext && (
+                                <PositioningControls id={item.id} />
+                            )}
+                          </>
                       )}
-                    </>
-                  )}
-                </div>
-                <button
-                  onClick={() => toggleExpand(item.id)}
-                  className="w-full p-3 transition-colors flex items-center justify-center gap-2 rounded-b-lg text-[#f8f4f0] hover:bg-[#b8845f] active:bg-[#8b7258]"
-                  style={{
-                    backgroundColor: item.isExpanded
-                      ? "#a08a73"
-                      : "rgb(143, 88, 48)",
-                  }}
-                >
-                  {item.isExpanded ? (
-                    <>
-                      <ChevronUp size={20} />
-                      <span>Згорнути</span>
-                    </>
-                  ) : (
-                    <>
-                      <ChevronDown size={20} />
-                      <span>Розгорнути</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            );
-          })}
+                    </div>
+                  </div>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
   );
 };
 

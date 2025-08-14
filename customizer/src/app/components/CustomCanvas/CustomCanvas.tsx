@@ -1,98 +1,36 @@
-import React, { Suspense, useEffect, useState } from "react";
-import { Canvas } from "@react-three/fiber";
-import { useSnapshot } from "valtio";
-import { useCanvasState } from "@/app/state/canvasState";
-import Lighting from "./Lighting";
-import Controls from "./Controls";
-import Background from "@/app/components/CustomCanvas/Background";
-import ModelPart from "./ModelPart";
-import CustomLoader from "./CustomLoader";
-import { AppFile } from "@/app/Interfaces/File";
+import React, {Suspense, useEffect, useRef, useState} from "react";
+import {Canvas} from "@react-three/fiber";
+import {useCanvasState} from "@/app/state/canvasState";
+import CustomLoader from "./Support/CustomLoader";
 
 import KnifeService from "@/app/services/KnifeService";
 import AttachmentService from "@/app/services/AttachmentService";
 import InitialDataService from "@/app/services/InitialDataService";
 import APIService from "@/app/services/ApiService";
-import { Knife } from "@/app/Interfaces/Knife/Knife";
-import { Attachment } from "@/app/Interfaces/Attachment";
-import { KnifeForCanvas } from "@/app/Interfaces/Knife/KnifeForCanvas";
-import { BladeCoatingColorForCanvas } from "@/app/Interfaces/Knife/BladeCoatingColorForCanvas";
-import { BladeShapeForCanvas } from "@/app/Interfaces/Knife/BladeShapeForCanvas";
-import { HandleColorForCanvas } from "@/app/Interfaces/Knife/HandleColorForCanvas";
-import { SheathColorForCanvas } from "@/app/Interfaces/Knife/SheathColorForCanvas";
+import {Attachment} from "@/app/Interfaces/Attachment";
+import {KnifeForCanvas} from "@/app/Interfaces/Knife/KnifeForCanvas";
+import {BladeCoatingColorForCanvas} from "@/app/Interfaces/Knife/BladeCoatingColorForCanvas";
+import {BladeShapeForCanvas} from "@/app/Interfaces/Knife/BladeShapeForCanvas";
+import {HandleColorForCanvas} from "@/app/Interfaces/Knife/HandleColorForCanvas";
+import {SheathColorForCanvas} from "@/app/Interfaces/Knife/SheathColorForCanvas";
+import Scene from "./Scene";
 
 interface Props {
   productId?: string | null;
 }
 
-// 1. Створюємо внутрішній компонент для сцени
-const Scene = () => {
-  const state = useCanvasState();
-  const snap = useSnapshot(state);
 
-  const validateModelUrl = (url: string | null | undefined): boolean => {
-    return Boolean(
-      url &&
-        (url.endsWith(".glb") ||
-          url.endsWith(".gltf") ||
-          url.startsWith("blob:"))
-    );
-  };
-
-  const isValidAppFile = (file: AppFile | null): file is AppFile => {
-    return file !== null && file.fileUrl !== null && file.fileUrl !== undefined;
-  };
-
-  const bladeSettings = {
-    materialProps: { default: { color: snap.bladeCoatingColor.colorCode } },
-  };
-  const sheathSettings = {
-    materialProps: { default: { color: snap.sheathColor.colorCode } },
-  };
-
-  return (
-    <>
-      <Lighting />
-      <Controls />
-      <Background />
-      <group position={[0, 0, 0]} rotation={[0, 0, 0]} scale={1}>
-        {isValidAppFile(snap.bladeShape.bladeShapeModel) &&
-          validateModelUrl(snap.bladeShape.bladeShapeModel.fileUrl) && (
-            <ModelPart
-              url={snap.bladeShape.bladeShapeModel.fileUrl!}
-              {...bladeSettings}
-            />
-          )}
-        {snap.bladeShape.sheathModel &&
-          isValidAppFile(snap.bladeShape.sheathModel) &&
-          validateModelUrl(snap.bladeShape.sheathModel.fileUrl) && (
-            <ModelPart
-              url={snap.bladeShape.sheathModel.fileUrl!}
-              {...sheathSettings}
-              position={[0, -10, 0]}
-              rotation={[0, 0, 0]}
-            />
-          )}
-        {snap.attachment &&
-          snap.attachment.model &&
-          isValidAppFile(snap.attachment.model) &&
-          validateModelUrl(snap.attachment.model.fileUrl) && (
-            <ModelPart
-              url={snap.attachment.model.fileUrl!}
-              {...sheathSettings}
-              position={[-1, -10, -1]}
-              rotation={[0, 0, Math.PI / 2]}
-            />
-          )}
-      </group>
-    </>
-  );
+const screenshotCurrentCanvas = (ref: HTMLCanvasElement | null) => {
+  if (!ref) return;
+  const dataURL = ref.toDataURL("image/jpeg");
+  return dataURL;
 };
 
 const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
   const state = useCanvasState();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const localCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {
     const apiService = new APIService();
@@ -114,19 +52,12 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
     };
 
     const populateAttachmentState = (attachment: Attachment) => {
-      // Для attachment заповнюємо тільки поле attachment
       // @ts-ignore
       state.attachment = {
         id: attachment.id,
         name: attachment.name,
         model: attachment.model ?? { fileUrl: "", id: "" },
-        // Додайте інші потрібні поля з attachment
       };
-
-      // Можливо, потрібно очистити інші поля або встановити значення за замовчуванням
-      // state.bladeShape = defaultBladeShape;
-      // state.bladeCoatingColor = defaultBladeCoatingColor;
-      // і т.д.
     };
 
     const SelectByDefault = (
@@ -162,12 +93,10 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
 
       try {
         if (productId) {
-          // Спочатку пробуємо завантажити як knife
           try {
             const knifeData = await knifeService.getById(productId);
             populateKnifeState(knifeData.knifeForCanvas);
           } catch (knifeError: any) {
-            // Якщо не вдалося завантажити як knife, пробуємо як attachment
             if (knifeError.status === 404) {
               try {
                 const attachmentData = await attachmentService.getById(
@@ -186,7 +115,6 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
             }
           }
         } else {
-          // Якщо productId немає, завантажуємо початкові дані
           const initialData = await initialDataService.getData();
           console.log("Initial data fetched:", initialData);
           SelectByDefault(
@@ -207,13 +135,28 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
     loadData();
   }, [productId, state]);
 
+  useEffect(() => {
+    state.getScreenshot = () => {
+      return screenshotCurrentCanvas(localCanvasRef.current);
+    };
+    return () => {
+      state.getScreenshot = () => {
+        console.warn("Screenshot component was unmounted.");
+        return undefined;
+      };
+    };
+  }, []);
+
   return (
     <Canvas
       frameloop="always"
       gl={{
         powerPreference: "high-performance",
         antialias: true,
-        preserveDrawingBuffer: false,
+        preserveDrawingBuffer: true,
+      }}
+      onCreated={({ gl }) => {
+        localCanvasRef.current = gl.domElement;
       }}
     >
       <Suspense fallback={<CustomLoader />}>

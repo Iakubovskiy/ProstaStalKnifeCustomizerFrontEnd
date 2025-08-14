@@ -1,14 +1,18 @@
 "use client";
 import React, { useState, useRef, useEffect } from "react";
 import { Sling as Hamburger } from "hamburger-react";
-import { Button } from "@nextui-org/react";
+import {Badge, Button} from "@nextui-org/react";
 import { useTranslation } from "react-i18next";
 import Link from "next/link";
+import {useRouter} from "next/navigation";
+import {getCartItemCount} from "@/app/components/CustomNavbar/CustomNavbar";
 
 const NavigationMob = () => {
+  const router = useRouter();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -19,6 +23,25 @@ const NavigationMob = () => {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    setCartItemCount(getCartItemCount());
+
+    const handleStorageChange = (): void => {
+      setCartItemCount(getCartItemCount());
+    };
+    window.addEventListener("storage", handleStorageChange);
+
+    const handleCartUpdate = (): void => {
+      setCartItemCount(getCartItemCount());
+    };
+    window.addEventListener("cartUpdated", handleCartUpdate);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("cartUpdated", handleCartUpdate);
+    };
   }, []);
 
   const menuItems = [
@@ -46,7 +69,13 @@ const NavigationMob = () => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <Button isIconOnly className="w-full bg-coffe">
+            <Badge
+                content={cartItemCount > 0 ? cartItemCount : ""}
+                color="danger"
+                size="sm"
+                isInvisible={cartItemCount === 0}
+            >
+            <Button isIconOnly className="w-full bg-coffe" onPress={() => (router.push("/Cart"))}>
               <img
                   src="/icons/cart.svg"
                   alt={t("navigationMob.cartIconAlt")}
@@ -54,6 +83,7 @@ const NavigationMob = () => {
                   height={25}
               />
             </Button>
+            </Badge>
           </div>
         </div>
 

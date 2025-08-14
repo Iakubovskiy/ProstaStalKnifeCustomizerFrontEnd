@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import Engraving from "@/app/Models/Engraving";
 import React, { useEffect, useRef, useState } from "react";
 import SingleDecal from "./SingleDecal";
 import { EngravingForCanvas } from "@/app/Interfaces/Knife/EngravingForCanvas";

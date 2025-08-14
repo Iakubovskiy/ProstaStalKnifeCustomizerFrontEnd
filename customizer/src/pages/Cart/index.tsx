@@ -5,21 +5,17 @@ import OrderService from "@/app/services/OrderService";
 import DeliveryTypeService from "@/app/services/DeliveryTypeService";
 import KnifeService from "@/app/services/KnifeService";
 import PaymentMethodService from "@/app/services/PaymentMethodService";
-import EngravingService from "@/app/services/EngravingService";
 import { PaymentMethod } from "@/app/Interfaces/PaymentMethod";
 import {
   Button,
   Card,
-  Input,
-  Select,
-  SelectItem,
   Table,
   TableBody,
   TableCell,
   TableColumn,
   TableHeader,
   TableRow,
-  Spinner,
+  Image,
 } from "@nextui-org/react";
 import "../../styles/globals.css";
 import Toast from "../../app/components/Toast/Toast";
@@ -27,6 +23,10 @@ import { CartItem } from "@/app/Interfaces/CartItem";
 import { OrderDTO } from "@/app/DTOs/OrderDTO";
 import { OrderItemDTO } from "@/app/DTOs/OrderItemDTO";
 import { ClientData } from "@/app/DTOs/ClientData";
+import './cart-style.css';
+import CartInput from '@/app/components/Cart/CartInput/input';
+import CartSelect from '@/app/components/Cart/Select/Select';
+import ProductInCart from '@/app/components/Cart/ProductInCart/ProductInCart'
 
 const CartAndOrderPage = () => {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -49,7 +49,6 @@ const CartAndOrderPage = () => {
   const [comment, setComment] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  // Стан для валідації телефону
   const [phoneError, setPhoneError] = useState<string>("");
   const [isPhoneValid, setIsPhoneValid] = useState<boolean>(true);
 
@@ -57,12 +56,10 @@ const CartAndOrderPage = () => {
   const knifeService = new KnifeService();
   const deliveryTypeService = new DeliveryTypeService();
   const paymentMethodService = new PaymentMethodService();
-  const engravingService = new EngravingService();
 
   const [toastMessage, setToastMessage] = useState("");
   const [showToast, setShowToast] = useState(false);
 
-  // Функція валідації номера телефону
   const validatePhoneNumber = (
     phone: string
   ): { isValid: boolean; error: string } => {
@@ -70,18 +67,19 @@ const CartAndOrderPage = () => {
       return { isValid: false, error: "Номер телефону обов'язковий" };
     }
 
-    // Видаляємо всі пробіли, дефіси та дужки для перевірки
     const cleanPhone = phone.replace(/[\s\-\(\)]/g, "");
 
-    // Перевіряємо чи містить тільки цифри та символ +
     if (!/^[\+]?[0-9]+$/.test(cleanPhone)) {
+      setClientInfo((prev) => ({
+        ...prev,
+        clientPhoneNumber: (cleanPhone.replace(/(?!^)\+/g, "")).replace(/[^+\d]/g, ""),
+      }));
       return {
         isValid: false,
         error: "Номер може містити тільки цифри, +, пробіли, дефіси та дужки",
       };
     }
 
-    // Перевіряємо довжину (від 10 до 15 цифр, враховуючи міжнародні номери)
     const digitsOnly = cleanPhone.replace(/^\+/, "");
     if (digitsOnly.length < 10 || digitsOnly.length > 15) {
       return {
@@ -90,7 +88,6 @@ const CartAndOrderPage = () => {
       };
     }
 
-    // Українські номери (додаткова перевірка)
     if (cleanPhone.startsWith("+380") || cleanPhone.startsWith("380")) {
       const ukrainianDigits = cleanPhone.replace(/^(\+380|380)/, "");
       if (ukrainianDigits.length !== 9) {
@@ -104,10 +101,11 @@ const CartAndOrderPage = () => {
     return { isValid: true, error: "" };
   };
 
-  // Обробник зміни номера телефону
   const handlePhoneChange = (value: string) => {
-    setClientInfo((prev) => ({ ...prev, clientPhoneNumber: value }));
-
+    setClientInfo((prev) => ({
+      ...prev,
+      clientPhoneNumber: value,
+    }));
     const validation = validatePhoneNumber(value);
     setIsPhoneValid(validation.isValid);
     setPhoneError(validation.error);
@@ -132,18 +130,12 @@ const CartAndOrderPage = () => {
 
   const handleCloseToast = () => setShowToast(false);
 
-  const handleDeliverySelectionChange = (keys: any) => {
-    if (keys instanceof Set && keys.size > 0) {
-      const selectedKey = Array.from(keys)[0] as string;
-      setSelectedDeliveryType(selectedKey);
-    }
+  const handleDeliverySelectionChange = (value:string) => {
+    setSelectedDeliveryType(value);
   };
 
-  const handlePaymentSelectionChange = (keys: any) => {
-    if (keys instanceof Set && keys.size > 0) {
-      const selectedKey = Array.from(keys)[0] as string;
-      setSelectedPaymentMethod(selectedKey);
-    }
+  const handlePaymentSelectionChange = (value: string) => {
+    setSelectedPaymentMethod(value);
   };
 
   const calculateTotal = () => {
@@ -248,185 +240,216 @@ const CartAndOrderPage = () => {
     return item.name || `Продукт #${item.productId.substring(0, 8)}...`;
   };
 
-  const getPaymentMethodName = (method: PaymentMethod): string => {
-    return method.names?.ua || method.name;
-  };
+  const getDeliveryTypePrice = () => {
+    const deliveryType = deliveryTypes.find(
+      (type) => type.id === selectedDeliveryType
+    );
+    if (deliveryType) {
+      return deliveryType.price.toFixed(2);
+    }
+    return "0.00";
+  }
+
+  const getPaymentMethodCommision = () => {
+    const paymentMethod = paymentMethods.find(
+        (method) => method.id === selectedPaymentMethod
+    );
+    if (paymentMethod) {
+      return paymentMethod.description;
+    }
+    return "0.00";
+  }
 
   return (
-    <div className="min-h-screen p-8 bg-gray-50">
+    <div className="min-h-screen p-2 bg-gray-50">
       <Toast
         message={toastMessage}
         isVisible={showToast}
         onClose={handleCloseToast}
       />
       <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl font-bold mb-8">Кошик та Замовлення</h1>
+        <h1 className="text-2xl font-bold mb-8">Оформлення замовлення</h1>
+        <div className="flex flex-col gap-10 lg:flex-row lg:gap-40 ">
+          <div>
+            {cartItems.length > 0 && (
+                <>
+                  <h3 className="section-label">Дані отримувача</h3>
+                  <div className="container data-container">
+                    <CartInput
+                        type={'text'}
+                        name={'fullName'}
+                        labelText={"ПІБ"}
+                        placeholder={"ПІБ"}
+                        value={clientInfo.clientFullName || ""}
+                        onChange={(name) =>
+                            setClientInfo((prev) => ({
+                              ...prev,
+                              clientFullName: name,
+                            }))
+                        }
+                    />
+                    <CartInput
+                        type={'text'} name={'phoneNumber'}
+                        labelText={"Номер телефону"}
+                        placeholder={"+380XXXXXXXXX"}
+                        value={clientInfo.clientPhoneNumber || ""}
+                        onChange={handlePhoneChange}
+                    />
+                    <CartInput
+                        type={'email'}
+                        name={'email'}
+                        labelText={"Email"}
+                        placeholder={"Email"}
+                        value={clientInfo.email || ""}
+                        onChange={(email) =>
+                            setClientInfo((prev) => ({
+                              ...prev,
+                              email: email,
+                            }))
+                        }
+                    />
+                    <CartInput
+                        type={'text'}
+                        name={'country'}
+                        labelText={"Країна"}
+                        placeholder={"Країна"}
+                        value={clientInfo.countryForDelivery || ""}
+                        onChange={(country) =>
+                            setClientInfo((prev) => ({
+                              ...prev,
+                              countryForDelivery: country,
+                            }))
+                        }
+                    />
+                    <CartInput
+                        type={'text'}
+                        name={'city'}
+                        labelText={"Місто"}
+                        placeholder={"Місто"}
+                        value={clientInfo.city || ""}
+                        onChange={(city) =>
+                            setClientInfo((prev) => ({
+                              ...prev,
+                              city: city,
+                            }))
+                        }
+                    />
+                    {/*<CartInput type={'text'} name={'fullName'} labelText={"Месенджер"} placeholder={"Месенджер"}/>*/}
+                  </div>
+                  <h3 className="section-label">Доставка</h3>
+                  <div className="container data-container">
+                    <CartSelect
+                      name='deliveryType'
+                      labelText="Метод доставки"
+                      optionKeys={deliveryTypes.map((type) => type.id)}
+                      options={deliveryTypes.map((type) =>
+                            `${type.name} - ₴${type.price.toFixed(2)}`
+                      )}
+                      value={selectedDeliveryType}
+                      onChange={handleDeliverySelectionChange}
+                    />
 
-        <Card className="p-8 mb-8">
-          <h2 className="text-xl font-semibold mb-4">Ваш кошик</h2>
-          {cartItems.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableColumn>Назва</TableColumn>
-                <TableColumn>Кількість</TableColumn>
-                <TableColumn>Ціна</TableColumn>
-                <TableColumn>Сума</TableColumn>
-                <TableColumn>Дія</TableColumn>
-              </TableHeader>
-              <TableBody>
-                {cartItems.map((item, index) => (
-                  <TableRow key={`${item.type}-${index}`}>
-                    <TableCell>{getItemName(item)}</TableCell>
-                    <TableCell>{item.quantity}</TableCell>
-                    <TableCell>₴{item.price.toFixed(2)}</TableCell>
-                    <TableCell>
-                      ₴{(item.price * item.quantity).toFixed(2)}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        color="danger"
-                        onClick={() => handleRemoveItem(index)}
-                      >
-                        Прибрати
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <p>Ваш кошик порожній</p>
-          )}
-        </Card>
+                    <CartInput
+                        name={"address"}
+                        labelText={"Адреса"}
+                        type={"text"}
+                        placeholder={"Адреса"}
+                        value={clientInfo.address || ""}
+                        onChange={(value: string)=> {
+                          setClientInfo((prev) => ({
+                            ...prev,
+                            address: value,
+                          }))
+                        }}
+                    />
+                    <CartInput
+                        name={"zip-code"}
+                        labelText={"Zip-code"}
+                        type={"text"}
+                        placeholder={"Zip-code"}
+                        value={clientInfo.zipCode || ""}
+                        onChange={(value: string)=> {
+                          setClientInfo((prev) => ({
+                            ...prev,
+                            zipCode: value,
+                          }))
+                        }}
+                    />
+                  </div>
+                  <h3 className="section-label">Оплата</h3>
+                  <div className="container data-container">
+                    <CartSelect
+                        name='paymentMethod'
+                        labelText="Спосіб оплати"
+                        optionKeys={paymentMethods.map((method) => method.id)}
+                        options={paymentMethods.map((method) =>
+                            `${method.name} - ${method.description}`
+                        )}
+                        value={selectedPaymentMethod}
+                        onChange={handlePaymentSelectionChange}
+                    />
+                  </div>
+                </>
+            )}
+          </div>
 
-        {cartItems.length > 0 && (
-          <Card className="p-8 mb-8">
-            <h2 className="text-xl font-semibold mb-4">
-              Оформлення замовлення
-            </h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <Input
-                label="Повне ім'я"
-                required
-                value={clientInfo.clientFullName || ""}
-                onChange={(e) =>
-                  setClientInfo((prev) => ({
-                    ...prev,
-                    clientFullName: e.target.value,
-                  }))
-                }
-              />
-              <Input
-                label="Номер телефону"
-                required
-                type="tel"
-                value={clientInfo.clientPhoneNumber || ""}
-                onChange={(e) => handlePhoneChange(e.target.value)}
-                isInvalid={!isPhoneValid}
-                errorMessage={phoneError}
-                placeholder="+380XXXXXXXXX"
-                color={!isPhoneValid ? "danger" : "default"}
-              />
-              <Input
-                label="Email"
-                type="email"
-                required
-                value={clientInfo.email || ""}
-                onChange={(e) =>
-                  setClientInfo((prev) => ({ ...prev, email: e.target.value }))
-                }
-              />
-              <Input
-                label="Країна"
-                required
-                value={clientInfo.countryForDelivery || ""}
-                onChange={(e) =>
-                  setClientInfo((prev) => ({
-                    ...prev,
-                    countryForDelivery: e.target.value,
-                  }))
-                }
-              />
-              <Input
-                label="Місто"
-                required
-                value={clientInfo.city || ""}
-                onChange={(e) =>
-                  setClientInfo((prev) => ({ ...prev, city: e.target.value }))
-                }
-              />
-              <Input
-                label="Адреса (опціонально)"
-                value={clientInfo.address || ""}
-                onChange={(e) =>
-                  setClientInfo((prev) => ({
-                    ...prev,
-                    address: e.target.value,
-                  }))
-                }
-              />
-              <Input
-                label="Поштовий індекс (опціонально)"
-                value={clientInfo.zipCode || ""}
-                onChange={(e) =>
-                  setClientInfo((prev) => ({
-                    ...prev,
-                    zipCode: e.target.value,
-                  }))
-                }
-              />
-              <Select
-                label="Тип доставки"
-                selectedKeys={
-                  selectedDeliveryType
-                    ? new Set([selectedDeliveryType])
-                    : undefined
-                }
-                onSelectionChange={handleDeliverySelectionChange}
-                required
-              >
-                {deliveryTypes.map((type) => (
-                  <SelectItem key={type.id} value={type.id}>
-                    {`${type.name} - ₴${type.price.toFixed(2)}`}
-                  </SelectItem>
-                ))}
-              </Select>
-              <Select
-                label="Спосіб оплати"
-                selectedKeys={
-                  selectedPaymentMethod
-                    ? new Set([selectedPaymentMethod])
-                    : undefined
-                }
-                onSelectionChange={handlePaymentSelectionChange}
-                required
-              >
-                {paymentMethods.map((method) => (
-                  <SelectItem key={method.id} value={method.id}>
-                    {getPaymentMethodName(method)}
-                  </SelectItem>
-                ))}
-              </Select>
+          <div>
+            <h3 className="section-label">Перелік товарів</h3>
+            <div className="product-data-container">
+              {cartItems.length > 0 ? (
+                <>
+                  {cartItems.map((item, index) => (
+                      <ProductInCart
+                          key = {index}
+                          index={index}
+                          name={getItemName(item)}
+                          pictureUrl={item.photoUrl}
+                          price={item.price}
+                          quantity={item.quantity}
+                          removeFromCart={handleRemoveItem}
+                          addQuantity={() => {
+                            setCartItems((prev) => {
+                              const updatedItems = [...prev];
+                              updatedItems[index].quantity += 1;
+                              localStorage.setItem(
+                                  "cart",
+                                  JSON.stringify(cartItems)
+                              );
+                              return updatedItems;
+                            });
+                          }}
+                          reduceQuantity={() => {
+                            if (item.quantity > 1) {
+                              setCartItems((prev) => {
+                                const updatedItems = [...prev];
+                                updatedItems[index].quantity -= 1;
+                                localStorage.setItem(
+                                    "cart",
+                                    JSON.stringify(cartItems)
+                                );
+                                return updatedItems;
+                              });
+                            }
+                          }}
+                      />
+                  ))}
+                  <div className="additional-data">
+                    <p className="additional-data-text">Вартість доставки: {getDeliveryTypePrice()} грн</p>
+                  </div>
+                  <div className="additional-data">
+                    <p className="additional-data-text">Комісія за оплату: {getPaymentMethodCommision()} грн</p>
+                  </div>
+                  <div className="total-section">
+                    <p className="total-text">Загальна вартість: {calculateTotal()} грн</p>
+                    <button onClick={() => createOrder()} className="create-order-button">Оформити замовлення</button>
+                  </div>
+                </>
+              ) : (
+                <p>Ваш кошик порожній</p>
+              )}
             </div>
-            <Input
-              label="Коментар (опціонально)"
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-            />
-            <div className="text-right font-bold text-xl mt-6">
-              Загальна сума: ₴{calculateTotal().toFixed(2)}
-            </div>
-            <Button
-              className="mt-4"
-              color="primary"
-              onClick={createOrder}
-              disabled={isLoading || !isPhoneValid}
-            >
-              {isLoading ? <Spinner color="white" /> : "Оформити замовлення"}
-            </Button>
-          </Card>
-        )}
+          </div>
+        </div>
       </div>
     </div>
   );

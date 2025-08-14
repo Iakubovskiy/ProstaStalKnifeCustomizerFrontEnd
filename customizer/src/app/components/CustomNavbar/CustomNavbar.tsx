@@ -23,6 +23,31 @@ import { useTranslation } from "react-i18next";
 import UserService from "@/app/services/UserService";
 import type { User } from "@/app/Interfaces/User";
 
+export const getCartItemCount = (): number => {
+  try {
+    const cart = localStorage.getItem("cart");
+    if (cart) {
+      const cartItems = JSON.parse(cart);
+      if (Array.isArray(cartItems)) {
+        return cartItems.length;
+      }
+      if (typeof cartItems === "object" && cartItems !== null) {
+        return Object.values(cartItems).reduce(
+            (total: number, quantity: unknown) => {
+              const qty = typeof quantity === "number" ? quantity : 0;
+              return total + qty;
+            },
+            0
+        );
+      }
+    }
+    return 0;
+  } catch (error) {
+    console.error("Помилка при читанні localStorage:", error);
+    return 0;
+  }
+};
+
 export default function CustomNavbar() {
   const router = useRouter();
   const { t } = useTranslation();
@@ -31,31 +56,6 @@ export default function CustomNavbar() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const userService = new UserService();
-
-  const getCartItemCount = (): number => {
-    try {
-      const cart = localStorage.getItem("cart");
-      if (cart) {
-        const cartItems = JSON.parse(cart);
-        if (Array.isArray(cartItems)) {
-          return cartItems.length;
-        }
-        if (typeof cartItems === "object" && cartItems !== null) {
-          return Object.values(cartItems).reduce(
-            (total: number, quantity: unknown) => {
-              const qty = typeof quantity === "number" ? quantity : 0;
-              return total + qty;
-            },
-            0
-          );
-        }
-      }
-      return 0;
-    } catch (error) {
-      console.error("Помилка при читанні localStorage:", error);
-      return 0;
-    }
-  };
 
   const checkAuthStatus = async () => {
     try {
@@ -104,7 +104,6 @@ export default function CustomNavbar() {
     };
     window.addEventListener("cartUpdated", handleCartUpdate);
 
-    // Слухач для оновлення статусу авторизації
     const handleAuthUpdate = (): void => {
       checkAuthStatus();
     };
@@ -237,7 +236,7 @@ export default function CustomNavbar() {
             size="sm"
             isInvisible={cartItemCount === 0}
           >
-            <Button isIconOnly onClick={() => router.push("/cart")}>
+            <Button isIconOnly onClick={() => router.push("/Cart")}>
               <img
                 src="/icons/cart.svg"
                 alt="Cart icon"

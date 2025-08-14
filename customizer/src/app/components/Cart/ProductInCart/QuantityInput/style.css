@@ -1,0 +1,49 @@
+.quantity-input, .quantity-control-button{
+    width: 30px;
+    height: 30px;
+    border: 1px solid #F5A524;
+    background: #ffffff;
+    font-size: 14px;
+    border-radius: 0;
+}
+
+.quantity-control-button{
+    border-radius: 10px;
+}
+.quantity-input-block{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.quantity-input-label{
+    font-size: 14px;
+    color: black;
+    font-weight: bold;
+    margin: 0;
+}
+
+.quantity-input-container{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .quantity-control-button{
+        border-radius: 5px;
+    }
+    .quantity-input, .quantity-control-button{
+        text-align: center;
+        padding: 0;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+    }
+    .quantity-input-container{
+        gap: 5px;
+    }
+    .quantity-input-label {
+        font-size: 12px;
+    }
+}

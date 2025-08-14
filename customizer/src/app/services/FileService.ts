@@ -21,6 +21,12 @@ class FileService {
     const res = await this.apiService.getById<AppFile>(this.resource, id);
     return res;
   }
+
+  async getJpegFileFromUrl(url: string) : Promise<File> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    return new File([blob], "file.jpg", { type: "image/jpeg" });
+  }
 }
 
 export default FileService;

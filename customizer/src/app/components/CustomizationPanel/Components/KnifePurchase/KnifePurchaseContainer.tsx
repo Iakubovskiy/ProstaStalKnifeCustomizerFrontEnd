@@ -4,7 +4,6 @@ import { PriceCalculator } from "./PriceCalculator";
 import { OrderButton } from "./OrderButton";
 import EngravingPriceService from "@/app/services/EngravingPriceService";
 import { useSnapshot } from "valtio";
-import InitialDataService from "@/app/services/InitialDataService";
 import Toast from "../../../Toast/Toast";
 import { SheathColorPriceByType } from "@/app/Interfaces/SheathColorPriceByType";
 import { KnifeDTO } from "@/app/DTOs/KnifeDTO";
@@ -27,7 +26,6 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
   const fileService = new FileService();
 
   const [totalPrice, setTotalPrice] = useState(0);
-  const initialDataService = new InitialDataService();
   const [showToast, setShowToast] = useState(false);
   const {
     sheathColor,
@@ -96,19 +94,6 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
     setShowToast(false);
   };
 
-  const resetToDefaultSettings = async () => {
-    try {
-      const initialData = await initialDataService.getData();
-      state.attachment = initialData.knifeForCanvas.attachments || null;
-      state.bladeShape = initialData.knifeForCanvas.bladeShape;
-      state.bladeCoatingColor = initialData.knifeForCanvas.bladeCoatingColor;
-      state.handleColor = initialData.knifeForCanvas.handleColor;
-      state.sheathColor = initialData.knifeForCanvas.sheathColor;
-      state.engravings = [];
-    } catch (error) {
-      console.error("Error resetting to default settings:", error);
-    }
-  };
 
   const handleAddToCart = async () => {
     if (isLoading) return;
@@ -117,9 +102,19 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
     try {
       let cartItem: CartItem;
       const pricePerUnit = await calculateSingleItemPrice();
+      let knifePhotoId: string = "";
+      const knifePhotoUrl: string | undefined = state.getScreenshot();
+      if(knifePhotoUrl){
+        const knifePhotoFile: File = await fileService.getJpegFileFromUrl(knifePhotoUrl);
+        const uploadedKnifePhoto: AppFile = await fileService.upload(
+            knifePhotoFile
+        );
+        knifePhotoId = uploadedKnifePhoto.id;
+      }
 
       if (productId) {
         cartItem = {
+          photoUrl: knifePhotoId,
           type: "existing_product",
           name: state.bladeShape.name,
           price: pricePerUnit,
@@ -169,7 +164,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
 
         const knifeToCreate: KnifeDTO = {
           isActive: true,
-          imageFileId: state.bladeShape.bladeShapeImage?.id || "",
+          imageFileId: knifePhotoId,
           names: {
             ua: i18n.getFixedT("uk")("purchaseContainer.customKnifeName"),
             en: i18n.getFixedT("en")("purchaseContainer.customKnifeName"),
@@ -190,6 +185,7 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
         };
 
         cartItem = {
+          photoUrl: knifePhotoUrl || "",
           type: "custom_knife",
           price: pricePerUnit,
           productData: knifeToCreate,
@@ -204,7 +200,6 @@ export const KnifePurchaseContainer: React.FC<Props> = ({ productId }) => {
 
       setShowToast(true);
       window.dispatchEvent(new CustomEvent("cartUpdated"));
-      await resetToDefaultSettings();
     } catch (error) {
       console.error("Could not add item to cart:", error);
     } finally {

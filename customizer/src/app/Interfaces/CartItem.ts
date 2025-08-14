@@ -1,6 +1,7 @@
 import { KnifeDTO } from "../DTOs/KnifeDTO";
 
 export interface ExistingProductCartItem {
+  photoUrl: string;
   type: "existing_product";
   productId: string;
   quantity: number;
@@ -9,6 +10,7 @@ export interface ExistingProductCartItem {
 }
 
 export interface CustomKnifeCartItem {
+  photoUrl: string;
   type: "custom_knife";
   productData: KnifeDTO;
   quantity: number;

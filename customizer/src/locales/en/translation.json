@@ -238,7 +238,7 @@
   },
   "customizationPanel2": {
     "selectOptionPrompt": "Select an option to customize",
-    "positioningTitle": "Positioning: Engr. {id}",
+    "positioningTitle": "Positioning: Engr. {{id}}",
     "closePositioningPanelTooltip": "Close positioning panel",
     "engravingNotFoundError": "Error: Engraving for setup not found.",
     "previousPageTooltip": "Previous page",

@@ -114,13 +114,10 @@ const Layout: React.FC<LayoutProps> = ({
   return (
     <>
       <Head>
-        {/* Базові SEO теги */}
         <title>{title}</title>
         <meta name="description" content={description} />
-        {/*<meta name="keywords" content={generateKeywords()} />*/}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        {/* Robots meta */}
         {noIndex ? (
           <meta name="robots" content="noindex, nofollow" />
         ) : (
@@ -138,11 +135,9 @@ const Layout: React.FC<LayoutProps> = ({
         <meta name="geo.region" content="UA" />
         <meta name="geo.placename" content="Ukraine" />
 
-        {/* Open Graph Tags */}
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
         <meta property="og:type" content={ogType} />
-        {/*<meta property="og:url" content={fullUrl} />*/}
         <meta property="og:image" content={finalOgImage} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
@@ -150,7 +145,6 @@ const Layout: React.FC<LayoutProps> = ({
         <meta property="og:site_name" content={siteName} />
         <meta property="og:locale" content="uk_UA" />
 
-        {/* Twitter Card Tags */}
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={title} />
         <meta name="twitter:description" content={description} />
@@ -159,13 +153,11 @@ const Layout: React.FC<LayoutProps> = ({
         <meta name="twitter:site" content="@yourhandle" />
         <meta name="twitter:creator" content="@yourhandle" />
 
-        {/* Additional Meta Tags */}
         <meta name="author" content={siteName} />
         <meta name="generator" content="Next.js" />
         <meta name="theme-color" content="#8b7258" />
         <meta name="msapplication-TileColor" content="#8b7258" />
 
-        {/* Favicon и Icons */}
         <link rel="icon" href="/favicon.ico" />
         <link
           rel="icon"
@@ -186,7 +178,6 @@ const Layout: React.FC<LayoutProps> = ({
         />
         <link rel="manifest" href="/site.webmanifest" />
 
-        {/* Preconnect для швидшого завантаження */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -194,11 +185,9 @@ const Layout: React.FC<LayoutProps> = ({
           crossOrigin="anonymous"
         />
 
-        {/* DNS Prefetch */}
         <link rel="dns-prefetch" href="//cdn.jsdelivr.net" />
         <link rel="dns-prefetch" href="//cdnjs.cloudflare.com" />
 
-        {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -212,7 +201,6 @@ const Layout: React.FC<LayoutProps> = ({
           }}
         />
 
-        {/* Breadcrumb Structured Data */}
         {breadcrumbStructuredData && (
           <script
             type="application/ld+json"

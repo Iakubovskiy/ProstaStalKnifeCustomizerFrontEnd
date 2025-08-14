@@ -7,7 +7,7 @@ const Controls = () => {
     useEffect(() => {
         if (controlsRef.current) {
             //@ts-ignore
-            controlsRef.current.object.position.setLength(100);
+            controlsRef.current.object.position.setLength(25);
             //@ts-ignore
             controlsRef.current.update();
         }

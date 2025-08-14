@@ -12,6 +12,7 @@ import {BladeCharacteristics} from "@/app/Interfaces/BladeCharacteristics";
 
 interface State {
   invalidate: () => void;
+  getScreenshot: () => string | undefined;
   id: string;
   handleColor: HandleColorForCanvas;
   sheathColor: SheathColorForCanvas;
@@ -23,6 +24,10 @@ interface State {
 
 const state = proxy<State>({
   invalidate: () => invalidate(),
+  getScreenshot: () => {
+    console.warn("Screenshot function is not ready yet.");
+    return undefined;
+  },
   id: "",
   handleColor: {
     id: "",

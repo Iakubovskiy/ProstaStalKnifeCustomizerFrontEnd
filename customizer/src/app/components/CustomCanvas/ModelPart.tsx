@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useCanvasState } from "@/app/state/canvasState";
 import { useSnapshot } from "valtio/index";
-import EngravedMesh from "@/app/components/CustomCanvas/EngravedMesh";
+import EngravedMesh from "@/app/components/CustomCanvas/Engraving/EngravedMesh";
 import Engraving from "@/app/Models/Engraving";
 import { EngravingForCanvas } from "@/app/Interfaces/Knife/EngravingForCanvas";
 
