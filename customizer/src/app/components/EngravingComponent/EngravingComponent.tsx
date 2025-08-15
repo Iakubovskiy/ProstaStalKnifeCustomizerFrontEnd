@@ -6,13 +6,13 @@ import {
   Settings2,
   Trash2,
   Paperclip,
-  XCircle,
 } from "lucide-react";
 import ModalFormButton from "../ModalButton/ModalButton";
 import { DraggablePopup } from "./DraggablePopup";
 import Select, { StylesConfig, SingleValue, GroupBase } from "react-select";
 import { EngravingForCanvas } from "@/app/Interfaces/Knife/EngravingForCanvas";
 import { ref } from "valtio";
+import {fontOptions} from "./fontOptions";
 
 export const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
   const customState = useCanvasState();
@@ -232,7 +232,7 @@ enum Side {
   Left = 2,
   Axillary = 3,
 }
-interface OptionType {
+export interface OptionType {
   value: string | number;
   label: string;
 }
@@ -363,8 +363,10 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     returnAsString: boolean = false
   ): string {
     const fontSize = 100;
-    const textWidth = text.length * fontSize * 1;
-    const textHeight = text.length * fontSize * 1;
+    const textWidth = text.length * fontSize;
+    const textHeight = text.length * fontSize;
+    const fontBase64 = fontOptions.find((option) => option.value === fontFamily)?.base64;
+
     const svg = `
       <svg 
         width="${textWidth}" 
@@ -373,6 +375,15 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
         xmlns="http://www.w3.org/2000/svg"
         
       >
+      <style>
+            @font-face {
+                font-family: '${fontFamily}';
+                src: url('data:font/ttf;base64,${fontBase64}') format('truetype');
+            }
+            text{
+                font-family: '${fontFamily}',serif;
+            }
+        </style>
         <rect 
       width="100%" 
       height="100%" 
@@ -426,6 +437,25 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
               if (customState.engravings[id].picture) {
                 customState.engravings[id].picture.fileUrl = newUrl;
               }
+              const svgString = textToSvgUrl(
+                  item.text,
+                  value,
+                  customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000",
+                  true
+              );
+              const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+              const file = new File([svgBlob], `engraving-${id}.svg`, { type: "image/svg+xml" });
+              const localPreviewUrl = URL.createObjectURL(svgBlob);
+              updateEngravingState(id, {
+                text: item.text,
+                picture: {
+                  id: `svg-pending-${customState.engravings[id].id}`,
+                  fileUrl: localPreviewUrl,
+                },
+                fileObject: ref(
+                    file
+                ),
+              });
             }
             customState.invalidate();
           }
@@ -457,7 +487,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                 let svgText = reader.result as string;
 
                 svgText = replaceStrokeColor(svgText, engravingColor);
-                console.log("svgText", svgText);
 
                 const blob = new Blob([svgText], { type: "image/svg+xml" });
                 const svgUrl = URL.createObjectURL(blob);
@@ -551,7 +580,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     index: number,
     newProps: Partial<EngravingForCanvas>
   ) => {
-    console.log("updateEngravingState", index, newProps);
     const currentEngraving = customState.engravings[index];
     if (currentEngraving) {
       const updatedEngraving = { ...currentEngraving, ...newProps };
@@ -616,7 +644,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
         item.id === id ? { ...item, selectedFile: file } : item
       )
     );
-    console.log("Selected file:", file);
     if (file) {
       const isSVG = file.type === "image/svg+xml";
       const engravingColor = getEngravingColor(id);
@@ -626,7 +653,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
           let svgText = reader.result as string;
 
           svgText = replaceStrokeColor(svgText, engravingColor);
-          console.log("svgText", svgText);
 
           const blob = new Blob([svgText], { type: "image/svg+xml" });
           const svgUrl = URL.createObjectURL(blob);
@@ -721,11 +747,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     { value: "text", label: "Текст" },
     { value: "file", label: "Фото" },
   ];
-  const fontOptions: OptionType[] = [
-    { value: "Montserrat", label: "Montserrat" },
-    { value: "Arial", label: "Arial" },
-    { value: "Open Sans", label: "Open Sans" },
-  ];
+
   const sideOptions: OptionType[] = [
     { value: Side.Right, label: "Права" },
     { value: Side.Left, label: "Ліва" },

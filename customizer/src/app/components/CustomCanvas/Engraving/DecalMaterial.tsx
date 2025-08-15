@@ -39,12 +39,10 @@ const DecalMaterial: React.FC<DecalMaterialProps> = ({
 
     useEffect(() => {
         if (!initialTexture) {
-            console.log('Texture not found');
             return;
         }
 
         let isMounted = true;
-        console.log('IsSVG = ', isSVG);
 
         if (isSVG) {
             const engravingColor = engravingSide === Side.Axillary
@@ -67,7 +65,6 @@ const DecalMaterial: React.FC<DecalMaterialProps> = ({
                     });
                 });
         } else {
-            console.log('Texture is not SVG');
             setProcessedTexture(initialTexture);
         }
 
