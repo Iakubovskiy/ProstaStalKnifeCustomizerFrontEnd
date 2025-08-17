@@ -16,7 +16,7 @@ import {SheathColorForCanvas} from "@/app/Interfaces/Knife/SheathColorForCanvas"
 import Scene from "./Scene";
 
 interface Props {
-  productId?: string | null;
+  productId?: string;
 }
 
 
@@ -90,12 +90,14 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
     const loadData = async () => {
       setIsLoading(true);
       setError(null);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       try {
         if (productId) {
           try {
             const knifeData = await knifeService.getById(productId);
             populateKnifeState(knifeData.knifeForCanvas);
+            console.log("Engravings: ", state.engravings);
           } catch (knifeError: any) {
             if (knifeError.status === 404) {
               try {
@@ -116,7 +118,6 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
           }
         } else {
           const initialData = await initialDataService.getData();
-          console.log("Initial data fetched:", initialData);
           SelectByDefault(
             initialData.knifeForCanvas.bladeShape,
             initialData.knifeForCanvas.bladeCoatingColor,

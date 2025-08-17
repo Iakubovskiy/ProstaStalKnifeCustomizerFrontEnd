@@ -277,7 +277,7 @@ const KnifeEditPage = () => {
           <div className="flex flex-col gap-4 h-[80vh] lg:h-auto sticky top-8">
             <div className="flex-grow aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden shadow-lg">
               <KnifeConfigurator
-                productId={isCreating ? null : (id as string)}
+                productId={isCreating ? undefined : (id as string)}
               />
             </div>
             <div className="hidden lg:block">

@@ -356,6 +356,24 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     });
   };
 
+  function measureTextInDOM(text: string, fontFamily: string, fontSize: number): { width: number; height: number } {
+    const span = document.createElement("span");
+
+    span.style.fontFamily = fontFamily;
+    span.style.fontSize = `${fontSize}px`;
+    span.style.position = "absolute";
+    span.style.visibility = "hidden";
+    span.style.left = "-9999px";
+    span.style.top = "-9999px";
+    span.textContent = text;
+    document.body.appendChild(span);
+    const rect = span.getBoundingClientRect();
+    const dimensions = { width: rect.width, height: rect.height };
+    document.body.removeChild(span);
+
+    return dimensions;
+  }
+
   function textToSvgUrl(
     text: string,
     fontFamily: string,
@@ -363,15 +381,17 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     returnAsString: boolean = false
   ): string {
     const fontSize = 100;
-    const textWidth = text.length * fontSize;
-    const textHeight = text.length * fontSize;
+    const heightRedundancy = 50;
+    const textDimensions = measureTextInDOM(text, fontFamily, fontSize);
+    const textWidth = textDimensions.width;
+    const textHeight = textDimensions.height;
     const fontBase64 = fontOptions.find((option) => option.value === fontFamily)?.base64;
 
     const svg = `
       <svg 
         width="${textWidth}" 
         height="${textHeight}"
-        viewBox="0 0 ${textWidth} ${textHeight}"
+        viewBox="0 0 ${textWidth} ${textHeight-heightRedundancy}"
         xmlns="http://www.w3.org/2000/svg"
         
       >
@@ -388,10 +408,12 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
       width="100%" 
       height="100%" 
       fill="none" 
+      stroke="${color}"
+          stroke-width="5"
     />
         <text
           x="50%"
-          y="50%"
+          y="60%"
           dominant-baseline="middle"
           text-anchor="middle"
           font-family="${fontFamily}"
