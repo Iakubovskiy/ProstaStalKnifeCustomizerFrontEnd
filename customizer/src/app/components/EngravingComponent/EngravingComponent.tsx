@@ -408,8 +408,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
       width="100%" 
       height="100%" 
       fill="none" 
-      stroke="${color}"
-          stroke-width="5"
     />
         <text
           x="50%"
