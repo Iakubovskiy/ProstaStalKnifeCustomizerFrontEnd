@@ -381,17 +381,16 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     returnAsString: boolean = false
   ): string {
     const fontSize = 100;
-    const heightRedundancy = 50;
     const textDimensions = measureTextInDOM(text, fontFamily, fontSize);
     const textWidth = textDimensions.width;
-    const textHeight = textDimensions.height;
+    const textHeight = textDimensions.height + 100;
     const fontBase64 = fontOptions.find((option) => option.value === fontFamily)?.base64;
 
     const svg = `
       <svg 
         width="${textWidth}" 
         height="${textHeight}"
-        viewBox="0 0 ${textWidth} ${textHeight-heightRedundancy}"
+        viewBox="0 0 ${textWidth} ${textHeight}"
         xmlns="http://www.w3.org/2000/svg"
         
       >
