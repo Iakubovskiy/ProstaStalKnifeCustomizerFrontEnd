@@ -37,6 +37,7 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
     const knifeService = new KnifeService(apiService);
     const attachmentService = new AttachmentService(apiService);
     const initialDataService = new InitialDataService();
+    let isCanceled = false;
 
     const populateKnifeState = (data: KnifeForCanvas) => {
       state.bladeShape = data.bladeShape;
@@ -90,10 +91,11 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
     const loadData = async () => {
       setIsLoading(true);
       setError(null);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       try {
         if (productId) {
+          console.log("Id is available");
+          isCanceled = true;
           try {
             const knifeData = await knifeService.getById(productId);
             populateKnifeState(knifeData.knifeForCanvas);
@@ -117,13 +119,17 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
             }
           }
         } else {
+          console.log("Id is not available");
           const initialData = await initialDataService.getData();
-          SelectByDefault(
-            initialData.knifeForCanvas.bladeShape,
-            initialData.knifeForCanvas.bladeCoatingColor,
-            initialData.knifeForCanvas.sheathColor,
-            initialData.knifeForCanvas.handleColor
-          );
+          if(!isCanceled) {
+            SelectByDefault(
+                initialData.knifeForCanvas.bladeShape,
+                initialData.knifeForCanvas.bladeCoatingColor,
+                initialData.knifeForCanvas.sheathColor,
+                initialData.knifeForCanvas.handleColor
+            );
+            console.log("Selected by default: ");
+          }
         }
       } catch (err) {
         console.error("Failed to load product data:", err);
@@ -134,6 +140,9 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
     };
 
     loadData();
+    return () => {
+      isCanceled = true;
+    };
   }, [productId, state]);
 
   useEffect(() => {
