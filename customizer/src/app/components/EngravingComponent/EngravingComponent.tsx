@@ -382,7 +382,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
   ): string {
     const fontSize = 100;
     const textDimensions = measureTextInDOM(text, fontFamily, fontSize);
-    const textWidth = textDimensions.width+100;
+    const textWidth = textDimensions.width+150;
     const textHeight = textDimensions.height + 200;
     const fontBase64 = fontOptions.find((option) => option.value === fontFamily)?.base64;
 
