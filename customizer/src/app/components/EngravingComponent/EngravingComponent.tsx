@@ -668,11 +668,17 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
   };
 
   const replaceStrokeColor = (svgText: string, newColor: string): string => {
-    return svgText.replace(/(<(path|g|svg)[^>]*style="[^"]*)stroke\s*:\s*#[0-9a-fA-F]{3,6}([^"]*)"/gi,
+    let modifiedSvg = svgText.replace(/(<(path|g|svg)[^>]*style="[^"]*)stroke\s*:\s*#[0-9a-fA-F]{3,6}([^"]*)"/gi,
         (match, p1, tag, p3) => {
           return `${p1}stroke:${newColor}${p3}"`;
         }
     );
+    modifiedSvg = modifiedSvg.replace(/(<(path|g|svg)[^>]*)fill\s*=\s*"#[0-9a-fA-F]{3,6}"([^"]*)"/gi,
+        (match, p1, tag, p3) => {
+          return `${p1}fill="${newColor}"${p3}"`;
+        }
+    );
+    return modifiedSvg;
   }
 
   const getEngravingColor = (id: number) : string => {
