@@ -307,6 +307,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
 
   const customState = useCanvasState();
   const [items, setItems] = useState<CardItem[]>([]);
+  const fontSize = 300;
 
   useEffect(() => {
     if (!customState.engravings || customState.engravings.length === 0) {
@@ -356,10 +357,19 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     });
   };
 
-  function measureTextInDOM(text: string, fontFamily: string, fontSize: number): { width: number; height: number } {
+  const measureTextInDOM = (text: string, fontFamily: string, fontSize: number): { width: number; height: number } => {
+    const fontBase64 = fontOptions.find((option) => option.value === fontFamily)?.base64;
+    const style = document.createElement("style");
+    style.textContent = `
+    @font-face {
+      font-family: '${fontFamily}';
+      src: url('data:font/ttf;base64,${fontBase64}') format('truetype');
+    }
+  `;
+    document.head.appendChild(style);
     const span = document.createElement("span");
 
-    span.style.fontFamily = fontFamily;
+    span.style.fontFamily = `'${fontFamily}', serif`;
     span.style.fontSize = `${fontSize}px`;
     span.style.position = "absolute";
     span.style.visibility = "hidden";
@@ -374,23 +384,21 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     return dimensions;
   }
 
-  function textToSvgUrl(
+  const textToSvgUrl = (
     text: string,
     fontFamily: string,
     color: string,
+    textWidth: number,
+    textHeight: number,
+    fontSize: number,
     returnAsString: boolean = false
-  ): string {
-    const fontSize = 100;
-    const textDimensions = measureTextInDOM(text, fontFamily, fontSize);
-    const textWidth = textDimensions.width+150;
-    const textHeight = textDimensions.height + 250;
+  ): string => {
     const fontBase64 = fontOptions.find((option) => option.value === fontFamily)?.base64;
 
     const svg = `
       <svg 
         width="${textWidth}" 
         height="${textHeight}"
-        viewBox="0 0 ${textWidth} ${textHeight}"
         xmlns="http://www.w3.org/2000/svg"
         
       >
@@ -403,16 +411,9 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                 font-family: '${fontFamily}',serif;
             }
         </style>
-        <rect 
-      width="100%" 
-      height="100%" 
-      fill="none" 
-    />
         <text
-          x="50%"
-          y="60%"
-          dominant-baseline="middle"
-          text-anchor="middle"
+          dominant-baseline="hanging"
+          text-anchor="start"
           font-family="${fontFamily}"
           font-size="${fontSize}"
           fill="${color}"
@@ -448,10 +449,16 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
           if (customState.engravings[id]) {
             customState.engravings[id].font = value;
             if (item.type === "text" && item.text) {
+              const textDimensions = measureTextInDOM(item.text, value, fontSize);
+              const textWidth = textDimensions.width;
+              const textHeight = textDimensions.height;
               const newUrl = textToSvgUrl(
                 item.text,
                 value,
-                  customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000"
+                customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000",
+                textWidth,
+                textHeight,
+                fontSize
               );
               if (customState.engravings[id].picture) {
                 customState.engravings[id].picture.fileUrl = newUrl;
@@ -460,11 +467,15 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                   item.text,
                   value,
                   customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000",
+                  textWidth,
+                  textHeight,
+                  fontSize,
                   true
               );
               const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
               const file = new File([svgBlob], `engraving-${id}.svg`, { type: "image/svg+xml" });
               const localPreviewUrl = URL.createObjectURL(svgBlob);
+
               updateEngravingState(id, {
                 text: item.text,
                 picture: {
@@ -530,10 +541,16 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
             }
           }
           else if (item.type === "text" && item.text && item.font) {
+            const textDimensions = measureTextInDOM(item.text, item.font, fontSize);
+            const textWidth = textDimensions.width;
+            const textHeight = textDimensions.height;
             const newUrl = textToSvgUrl(
                 item.text,
                 item.font,
                 value === Side.Axillary? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000",
+                textWidth,
+                textHeight,
+                fontSize
             );
             if (customState.engravings[id].picture) {
               customState.engravings[id].picture.fileUrl = newUrl;
@@ -576,10 +593,16 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                 customState.engravings[id].picture.fileUrl = emptyImage;
               }
               if (item.text && item.font) {
+                const textDimensions = measureTextInDOM(item.text, item.font, fontSize);
+                const textWidth = textDimensions.width;
+                const textHeight = textDimensions.height;
                 const newUrl = textToSvgUrl(
                   item.text,
                   item.font,
-                  customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000"
+                  customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000",
+                  textWidth,
+                  textHeight,
+                  fontSize
                 );
                 if (customState.engravings[id].picture) {
                   customState.engravings[id].picture.fileUrl = newUrl;
@@ -616,11 +639,17 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     const currentEngraving = customState.engravings[id];
 
     if (item && currentEngraving) {
+      const textDimensions = measureTextInDOM(value || "", item.font || "Montserrat", fontSize);
+      const textWidth = textDimensions.width;
+      const textHeight = textDimensions.height;
       const svgString = textToSvgUrl(
         value,
         item.font ?? "Montserrat",
           customState.engravings[id].side === 3? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000",
-        true
+          textWidth,
+          textHeight,
+          fontSize,
+          true
       );
       const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
       const file = new File([svgBlob], `engraving-${id}.svg`, { type: "image/svg+xml" });

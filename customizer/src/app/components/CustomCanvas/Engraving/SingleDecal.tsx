@@ -1,12 +1,36 @@
 import React, { Suspense } from "react";
 import { Decal } from "@react-three/drei";
 import DecalMaterial from "./DecalMaterial";
+import {EngravingForCanvas} from "@/app/Interfaces/Knife/EngravingForCanvas";
 
-// @ts-ignore
-const SingleDecal = ({ meshRef, engraving, arrayPosition, offsetFactor }) => {
+interface SingleDecalProps {
+    meshRef: any;
+    engraving: EngravingForCanvas;
+    offsetFactor: number;
+}
+
+const getTextDecalParameters = (engraving:EngravingForCanvas) => {
+    if(!engraving.text)
+        return;
+    const decalTextHeight = engraving.scaleY;
+    const decalTextWidth = engraving.text.length/2 * decalTextHeight;
+
+    return {
+        decalTextHeight,
+        decalTextWidth
+    }
+};
+
+const SingleDecal = ({ meshRef, engraving, offsetFactor }:SingleDecalProps) => {
 
     if (!meshRef.current || !engraving?.picture || !engraving?.picture.fileUrl) {
         return null;
+    }
+    let textWidth: number | undefined;
+    let textHeight: number | undefined;
+    if(engraving.text) {
+        textWidth = getTextDecalParameters(engraving)?.decalTextWidth;
+        textHeight = getTextDecalParameters(engraving)?.decalTextHeight;
     }
 
     return (
@@ -22,7 +46,7 @@ const SingleDecal = ({ meshRef, engraving, arrayPosition, offsetFactor }) => {
                 engraving.side === 2 ? Math.PI : 0,
                 engraving.rotationZ || 0,
             ]}
-            scale={engraving.scaleX || 20}
+            scale={[textWidth || engraving.scaleX || 20, textHeight || engraving.scaleY || 20, 30]}
         >
             <Suspense fallback={null}>
                 <DecalMaterial
