@@ -394,6 +394,8 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     returnAsString: boolean = false
   ): string => {
     const fontBase64 = fontOptions.find((option) => option.value === fontFamily)?.base64;
+    console.log("textWidth = ", textWidth);
+    console.log("textHeight = ", textHeight);
 
     const svg = `
       <svg 
@@ -412,7 +414,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
             }
         </style>
         <text
-          dominant-baseline="hanging"
+          dominant-baseline="text-before-edge"
           text-anchor="start"
           font-family="${fontFamily}"
           font-size="${fontSize}"
