@@ -119,7 +119,6 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
             }
           }
         } else {
-          console.log("Id is not available");
           const initialData = await initialDataService.getData();
           if(!isCanceled) {
             SelectByDefault(
@@ -128,7 +127,6 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
                 initialData.knifeForCanvas.sheathColor,
                 initialData.knifeForCanvas.handleColor
             );
-            console.log("Selected by default: ");
           }
         }
       } catch (err) {

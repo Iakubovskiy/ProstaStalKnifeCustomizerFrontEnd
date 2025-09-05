@@ -270,5 +270,8 @@
     "copiedToast": "Copy",
     "copyTooltip": "Here ;)",
     "errorToast": "Error :("
+  },
+  "viewPage": {
+    "getFiles": "Download engraving files"
   }
 }

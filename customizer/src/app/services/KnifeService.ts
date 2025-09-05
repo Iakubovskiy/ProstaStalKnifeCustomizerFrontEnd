@@ -28,12 +28,9 @@ class KnifeService {
   async create(data: KnifeDTO): Promise<Knife> {
     if (!data.titles || Object.keys(data.titles).length === 0) {
       data.titles = { ua: "-", en: "-" } as unknown as LocalizedContent;
-      console.log("titles");
     }
-    console.log("titles", data.titles);
     if (!data.descriptions || Object.keys(data.descriptions).length === 0) {
       data.descriptions = { ua: "-", en: "-" } as unknown as LocalizedContent;
-      console.log("descriptions");
     }
     if (
       !data.metaDescriptions ||
@@ -43,7 +40,6 @@ class KnifeService {
         ua: "-",
         en: "-",
       } as unknown as LocalizedContent;
-      console.log("metaDescriptions");
     }
     if (!data.metaTitles || Object.keys(data.metaTitles).length === 0) {
       data.metaTitles = { ua: "-", en: "-" } as unknown as LocalizedContent;

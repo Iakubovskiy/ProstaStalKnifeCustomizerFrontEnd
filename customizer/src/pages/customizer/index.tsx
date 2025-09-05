@@ -48,6 +48,14 @@ const CustomizerPage = () => {
           const uploadedFile: AppFile = await fileService.upload(engraving.fileObject);
           pictureId = uploadedFile.id;
         }
+        let names: { [key: string]: string } | null = null;
+        if(engraving.name) {
+          names = {
+            'ua': engraving.name,
+            'en': engraving.name,
+          };
+        }
+        console.log('names =', names);
 
         processedEngravings.push({
           pictureId,
@@ -64,6 +72,7 @@ const CustomizerPage = () => {
           scaleY: engraving.scaleY,
           scaleZ: engraving.scaleZ,
           isActive: false,
+          names: names,
         });
       }
 

@@ -1,17 +1,11 @@
-import { useCanvasState } from "@/app/state/canvasState";
-import React, { useEffect, useState } from "react";
-import {
-  ChevronDown,
-  ChevronUp,
-  Settings2,
-  Trash2,
-  Paperclip,
-} from "lucide-react";
+import {useCanvasState} from "@/app/state/canvasState";
+import React, {useEffect, useState} from "react";
+import {ChevronDown, ChevronUp, Paperclip, Settings2, Trash2,} from "lucide-react";
 import ModalFormButton from "../ModalButton/ModalButton";
-import { DraggablePopup } from "./DraggablePopup";
-import Select, { StylesConfig, SingleValue, GroupBase } from "react-select";
-import { EngravingForCanvas } from "@/app/Interfaces/Knife/EngravingForCanvas";
-import { ref } from "valtio";
+import {DraggablePopup} from "./DraggablePopup";
+import Select, {GroupBase, SingleValue, StylesConfig} from "react-select";
+import {EngravingForCanvas} from "@/app/Interfaces/Knife/EngravingForCanvas";
+import {ref} from "valtio";
 import {fontOptions} from "./fontOptions";
 
 export const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
@@ -303,6 +297,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     isExpanded?: boolean;
     selectedFile?: File | null;
     isPositioningOpen?: boolean;
+    name?: string;
   }
 
   const customState = useCanvasState();
@@ -310,28 +305,56 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
   const fontSize = 300;
 
   useEffect(() => {
-    if (!customState.engravings || customState.engravings.length === 0) {
-      setItems([]);
-    } else {
-      const newItems = customState.engravings.map(
-        (engraving, index: number) => {
-          const existingItem = items.find((it) => it.id === index);
-          return {
-            id: index,
-            type: (engraving.text === "" || engraving.text === null) ? "file" : ("text" as "text" | "file"),
-            selectedSide: engraving.side,
-            font: engraving.font || "Montserrat",
-            text: engraving.text || "",
-            isExpanded: existingItem ? existingItem.isExpanded : true,
-            selectedFile: existingItem ? existingItem.selectedFile : null,
-            isPositioningOpen: existingItem
-              ? existingItem.isPositioningOpen
-              : false,
-          };
-        }
+    const processEngravings = async () => {
+      if (!customState.engravings || customState.engravings.length === 0) {
+        setItems([]);
+        return;
+      }
+
+      const newItemsPromises = customState.engravings.map(
+          async (engraving: EngravingForCanvas, index: number) => {
+            const existingItem = items.find((it) => it.id === index);
+            let file: File | null = null;
+
+            if (engraving.picture && engraving.picture.fileUrl) {
+              try {
+                const response = await fetch(engraving.picture.fileUrl);
+                if (!response.ok) {
+                  throw new Error(`Помилка отримання Blob з URL: ${response.statusText} для ${engraving.picture.fileUrl}`);
+                }
+                const blob = await response.blob();
+
+                file = new File([blob], 'some-file', { type: 'image/svg+xml' });
+              } catch (error) {
+                console.error(`Помилка завантаження файлу для гравіювання ${index}:`, error);
+                file = null;
+              }
+            }
+
+            const name = engraving.name;
+            console.log("name = ", name);
+
+            return {
+              id: index,
+              type: (engraving.text === "" || engraving.text === null) ? "file" : ("text" as "text" | "file"),
+              selectedSide: engraving.side,
+              font: engraving.font || "Montserrat",
+              text: engraving.text || "",
+              isExpanded: existingItem ? existingItem.isExpanded : true,
+              selectedFile: existingItem && existingItem.selectedFile ? existingItem.selectedFile : file,
+              isPositioningOpen: existingItem
+                  ? existingItem.isPositioningOpen
+                  : false,
+              name: name,
+            };
+          }
       );
-      setItems(newItems);
-    }
+
+      const resolvedItems = await Promise.all(newItemsPromises);
+      setItems(resolvedItems);
+    };
+
+    processEngravings();
   }, [customState.engravings]);
 
   const removeCard = (idToRemove: number) => {
@@ -970,12 +993,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                                         const pictureUrl =
                                             currentEngraving?.picture?.fileUrl;
 
-                                        const isFromLibrary =
-                                            pictureUrl &&
-                                            !pictureUrl.startsWith("blob:") &&
-                                            !pictureUrl.startsWith("data:image/png;base64");
-
-                                        if (isFromLibrary) {
+                                        if (pictureUrl) {
                                           const fileName =
                                               pictureUrl.split("/").pop() ||
                                               "невідомий файл";

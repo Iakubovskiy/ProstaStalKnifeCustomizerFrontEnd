@@ -270,5 +270,8 @@
     "copiedToast": "Копіювати",
     "copyTooltip": "Тиць ;)",
     "errorToast": "Виникла помилка :("
+  },
+  "viewPage": {
+    "getFiles": "Вигрузити файли гравіювання"
   }
 }

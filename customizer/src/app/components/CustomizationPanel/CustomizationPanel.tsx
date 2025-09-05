@@ -1,22 +1,19 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import CustomizationPanelMenu from "./Menu/CustomizationPanelMenu";
+import React, {useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
+import CustomizationPanelMenu, {menuOptions} from "./Menu/CustomizationPanelMenu";
 import BladeShapeCustomizationComponent from "./Components/BladeShapeCustomizationComponent";
 import HandleCustomizationComponent from "./Components/HandleCustomizationComponent";
 import SheathCustomizationComponent from "./Components/SheathCustomizationComponent";
 import BladeCoatingCustomizationComponent from "./Components/BladeCoatingCustomizationComponent";
 import FasteningCustomizationComponent from "./Components/AttachmentCustomizationComponent";
-import EngravingComponent, {
-  PositioningControls,
-} from "../EngravingComponent/EngravingComponent";
-import { useCanvasState } from "@/app/state/canvasState";
+import EngravingComponent, {PositioningControls,} from "../EngravingComponent/EngravingComponent";
+import {useCanvasState} from "@/app/state/canvasState";
 import ArrowCard from "./Menu/ArrowCard";
-import { XCircle } from "lucide-react";
+import {XCircle} from "lucide-react";
 import {Engraving} from "@/app/Interfaces/Engraving";
 import {EngravingForCanvas} from "@/app/Interfaces/Knife/EngravingForCanvas";
 import EngravingLibraryComponent from "@/app/components/CustomizationPanel/Components/EngravingLibraryComponent";
-import { menuOptions } from "./Menu/CustomizationPanelMenu";
 
 
 const CustomizationPanel = () => {
@@ -118,30 +115,29 @@ const CustomizationPanel = () => {
       scaleX: libraryEngraving.scale?.scaleX ?? 20,
       scaleY: libraryEngraving.scale?.scaleY ?? 20,
       scaleZ: libraryEngraving.scale?.scaleZ ?? 20,
+      name: libraryEngraving.name,
+      fileObject: null,
     };
   };
 
-  const processSVG = (fileUrl: string, engravingColor: string, engraving: EngravingForCanvas) => {
-    fetch(fileUrl)
-        .then(response => response.text())
-        .then(svgText => {
-          try {
-            const coloredSvgText = replaceStrokeColor(svgText, engravingColor);
+  const processSVGAndCreateFile = async (fileUrl: string, engravingColor: string): Promise<{url: string, file: File}> => {
+    try {
+      const response = await fetch(fileUrl);
+      const svgText = await response.text();
+      const coloredSvgText = replaceStrokeColor(svgText, engravingColor);
 
-            const blob = new Blob([coloredSvgText], { type: "image/svg+xml" });
-            const svgUrl = URL.createObjectURL(blob);
+      const blob = new Blob([coloredSvgText], { type: "image/svg+xml" });
+      const svgUrl = URL.createObjectURL(blob);
+      const file = new File([blob], `library-engraving.svg`, { type: "image/svg+xml" });
 
-            engraving.picture.fileUrl = svgUrl;
-          } catch (error) {
-            console.error("Failed to process SVG:", error);
-          }
-        })
-        .catch(error => {
-          console.error("Failed to fetch SVG file:", error);
-        });
+      return { url: svgUrl, file };
+    } catch (error) {
+      console.error("Failed to process SVG:", error);
+      throw error;
+    }
   };
 
-  const handleEngravingSelectedFromLibrary = (libraryEngraving: Engraving) => {
+  const handleEngravingSelectedFromLibrary = async (libraryEngraving: Engraving) => {
     if (!libraryEngraving.picture) {
       console.error("Selected engraving from library has no picture.");
       return;
@@ -154,7 +150,10 @@ const CustomizationPanel = () => {
 
     if (isSVG) {
       const engravingColor = state.bladeCoatingColor.engravingColorCode;
-      processSVG(fileUrl, engravingColor, newEngravingForCanvas);
+      const {url,file} = await processSVGAndCreateFile(fileUrl, engravingColor);
+
+      newEngravingForCanvas.picture.fileUrl = url;
+      newEngravingForCanvas.fileObject = file
     }
 
     state.engravings = [...state.engravings, newEngravingForCanvas];

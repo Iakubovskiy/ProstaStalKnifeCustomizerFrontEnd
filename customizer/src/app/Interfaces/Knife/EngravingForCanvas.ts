@@ -16,4 +16,5 @@ export interface EngravingForCanvas {
   scaleY: number;
   scaleZ: number;
   fileObject?: File | null;
+  name?: string;
 }
