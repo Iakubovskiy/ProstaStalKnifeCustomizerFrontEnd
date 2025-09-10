@@ -26,71 +26,71 @@ const ViewPage = () => {
 
     const handleDownloadAllEngravings = async () => {
         if (!id) return;
-        const knife = await knifeService.getById(id);
-        const engravingFiles: EngravingFile[] = [];
-        const endsWithEngravingNumberSvg = (fileUrl:string):boolean => {
-            const regex = /engraving-\d+\.svg$/;
-            return regex.test(fileUrl);
-        };
-
-        for (const [index, engraving] of (knife.knifeForCanvas.engravings ?? []).entries()) {
-            if (!engraving.picture) continue;
-            const pictureForLaser = (await engravingService.getById(engraving.id)).pictureForLaser;
-
-            console.log('pictureForLaser =', pictureForLaser);
-
-            let fileFormat = engraving.picture.fileUrl.split('.').pop();
-            if (pictureForLaser){
-                fileFormat = pictureForLaser.fileUrl.split('.').pop();
-                console.log('fileFormat =', fileFormat);
-                const fileName = `engraving_${index + 1}_name${engraving.name}.${fileFormat}`;
-                engravingFiles.push({
-                    ...pictureForLaser,
-                    uniqueName: fileName,
-                });
-            }
-            else {
-                if (endsWithEngravingNumberSvg(engraving.picture.fileUrl)) {
-                    const fileName: string = engraving.picture.fileUrl.split('/').pop() ?? "UnknownImage.svg";
-                    const svgFile = await fileService.urlToFile(engraving.picture.fileUrl, fileName, "image/svg+xml");
-
-                    engraving.picture = await fileService.convertSvgToDxf(svgFile);
-                    fileFormat = 'dxf'
-                }
-
-                const fileName = `engraving_${index + 1}_name${engraving.name}.${fileFormat}`;
-                engravingFiles.push({
-                    ...engraving.picture,
-                    uniqueName: fileName,
-                });
-            }
-        }
-
-        if (engravingFiles.length === 0) return;
         setDownloading(true);
-
-        const zip = new JSZip();
-        const folder = zip.folder(`${id}_engravings`);
-
         try {
-            const filePromises = engravingFiles.map(async (file) => {
-                const response = await fetch(file.fileUrl);
-                if (!response.ok) {
-                    throw new Error(`Не вдалося завантажити файл: ${file.uniqueName}`);
-                }
-                const blob = await response.blob();
-                folder?.file(file.uniqueName, blob);
-            });
+            const knife = await knifeService.getById(id);
+            const engravingFiles: EngravingFile[] = [];
+            const endsWithEngravingNumberSvg = (fileUrl: string): boolean => {
+                const regex = /engraving-\d+\.svg$/;
+                return regex.test(fileUrl);
+            };
 
-            await Promise.all(filePromises);
+            for (const [index, engraving] of (knife.knifeForCanvas.engravings ?? []).entries()) {
+                if (!engraving.picture) continue;
+                const pictureForLaser = (await engravingService.getById(engraving.id)).pictureForLaser;
+
+
+                let fileFormat = engraving.picture.fileUrl.split('.').pop();
+                if (pictureForLaser) {
+                    fileFormat = pictureForLaser.fileUrl.split('.').pop();
+                    const fileName = `engraving_${index + 1}_name${engraving.name}.${fileFormat}`;
+                    engravingFiles.push({
+                        ...pictureForLaser,
+                        uniqueName: fileName,
+                    });
+                } else {
+                    if (endsWithEngravingNumberSvg(engraving.picture.fileUrl)) {
+                        const fileName: string = engraving.picture.fileUrl.split('/').pop() ?? "UnknownImage.svg";
+                        const svgFile = await fileService.urlToFile(engraving.picture.fileUrl, fileName, "image/svg+xml");
+
+                        engraving.picture = await fileService.convertSvgToDxf(svgFile);
+                        fileFormat = 'dxf'
+                    }
+
+                    const fileName = `engraving_${index + 1}_name${engraving.name}.${fileFormat}`;
+                    engravingFiles.push({
+                        ...engraving.picture,
+                        uniqueName: fileName,
+                    });
+                }
+            }
+
+            if (engravingFiles.length === 0) return;
+            const zip = new JSZip();
+            const folder = zip.folder(`${id}_engravings`);
+
+            try {
+                const filePromises = engravingFiles.map(async (file) => {
+                    const response = await fetch(file.fileUrl);
+                    if (!response.ok) {
+                        throw new Error(`Не вдалося завантажити файл: ${file.uniqueName}`);
+                    }
+                    const blob = await response.blob();
+                    folder?.file(file.uniqueName, blob);
+                });
+
+                await Promise.all(filePromises);
 
             zip.generateAsync({ type: 'blob' }).then(content => {
                 saveAs(content, `${id}_engravings.zip`);
             });
 
-        } catch (err) {
+            } catch (err) {
+                console.error("Error creating zip file:", err);
+                alert(err instanceof Error ? err.message : "Помилка при створенні архіву.");
+            }
+        } catch (err){
             console.error("Error creating zip file:", err);
-            alert(err instanceof Error ? err.message : "Помилка при створенні архіву.");
         } finally {
             setDownloading(false);
         }
