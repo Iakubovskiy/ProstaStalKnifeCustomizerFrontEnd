@@ -89,7 +89,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
         ref={inputRef}
         onChange={handleFileSelect}
         className="hidden"
-        accept="image/*,.glb,.obj,.fbx"
+        accept="image/*,.glb,.obj,.fbx, .dxf"
       />
       <Button onPress={triggerFileSelect} startContent={<Upload size={18} />}>
         {currentFile ? "Замінити файл" : "Вибрати файл"}

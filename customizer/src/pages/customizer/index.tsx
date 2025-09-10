@@ -43,6 +43,7 @@ const CustomizerPage = () => {
       const processedEngravings: EngravingDTO[] = [];
       for (const engraving of snap.engravings) {
         let pictureId: string | null = engraving.picture?.id || null;
+        const pictureForLaserId: string | null = engraving.pictureForLaser?.id || null;
 
         if (engraving.fileObject) {
           const uploadedFile: AppFile = await fileService.upload(engraving.fileObject);
@@ -58,7 +59,8 @@ const CustomizerPage = () => {
         console.log('names =', names);
 
         processedEngravings.push({
-          pictureId,
+          pictureId: pictureId,
+          pictureForLaserId: pictureForLaserId,
           side: engraving.side,
           text: engraving.text,
           font: engraving.font,

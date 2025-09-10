@@ -103,12 +103,13 @@ const CustomizationPanel = () => {
     return {
       id: "",
       picture: { ...libraryEngraving.picture },
+      pictureForLaser: libraryEngraving.pictureForLaser,
       side: 1,
       text: null,
       font: null,
       locationX: libraryEngraving.position?.locationX ?? 0,
       locationY: libraryEngraving.position?.locationY ?? 0,
-      locationZ: libraryEngraving.position?.locationZ ?? 0.01,
+      locationZ: libraryEngraving.position?.locationZ ?? 10,
       rotationX: libraryEngraving.rotation?.rotationX ?? 0,
       rotationY: libraryEngraving.rotation?.rotationY ?? 0,
       rotationZ: libraryEngraving.rotation?.rotationZ ?? 0,
@@ -116,7 +117,7 @@ const CustomizationPanel = () => {
       scaleY: libraryEngraving.scale?.scaleY ?? 20,
       scaleZ: libraryEngraving.scale?.scaleZ ?? 20,
       name: libraryEngraving.name,
-      fileObject: null,
+      fileObject: null
     };
   };
 

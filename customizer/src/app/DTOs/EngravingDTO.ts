@@ -3,6 +3,7 @@ export interface EngravingDTO {
   names?: LocalizedContent | null;
   descriptions?: LocalizedContent | null;
   pictureId?: string | null;
+  pictureForLaserId?: string | null;
   side: number;
   text?: string | null;
   font?: string | null;

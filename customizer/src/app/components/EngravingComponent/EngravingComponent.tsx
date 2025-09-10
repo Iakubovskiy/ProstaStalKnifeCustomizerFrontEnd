@@ -7,6 +7,7 @@ import Select, {GroupBase, SingleValue, StylesConfig} from "react-select";
 import {EngravingForCanvas} from "@/app/Interfaces/Knife/EngravingForCanvas";
 import {ref} from "valtio";
 import {fontOptions} from "./fontOptions";
+import {AppFile} from "@/app/Interfaces/File";
 
 export const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
   const customState = useCanvasState();
@@ -296,6 +297,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     text?: string;
     isExpanded?: boolean;
     selectedFile?: File | null;
+    pictureForLaser?: AppFile | null
     isPositioningOpen?: boolean;
     name?: string;
   }
@@ -332,12 +334,12 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
             }
 
             const name = engraving.name;
-            console.log("name = ", name);
 
             return {
               id: index,
               type: (engraving.text === "" || engraving.text === null) ? "file" : ("text" as "text" | "file"),
               selectedSide: engraving.side,
+              pictureForLaser: engraving.pictureForLaser,
               font: engraving.font || "Montserrat",
               text: engraving.text || "",
               isExpanded: existingItem ? existingItem.isExpanded : true,
@@ -533,6 +535,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
         if (item.id === id) {
           const updatedItem = { ...item, selectedSide: value };
           if(item.type === "file" && item.selectedFile){
+            console.log('laser = ', item.pictureForLaser)
             const file = item.selectedFile;
             const isSVG = file.type === "image/svg+xml";
             const engravingColor = value === Side.Axillary? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000";

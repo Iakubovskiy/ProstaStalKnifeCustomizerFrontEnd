@@ -6,6 +6,7 @@ export interface EngravingForCanvas {
   text: string | null;
   font: string | null;
   picture: AppFile;
+  pictureForLaser?: AppFile | null;
   locationX: number;
   locationY: number;
   locationZ: number;

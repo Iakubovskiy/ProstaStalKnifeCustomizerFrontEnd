@@ -102,7 +102,7 @@ const EngravingPage = () => {
     }, [allTags, engraving.tags]);
 
     const handleSave = async () => {
-        if (!engraving.names?.["ua"] || !engraving.picture) {
+        if (!engraving.names?.["ua"] || !engraving.picture || !engraving.pictureForLaser) {
             alert("Будь ласка, заповніть Назву (ua) та завантажте зображення.");
             return;
         }
@@ -112,6 +112,7 @@ const EngravingPage = () => {
             names: engraving.names,
             descriptions: engraving.descriptions,
             pictureId: engraving.picture.id,
+            pictureForLaserId: engraving.pictureForLaser.id,
             tagsIds: engraving.tags?.map((tag) => tag.id) || [],
             locationX: engraving.position?.locationX ?? 0,
             locationY: engraving.position?.locationY ?? 0,
@@ -217,6 +218,9 @@ const EngravingPage = () => {
 
                 <div className="grid grid-cols-1 pt-4 border-t">
                     <FileUpload label="Зображення гравіювання" currentFile={engraving.picture as AppFile} onFileChange={(f) => handleFieldChange("picture", f!)} isRequired />
+                </div>
+                <div className="grid grid-cols-1 pt-4 border-t">
+                    <FileUpload label="Файл гравіювання для лазера" currentFile={engraving.pictureForLaser as AppFile} onFileChange={(f) => handleFieldChange("pictureForLaser", f!)} isRequired />
                 </div>
 
                 <div className="flex gap-4 pt-4">

@@ -14,11 +14,32 @@ import {BladeShapeForCanvas} from "@/app/Interfaces/Knife/BladeShapeForCanvas";
 import {HandleColorForCanvas} from "@/app/Interfaces/Knife/HandleColorForCanvas";
 import {SheathColorForCanvas} from "@/app/Interfaces/Knife/SheathColorForCanvas";
 import Scene from "./Scene";
+import FileService from "@/app/services/FileService";
+import {AppFile} from "@/app/Interfaces/File";
 
 interface Props {
   productId?: string;
 }
 
+enum Side {
+  Right = 1,
+  Left = 2,
+  Axillary = 3,
+}
+
+const replaceStrokeColor = (svgText: string, newColor: string): string => {
+  let modifiedSvg = svgText.replace(/(<(path|g|svg)[^>]*style="[^"]*)stroke\s*:\s*#[0-9a-fA-F]{3,6}([^"]*)"/gi,
+      (match, p1, tag, p3) => {
+        return `${p1}stroke:${newColor}${p3}"`;
+      }
+  );
+  modifiedSvg = modifiedSvg.replace(/(<(path|g|svg)[^>]*)fill\s*=\s*"#[0-9a-fA-F]{3,6}"([^"]*)"/gi,
+      (match, p1, tag, p3) => {
+        return `${p1}fill="${newColor}"${p3}"`;
+      }
+  );
+  return modifiedSvg;
+}
 
 const screenshotCurrentCanvas = (ref: HTMLCanvasElement | null) => {
   if (!ref) return;
@@ -31,6 +52,7 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const localCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fileService = new FileService();
 
   useEffect(() => {
     const apiService = new APIService();
@@ -39,17 +61,73 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
     const initialDataService = new InitialDataService();
     let isCanceled = false;
 
-    const populateKnifeState = (data: KnifeForCanvas) => {
+    const populateKnifeState = async (data: KnifeForCanvas): Promise<void> => {
       state.bladeShape = data.bladeShape;
       state.bladeCoatingColor = data.bladeCoatingColor;
       state.handleColor = data.handleColor || state.handleColor;
       state.sheathColor = data.sheathColor || state.sheathColor;
-      // @ts-ignore
-      state.attachment =
-        data.attachment && data.attachment.length > 0
-          ? data.attachment[0]
-          : null;
-      state.engravings = data.engravings || [];
+
+      state.attachment = data.attachment && data.attachment?.length > 0 ? data.attachment[0] : null;
+
+      if (data.engravings && data.engravings?.length > 0) {
+        state.engravings = await Promise.all(
+            data.engravings.map(async (engraving, index) => {
+              const isSvg = engraving.picture?.fileUrl?.endsWith(".svg");
+              if (!isSvg) {
+                return engraving;
+              }
+
+              try {
+                const currentSide = engraving.side;
+                const engravingColor = currentSide === Side.Axillary
+                    ? state.sheathColor.engravingColorCode
+                    : state.bladeCoatingColor.engravingColorCode || "#000000";
+
+                const file = await fileService.urlToFile(
+                    engraving.picture.fileUrl,
+                    engraving.picture.fileUrl.split('/').pop() || 'engraving.svg',
+                    'image/svg+xml'
+                );
+                console.log('file = ', file);
+
+                const svgText = await readFileAsText(file);
+
+                const modifiedSvgText = replaceStrokeColor(svgText, engravingColor);
+
+                const blob = new Blob([modifiedSvgText], {type: "image/svg+xml"});
+                const svgUrl = URL.createObjectURL(blob);
+
+                const newEngravingPicture: AppFile = {
+                  fileUrl: svgUrl,
+                  id: engraving.picture.id
+                };
+
+                return {...engraving, picture: newEngravingPicture};
+              } catch (error) {
+                console.error(`Помилка обробки гравіювання ${index}:`, error);
+                return engraving;
+              }
+            })
+        );
+      } else {
+        state.engravings = [];
+      }
+    };
+
+    const readFileAsText = (file: File): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          resolve(reader.result as string);
+        };
+
+        reader.onerror = () => {
+          reject(new Error('Помилка читання файлу'));
+        };
+
+        reader.readAsText(file);
+      });
     };
 
     const populateAttachmentState = (attachment: Attachment) => {
@@ -99,7 +177,6 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
           try {
             const knifeData = await knifeService.getById(productId);
             populateKnifeState(knifeData.knifeForCanvas);
-            console.log("Engravings: ", state.engravings);
           } catch (knifeError: any) {
             if (knifeError.status === 404) {
               try {

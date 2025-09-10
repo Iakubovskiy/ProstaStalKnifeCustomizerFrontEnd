@@ -9,6 +9,7 @@ export interface Engraving {
   text: string | null;
   font: string | null;
   picture: AppFile | null;
+  pictureForLaser: AppFile | null;
   position: EngravingPosition;
   rotation: EngravingRotation;
   scale: EngravingScale;

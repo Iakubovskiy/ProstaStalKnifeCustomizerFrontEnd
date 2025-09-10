@@ -8,6 +8,7 @@ import {saveAs} from "file-saver";
 import {AppFile} from "@/app/Interfaces/File";
 import KnifeService from "@/app/services/KnifeService";
 import FileService from "@/app/services/FileService";
+import EngravingService from "@/app/services/EngravingService";
 
 interface EngravingFile extends AppFile {
     uniqueName: string;
@@ -19,6 +20,7 @@ const ViewPage = () => {
     const [downloading, setDownloading] = useState<boolean>();
     const knifeService = useMemo(() => new KnifeService(), []);
     const fileService = useMemo(() => new FileService(), []);
+    const engravingService = useMemo(() => new EngravingService(), []);
     let { id } = router.query;
     id = id as string;
 
@@ -33,20 +35,35 @@ const ViewPage = () => {
 
         for (const [index, engraving] of (knife.knifeForCanvas.engravings ?? []).entries()) {
             if (!engraving.picture) continue;
+            const pictureForLaser = (await engravingService.getById(engraving.id)).pictureForLaser;
 
-            if (endsWithEngravingNumberSvg(engraving.picture.fileUrl)) {
-                const fileName: string = engraving.picture.fileUrl.split('/').pop() ?? "UnknownImage.svg";
-                const svgFile = await fileService.urlToFile(engraving.picture.fileUrl, fileName, "image/svg+xml");
+            console.log('pictureForLaser =', pictureForLaser);
 
-                engraving.picture = await fileService.convertSvgToDxf(svgFile);
+            let fileFormat = engraving.picture.fileUrl.split('.').pop();
+            if (pictureForLaser){
+                fileFormat = pictureForLaser.fileUrl.split('.').pop();
+                console.log('fileFormat =', fileFormat);
+                const fileName = `engraving_${index + 1}_name${engraving.name}.${fileFormat}`;
+                engravingFiles.push({
+                    ...pictureForLaser,
+                    uniqueName: fileName,
+                });
             }
+            else {
+                if (endsWithEngravingNumberSvg(engraving.picture.fileUrl)) {
+                    const fileName: string = engraving.picture.fileUrl.split('/').pop() ?? "UnknownImage.svg";
+                    const svgFile = await fileService.urlToFile(engraving.picture.fileUrl, fileName, "image/svg+xml");
 
-            const fileFormat = 'dxf';
-            const fileName = `${knife.name.replace(/\s/g, '_')}_engraving_${index + 1}_name${engraving.name}.${fileFormat}`;
-            engravingFiles.push({
-                ...engraving.picture,
-                uniqueName: fileName,
-            });
+                    engraving.picture = await fileService.convertSvgToDxf(svgFile);
+                    fileFormat = 'dxf'
+                }
+
+                const fileName = `engraving_${index + 1}_name${engraving.name}.${fileFormat}`;
+                engravingFiles.push({
+                    ...engraving.picture,
+                    uniqueName: fileName,
+                });
+            }
         }
 
         if (engravingFiles.length === 0) return;
@@ -82,6 +99,16 @@ const ViewPage = () => {
 
     return (
         <div className="w-full" style={{ height: "80vh" }}>
+            {downloading&& (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="flex flex-col items-center justify-center bg-white p-8 rounded-lg text-black">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-green-500 mb-4"></div>
+                        <div className="text-xl font-bold">
+                            {t("shareDesign.savingToast")}
+                        </div>
+                    </div>
+                </div>
+            )}
             <div className="absolute left-4 z-10">
                 <button
                     onClick={handleDownloadAllEngravings}
