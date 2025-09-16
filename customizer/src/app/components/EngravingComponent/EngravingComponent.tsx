@@ -8,6 +8,7 @@ import {EngravingForCanvas} from "@/app/Interfaces/Knife/EngravingForCanvas";
 import {ref} from "valtio";
 import {fontOptions} from "./fontOptions";
 import {AppFile} from "@/app/Interfaces/File";
+import {replaceSvgColor} from "../CustomizationPanel/svgColorModification";
 
 export const PositioningControls: React.FC<{ id: number }> = ({ id }) => {
   const customState = useCanvasState();
@@ -326,7 +327,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                 }
                 const blob = await response.blob();
 
-                file = new File([blob], 'some-file', { type: 'image/svg+xml' });
+                file = new File([blob], 'some-file.svg', { type: 'image/svg+xml' });
               } catch (error) {
                 console.error(`Помилка завантаження файлу для гравіювання ${index}:`, error);
                 file = null;
@@ -544,7 +545,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
               reader.onload = () => {
                 let svgText = reader.result as string;
 
-                svgText = replaceStrokeColor(svgText, engravingColor);
+                svgText = replaceSvgColor(svgText, engravingColor);
 
                 const blob = new Blob([svgText], { type: "image/svg+xml" });
                 const svgUrl = URL.createObjectURL(blob);
@@ -695,20 +696,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     }
   };
 
-  const replaceStrokeColor = (svgText: string, newColor: string): string => {
-    let modifiedSvg = svgText.replace(/(<(path|g|svg)[^>]*style="[^"]*)stroke\s*:\s*#[0-9a-fA-F]{3,6}([^"]*)"/gi,
-        (match, p1, tag, p3) => {
-          return `${p1}stroke:${newColor}${p3}"`;
-        }
-    );
-    modifiedSvg = modifiedSvg.replace(/(<(path|g|svg)[^>]*)fill\s*=\s*"#[0-9a-fA-F]{3,6}"([^"]*)"/gi,
-        (match, p1, tag, p3) => {
-          return `${p1}fill="${newColor}"${p3}"`;
-        }
-    );
-    return modifiedSvg;
-  }
-
   const getEngravingColor = (id: number) : string => {
     let engravingColor: string;
     if(customState.engravings[id].side === Side.Axillary) {
@@ -734,7 +721,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
         reader.onload = () => {
           let svgText = reader.result as string;
 
-          svgText = replaceStrokeColor(svgText, engravingColor);
+          svgText = replaceSvgColor(svgText, engravingColor);
 
           const blob = new Blob([svgText], { type: "image/svg+xml" });
           const svgUrl = URL.createObjectURL(blob);

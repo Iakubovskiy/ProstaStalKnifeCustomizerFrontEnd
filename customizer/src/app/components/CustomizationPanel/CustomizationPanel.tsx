@@ -14,6 +14,7 @@ import {XCircle} from "lucide-react";
 import {Engraving} from "@/app/Interfaces/Engraving";
 import {EngravingForCanvas} from "@/app/Interfaces/Knife/EngravingForCanvas";
 import EngravingLibraryComponent from "@/app/components/CustomizationPanel/Components/EngravingLibraryComponent";
+import {replaceSvgColor} from "../CustomizationPanel/svgColorModification";
 
 
 const CustomizationPanel = () => {
@@ -89,13 +90,6 @@ const CustomizationPanel = () => {
     setMobilePositioningTargetId((prevId) => (id === null || prevId === id ? null : id));
   };
 
-  const replaceStrokeColor = (svgText: string, newColor: string): string => {
-    return svgText.replace(
-        /(<(path|g|svg)[^>]*style="[^"]*)stroke\s*:\s*#[0-9a-fA-F]{3,6}([^"]*)"/gi,
-        (match, p1, tag, p3) => `${p1}stroke:${newColor}${p3}"`
-    );
-  };
-
   const createEngravingForCanvas = (libraryEngraving: Engraving): EngravingForCanvas => {
     if (!libraryEngraving.picture) {
       throw("Selected engraving from library has no picture.");
@@ -125,7 +119,7 @@ const CustomizationPanel = () => {
     try {
       const response = await fetch(fileUrl);
       const svgText = await response.text();
-      const coloredSvgText = replaceStrokeColor(svgText, engravingColor);
+      const coloredSvgText = replaceSvgColor(svgText, engravingColor);
 
       const blob = new Blob([coloredSvgText], { type: "image/svg+xml" });
       const svgUrl = URL.createObjectURL(blob);

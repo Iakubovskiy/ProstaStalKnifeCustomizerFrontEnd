@@ -3,6 +3,7 @@ import {useTexture} from "@react-three/drei";
 import {useCanvasState} from "@/app/state/canvasState";
 import {useSnapshot} from "valtio";
 import * as THREE from "three";
+import {replaceSvgColor} from "../../CustomizationPanel/svgColorModification";
 
 interface DecalMaterialProps {
     pictureUrl: string;
@@ -14,14 +15,6 @@ enum Side {
     Right = 1,
     Left = 2,
     Axillary = 3,
-}
-
-const replaceStrokeColor = (svgText: string, newColor: string): string => {
-    return svgText.replace(/(<(path|g|svg)[^>]*style="[^"]*)stroke\s*:\s*#[0-9a-fA-F]{3,6}([^"]*)"/gi,
-        (match, p1, tag, p3) => {
-            return `${p1}stroke:${newColor}${p3}"`;
-        }
-    );
 }
 
 const DecalMaterial: React.FC<DecalMaterialProps> = ({
@@ -52,7 +45,7 @@ const DecalMaterial: React.FC<DecalMaterialProps> = ({
             fetch(initialTexture.image.src)
                 .then(res => res.text())
                 .then(svgText => {
-                    const modifiedSvg = replaceStrokeColor(svgText, engravingColor);
+                    const modifiedSvg = replaceSvgColor(svgText, engravingColor);
                     const blob = new Blob([modifiedSvg], { type: 'image/svg+xml' });
                     const url = URL.createObjectURL(blob);
 

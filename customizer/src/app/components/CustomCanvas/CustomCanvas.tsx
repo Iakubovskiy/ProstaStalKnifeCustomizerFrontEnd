@@ -2,7 +2,6 @@ import React, {Suspense, useEffect, useRef, useState} from "react";
 import {Canvas} from "@react-three/fiber";
 import {useCanvasState} from "@/app/state/canvasState";
 import CustomLoader from "./Support/CustomLoader";
-
 import KnifeService from "@/app/services/KnifeService";
 import AttachmentService from "@/app/services/AttachmentService";
 import InitialDataService from "@/app/services/InitialDataService";
@@ -16,6 +15,7 @@ import {SheathColorForCanvas} from "@/app/Interfaces/Knife/SheathColorForCanvas"
 import Scene from "./Scene";
 import FileService from "@/app/services/FileService";
 import {AppFile} from "@/app/Interfaces/File";
+import {replaceSvgColor} from "../CustomizationPanel/svgColorModification";
 
 interface Props {
   productId?: string;
@@ -25,20 +25,6 @@ enum Side {
   Right = 1,
   Left = 2,
   Axillary = 3,
-}
-
-const replaceStrokeColor = (svgText: string, newColor: string): string => {
-  let modifiedSvg = svgText.replace(/(<(path|g|svg)[^>]*style="[^"]*)stroke\s*:\s*#[0-9a-fA-F]{3,6}([^"]*)"/gi,
-      (match, p1, tag, p3) => {
-        return `${p1}stroke:${newColor}${p3}"`;
-      }
-  );
-  modifiedSvg = modifiedSvg.replace(/(<(path|g|svg)[^>]*)fill\s*=\s*"#[0-9a-fA-F]{3,6}"([^"]*)"/gi,
-      (match, p1, tag, p3) => {
-        return `${p1}fill="${newColor}"${p3}"`;
-      }
-  );
-  return modifiedSvg;
 }
 
 const screenshotCurrentCanvas = (ref: HTMLCanvasElement | null) => {
@@ -88,11 +74,10 @@ const KnifeConfigurator: React.FC<Props> = ({ productId }) => {
                     engraving.picture.fileUrl.split('/').pop() || 'engraving.svg',
                     'image/svg+xml'
                 );
-                console.log('file = ', file);
 
                 const svgText = await readFileAsText(file);
 
-                const modifiedSvgText = replaceStrokeColor(svgText, engravingColor);
+                const modifiedSvgText = replaceSvgColor(svgText, engravingColor);
 
                 const blob = new Blob([modifiedSvgText], {type: "image/svg+xml"});
                 const svgUrl = URL.createObjectURL(blob);
