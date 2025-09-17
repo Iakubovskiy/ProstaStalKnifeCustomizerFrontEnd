@@ -46,7 +46,18 @@ const CustomizerPage = () => {
         const pictureForLaserId: string | null = engraving.pictureForLaser?.id || null;
 
         if (engraving.fileObject) {
-          const uploadedFile: AppFile = await fileService.upload(engraving.fileObject);
+          const response = await fetch(engraving.picture.fileUrl);
+          const fileBlob = await response.blob();
+          const fileToUpload = new File(
+              [fileBlob],
+              'some-file.svg',
+              {
+                type: fileBlob.type,
+                lastModified: new Date().getTime(),
+              }
+          );
+
+          const uploadedFile: AppFile = await fileService.upload(fileToUpload);
           pictureId = uploadedFile.id;
         }
         let names: { [key: string]: string } | null = null;
