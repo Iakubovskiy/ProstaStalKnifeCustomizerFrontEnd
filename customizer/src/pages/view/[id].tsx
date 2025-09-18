@@ -10,6 +10,24 @@ import KnifeService from "@/app/services/KnifeService";
 import FileService from "@/app/services/FileService";
 import EngravingService from "@/app/services/EngravingService";
 
+const formFileName = (
+    engravingSide: number,
+    fileFormat: string,
+    engravingName?: string,
+    engravingText?: string,
+): string => {
+    let fileName:string;
+    if (engravingSide === 3){
+        fileName = `чохол ${engravingText ?? ''} ${engravingName ?? ''} ${crypto.randomUUID()}`;
+    } else {
+        const side = engravingSide === 1 ? 'права' : 'ліва';
+        fileName = `ніж ${side} сторона ${engravingText ?? ''} ${engravingName ?? ''} ${crypto.randomUUID()}`;
+    }
+
+    fileName += `.${fileFormat}`;
+    return fileName;
+}
+
 interface EngravingFile extends AppFile {
     uniqueName: string;
 }
@@ -40,16 +58,16 @@ const ViewPage = () => {
                 const pictureForLaser = (await engravingService.getById(engraving.id)).pictureForLaser;
 
 
-                let fileFormat = engraving.picture.fileUrl.split('.').pop();
+                let fileFormat = engraving.picture.fileUrl.split('.').pop() ?? 'svg';
                 if (pictureForLaser) {
-                    fileFormat = pictureForLaser.fileUrl.split('.').pop();
-                    const fileName = `engraving_${index + 1}_name${engraving.name}.${fileFormat}`;
+                    fileFormat = pictureForLaser.fileUrl.split('.').pop() ?? 'svg';
+                    const fileName = `${formFileName(engraving.side,fileFormat, engraving.name)}`;
                     engravingFiles.push({
                         ...pictureForLaser,
                         uniqueName: fileName,
                     });
                 } else {
-                    if (endsWithEngravingNumberSvg(engraving.picture.fileUrl)) {
+                    if (endsWithEngravingNumberSvg(engraving.picture.fileUrl) || engraving.picture.fileUrl.endsWith('some-file.svg')) {
                         const fileName: string = engraving.picture.fileUrl.split('/').pop() ?? "UnknownImage.svg";
                         const svgFile = await fileService.urlToFile(engraving.picture.fileUrl, fileName, "image/svg+xml");
 
@@ -57,7 +75,7 @@ const ViewPage = () => {
                         fileFormat = 'dxf'
                     }
 
-                    const fileName = `engraving_${index + 1}_name${engraving.name}.${fileFormat}`;
+                    const fileName = formFileName(engraving.side, fileFormat, engraving.name, engraving.text ?? '');
                     engravingFiles.push({
                         ...engraving.picture,
                         uniqueName: fileName,
