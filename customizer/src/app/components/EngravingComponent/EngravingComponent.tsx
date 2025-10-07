@@ -420,8 +420,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
     returnAsString: boolean = false
   ): string => {
     const fontBase64 = fontOptions.find((option) => option.value === fontFamily)?.base64;
-    console.log("textWidth = ", textWidth);
-    console.log("textHeight = ", textHeight);
 
     const svg = `
       <svg 
@@ -535,8 +533,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
       prev.map((item) => {
         if (item.id === id) {
           const updatedItem = { ...item, selectedSide: value };
-          if(item.type === "file" && item.selectedFile){
-            console.log('laser = ', item.pictureForLaser)
+          if(item.type === "file" && item.selectedFile && customState.engravings[id].picture.fileUrl !== emptyImage){
             const file = item.selectedFile;
             const isSVG = file.type === "image/svg+xml";
             const engravingColor = value === Side.Axillary? customState.sheathColor.engravingColorCode : customState.bladeCoatingColor.engravingColorCode || "#000000";
