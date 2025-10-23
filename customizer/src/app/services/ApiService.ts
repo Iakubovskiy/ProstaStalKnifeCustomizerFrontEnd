@@ -129,7 +129,7 @@ class APIService {
   }
 
   create<T>(resource: string, data: FormData | any): Promise<T> {
-    return this.request<T>(resource, "POST", data);
+    return this.request<T>(resource+'?nocache=${Date.now()', "POST", data);
   }
 
   update<T>(
