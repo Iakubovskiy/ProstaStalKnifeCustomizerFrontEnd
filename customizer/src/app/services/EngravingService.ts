@@ -17,7 +17,7 @@ class EngravingService {
 
   async getAllActive(): Promise<Engraving[]> {
     const res = await this.apiService.getAll<Engraving>(
-      `${this.resource}/active`
+      `${this.resource}/active?nocache=${Date.now()}`
     );
     return res;
   }
