@@ -50,7 +50,7 @@ const CustomizerPage = () => {
           const fileBlob = await response.blob();
           const fileToUpload = new File(
               [fileBlob],
-              'some-file.svg',
+              engraving.picture.name ?? 'some-file.svg',
               {
                 type: fileBlob.type,
                 lastModified: new Date().getTime(),

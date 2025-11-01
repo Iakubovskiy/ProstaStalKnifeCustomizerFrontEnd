@@ -326,7 +326,6 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
                   throw new Error(`Помилка отримання Blob з URL: ${response.statusText} для ${engraving.picture.fileUrl}`);
                 }
                 const blob = await response.blob();
-
                 file = new File([blob], 'some-file.svg', { type: 'image/svg+xml' });
               } catch (error) {
                 console.error(`Помилка завантаження файлу для гравіювання ${index}:`, error);
@@ -737,6 +736,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
           picture: {
             id: "",
             fileUrl: URL.createObjectURL(file),
+            name: file.name,
           },
           fileObject: ref(file),
         });
