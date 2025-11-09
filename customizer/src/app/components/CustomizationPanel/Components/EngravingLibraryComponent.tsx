@@ -118,7 +118,7 @@ const EngravingLibraryComponent: React.FC<EngravingLibraryProps> = ({ onSelect }
                         placeholder="Пошук за назвою..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-10 pr-4 py-2 border rounded-xl border border-[#b8845f]/20 bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#8b7258]/50"
+                        className="w-full pl-10 pr-4 py-2 border rounded-xl border border-[#b8845f]/20 bg-white/50 focus:outline-none focus:ring-2 focus:ring-[#8b7258]/50 text-black"
                     />
                 </div>
 
