@@ -475,7 +475,7 @@ const EngravingComponent: React.FC<EngravingComponentProps> = ({
             customState.engravings[id].font = value;
             if (item.type === "text" && item.text) {
               const textDimensions = measureTextInDOM(item.text, value, fontSize);
-              const textWidth = textDimensions.width;
+              const textWidth = textDimensions.width + 50;
               const textHeight = textDimensions.height;
               const newUrl = textToSvgUrl(
                 item.text,
