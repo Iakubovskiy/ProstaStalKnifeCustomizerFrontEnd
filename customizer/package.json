@@ -10,7 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@netlify/plugin-nextjs": "^5.9.2",
+    "@netlify/plugin-nextjs": "^5.15.4",
     "@nextui-org/react": "^2.6.10",
     "@react-three/drei": "^10.0.6",
     "@react-three/fiber": "^9.1.2",
