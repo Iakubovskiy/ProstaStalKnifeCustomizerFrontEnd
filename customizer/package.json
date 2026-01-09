@@ -5,7 +5,7 @@
   "proxy": "https://prostastal-backend-5bd4ca6915d2.herokuapp.com",
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --no-lint",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint ."
   },
